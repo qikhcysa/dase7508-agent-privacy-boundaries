@@ -2,7 +2,9 @@
 
 **智能体跨设备交接与云端回退的隐私边界** · DASE7508 Security of Intelligent Systems
 
-[简体中文](#中文) · [English](#english) · [项目路线图 / Project roadmap][i27]
+[简体中文](#中文) · [English](#english) · [项目路线图 / Project roadmap][i27] · [协作流程 / Collaboration](docs/COLLABORATION.md)
+
+组员与 agent 开始任务前，请先读[项目合作说明](docs/COLLABORATION.md)：所有前置 Issue 必须全部 CLOSED，且成果已在 main 可用。Members and agents must read the guide before implementation; every prerequisite must be CLOSED and delivered on main.
 
 ## 中文
 
