@@ -57,15 +57,17 @@ python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 
 ### 五位组员分工与 Issue
 
-| 角色 | 组员 | 分工 | 主要任务 |
-| --- | --- | --- | --- |
-| A | 夏张宁 · XIA Zhangning | 代理/API 主循环、跨设备交接、任务与会话隔离、实际发送记录、试验重置。协调全链路集成。 | [#3][i3] · [#9][i9] · [#11][i11] · [#20][i20] |
-| B | 夏立原 · XIA Liyuan | 本地日程与恢复、超时注入、批量运行、确定性评分及统计。 | [#10][i10] · [#12][i12] · [#19][i19] · [#21][i21] · [#25][i25] |
-| C | 金展 · JIN Zhan | 匹配攻击文档与成功判据、S1 模式脱敏、攻击结果分析。担任小组联络人。 | [#13][i13] · [#17][i17] · [#22][i22] · [#25][i25] |
-| D | 张玺龙 · ZHANG Xilong | 协调接口约定，负责可信注册表、上下文组装、统一出站、S2/S3 和允许或拒绝原因。 | [#5][i5] · [#7][i7] · [#8][i8] · [#14][i14] · [#15][i15] |
-| E | 江函谕 · JIANG Hanyu | 合成数据与良性文档、答案与字段规则、补充用例、证据复核和报告整理。 | [#6][i6] · [#16][i16] · [#18][i18] · [#24][i24] · [#26][i26] |
+以下姓名与完整 GitHub 用户名的对应关系由小组于 **2026-11-05** 确认，作为 Issue 指派和贡献归属的依据。`qikhcysa` 是张玺龙的账号，同时也是本仓库所属账号。金展的“jinzhan”是简称，完整用户名是 `jinzhan857-sketch`。
 
-依赖顺序为原型 [#1][i1]、[#3][i3] → 接口约定 [#5][i5] → 组件开发 [#6–#19][i27] → 集成、开发试验及协议冻结 [#20–#22][i27] → 正式实验、分析与报告 [#23–#26][i27]。以 [路线图 #27][i27] 的逐项依赖和各 Issue 的验收条件安排工作。提 PR 前先查已有 Issue，说明验证命令和观察结果，再由另一位组员审查。版本库可保存合成数据、配置和复现说明。API 密钥、真实日历或联系人、学号和本地生成的运行产物留在本地。
+| 角色 | 组员 | GitHub 用户名 | 分工 | 主要任务 |
+| --- | --- | --- | --- | --- |
+| A | 夏张宁 · XIA Zhangning | [cynic004](https://github.com/cynic004) | 代理/API 主循环、跨设备交接、任务与会话隔离、实际发送记录、试验重置、全链路集成和复现材料。 | [#3][i3] · [#9][i9] · [#11][i11] · [#20][i20] · [#33][i33] |
+| B | 夏立原 · XIA Liyuan | [Sherlyn-Xia](https://github.com/Sherlyn-Xia) | 本地日程与恢复、超时注入、批量运行、任务效用评分、正式实验及统计。 | [#10][i10] · [#12][i12] · [#19][i19] · [#23][i23] · [#24][i24] · [#25][i25] |
+| C | 金展 · JIN Zhan | [jinzhan857-sketch](https://github.com/jinzhan857-sketch) | 匹配攻击文档与成功判据、S1 模式脱敏、攻击结果判定、开发试验核对、协议冻结和攻击案例分析。担任小组联络人。 | [#13][i13] · [#17][i17] · [#21][i21] · [#22][i22] · [#31][i31] · [#34][i34] |
+| D | 张玺龙 · ZHANG Xilong | [qikhcysa](https://github.com/qikhcysa) | 协调接口约定，负责可信注册表、上下文组装、统一出站、S2/S3 和允许或拒绝原因。 | [#5][i5] · [#7][i7] · [#8][i8] · [#14][i14] · [#15][i15] |
+| E | 江函谕 · JIANG Hanyu | [unicjiang777](https://github.com/unicjiang777) | 合成数据与良性文档、答案与字段规则、补充用例、泄露与合法分享审计、报告和展示整理。 | [#6][i6] · [#16][i16] · [#18][i18] · [#26][i26] · [#32][i32] |
+
+每条实施 Issue 由一位成员主责，其他成员通过接口配合和 PR 审查参与。推进顺序为原型 → 接口约定 → 按依赖开发组件 → 集成、开发试验和协议冻结 → 正式实验 → 统计、攻击分析、泄露审计和复现 → 报告。以 [路线图 #27][i27] 的逐项依赖和各 Issue 的验收条件安排工作。提 PR 前先查已有 Issue，说明验证命令和观察结果，再由另一位组员审查。版本库可保存合成数据、配置和复现说明。API 密钥、真实日历或联系人、学号和本地生成的运行产物留在本地。
 
 ## English
 
@@ -120,15 +122,17 @@ Compare `proposals`, `decisions`, `outgoing_requests`, and `receiver_records` in
 
 ### Team and issue ownership
 
-| Role | Member | Responsibilities | Key issues |
-| --- | --- | --- | --- |
-| A | XIA Zhangning · 夏张宁 | Agent/API loop, handoff, task and session isolation, actual-send recording, and trial reset. Coordinates system integration. | [#3][i3] · [#9][i9] · [#11][i11] · [#20][i20] |
-| B | XIA Liyuan · 夏立原 | Local scheduling and recovery, timeout injection, batch runs, deterministic scoring, and statistics. | [#10][i10] · [#12][i12] · [#19][i19] · [#21][i21] · [#25][i25] |
-| C | JIN Zhan · 金展 | Matched attack documents and success criteria, S1 redaction, and attack outcome analysis. Team contact. | [#13][i13] · [#17][i17] · [#22][i22] · [#25][i25] |
-| D | ZHANG Xilong · 张玺龙 | Coordinates interface contracts. Owns the trusted registry, context assembly, outbound mediation, S2/S3, and policy decision reasons. | [#5][i5] · [#7][i7] · [#8][i8] · [#14][i14] · [#15][i15] |
-| E | JIANG Hanyu · 江函谕 | Synthetic data and benign documents, answer keys and field rules, supplemental cases, evidence audit, and report coordination. | [#6][i6] · [#16][i16] · [#18][i18] · [#24][i24] · [#26][i26] |
+The team confirmed the following member-to-account mapping on **2026-11-05**. Use these exact usernames for issue assignment and contribution attribution. `qikhcysa` is ZHANG Xilong's account and the repository owner. "jinzhan" is shorthand for JIN Zhan's full username, `jinzhan857-sketch`.
 
-The sequence is prototypes [#1][i1] and [#3][i3], shared contracts [#5][i5], component work [#6–#19][i27], integration and protocol freeze [#20–#22][i27], then formal runs, analysis, and reporting [#23–#26][i27]. Follow the dependency table in [roadmap #27][i27] and each issue's acceptance criteria. Link the existing issue in each PR, record commands and observations, and have a different teammate review the changes. Commit synthetic data, configuration, and reproduction instructions. Keep API keys, real calendars or contacts, student IDs, and local run outputs out of commits.
+| Role | Member | GitHub username | Responsibilities | Key issues |
+| --- | --- | --- | --- | --- |
+| A | XIA Zhangning · 夏张宁 | [cynic004](https://github.com/cynic004) | Agent/API loop, handoff, task and session isolation, actual-send recording, trial reset, system integration, and reproduction package. | [#3][i3] · [#9][i9] · [#11][i11] · [#20][i20] · [#33][i33] |
+| B | XIA Liyuan · 夏立原 | [Sherlyn-Xia](https://github.com/Sherlyn-Xia) | Local scheduling and recovery, timeout injection, batch runner, utility scoring, formal runs, and statistics. | [#10][i10] · [#12][i12] · [#19][i19] · [#23][i23] · [#24][i24] · [#25][i25] |
+| C | JIN Zhan · 金展 | [jinzhan857-sketch](https://github.com/jinzhan857-sketch) | Matched attacks and success criteria, S1 redaction, outcome grading, pilot review, protocol freeze, and attack-case analysis. Team contact. | [#13][i13] · [#17][i17] · [#21][i21] · [#22][i22] · [#31][i31] · [#34][i34] |
+| D | ZHANG Xilong · 张玺龙 | [qikhcysa](https://github.com/qikhcysa) | Interface contracts, trusted registry, context assembly, outbound mediation, S2/S3, and policy decision reasons. | [#5][i5] · [#7][i7] · [#8][i8] · [#14][i14] · [#15][i15] |
+| E | JIANG Hanyu · 江函谕 | [unicjiang777](https://github.com/unicjiang777) | Synthetic data and benign documents, answer keys and field rules, supplements, exposure/lawful-sharing audit, and report/presentation coordination. | [#6][i6] · [#16][i16] · [#18][i18] · [#26][i26] · [#32][i32] |
+
+Each implementation issue has one accountable owner; other members contribute through agreed interfaces and PR review. The sequence is prototypes, shared contracts, dependent component work, integration/pilot/freeze, formal runs, separate analysis/audit/reproduction, and the report. Follow the dependency table in [roadmap #27][i27] and each issue's acceptance criteria. Link the existing issue in each PR, record commands and observations, and have a different teammate review the changes. Commit synthetic data, configuration, and reproduction instructions. Keep API keys, real calendars or contacts, student IDs, and local run outputs out of commits.
 
 [p2]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/2
 [p4]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/4
@@ -157,3 +161,7 @@ The sequence is prototypes [#1][i1] and [#3][i3], shared contracts [#5][i5], com
 [i25]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/25
 [i26]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/26
 [i27]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27
+[i31]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/31
+[i32]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/32
+[i33]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/33
+[i34]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/34
