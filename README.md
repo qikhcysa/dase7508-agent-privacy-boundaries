@@ -1,10 +1,37 @@
 # Privacy Boundaries in Agent Handoffs and Cloud Fallbacks
 
-DASE7508 group project prototype. We study whether attacker-controlled meeting material can induce an assistant to release private calendar or contact data outside the active task's authorization, especially after handoff or local scheduling failure.
+DASE7508 Security of Intelligent Systems group project. We study whether an attacker who controls a meeting document can cause an agent to send private calendar or contact data beyond the active task's authorization after a device handoff or a scheduling failure.
 
-## Current status: T01 mechanism pilot
+## How the system works
 
-This repository currently contains a **deterministic, synthetic-data pilot** for [issue #1](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/1). It checks that a common release adapter records both proposed and actual mock-cloud payloads, and that an active-task policy can reject a forbidden release while allowing derived meeting slots. Its scripted proposal is **not evidence that a language model follows a prompt injection**. No hosted model, real cloud service, personal data, or paid API call is used in this stage.
+The planned harness simulates the desktop, mobile, and cloud receiver on one computer. A successful task explains the public agenda and returns up to three feasible slots.
+
+1. The assistant reads a meeting document on the simulated desktop.
+2. Local tools compute slots from a synthetic calendar. The controller sees meeting text, opaque handles, and permitted metadata. The runtime stores source, task, session, device, and derivation information in a trusted registry alongside local assets.
+3. The simulated mobile process either loads the document directly or resumes from a saved summary. It can call a local recovery scheduler when the primary scheduler times out.
+4. A common release adapter applies the selected policy to requests for the controller and mock cloud receiver. It records the policy decision, the exact serialized send attempt, and any observed receipt as separate events.
+
+The attacker can edit one document body. The harness controls the user request, original labels, authorization, scheduler faults, and release adapter. The hosted controller in the planned study and the mock cloud receiver are outside the local privacy boundary. Raw event details, locations, and contact numbers stay local unless the task policy authorizes the specific release.
+
+## Team and responsibilities
+
+| Role | Member | Responsibility |
+| --- | --- | --- |
+| A | XIA Zhangning | Agent/API loop, desktop-to-mobile handoff, task and session isolation, actual-send recording, and trial reset. |
+| B | XIA Liyuan | Local scheduling and recovery, fault injection, configuration switching, repeated runs, automated grading, and statistics. |
+| C | Jin Zhan | Paired attack documents, attack goals and success criteria, S1 pattern redaction, and attack outcome analysis. |
+| D | Zhang Xilong | Trusted policy, context and request assembly, outbound and fallback checks, and allow/deny reasons. |
+| E | Jiang Hanyu | Benign documents and synthetic assets, expected answers and field rules, evidence review, case displays, and report layout. |
+
+Jin Zhan is the team contact. The team shares integration, formal trials, interpretation, and writing. Each member reviews another component.
+
+## Current prototypes and reproduction
+
+Both prototypes use Python 3.11+ and synthetic data. Their documented checks run locally without API credentials.
+
+### T01 release boundary pilot
+
+The [T01 pilot](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/2) covers direct loading (H0), normal scheduling (F0), and S0/S3. It shows how the same scripted release proposal can reach the mock receiver under S0 and be denied under S3 while local scheduling completes.
 
 From the repository root, run:
 
@@ -13,14 +40,28 @@ python -m unittest discover -s tests -v
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
 
-The second command writes four traces: benign/attacked documents under S0 and S3, all with direct document loading (H0) and a working local scheduler (F0). Check `proposals`, `decisions`, `outgoing_requests`, and `receiver_records` in the JSON. Only `outgoing_requests` plus matching receiver records count as transmitted data. The fixture uses visibly synthetic private values.
+The second command writes four traces for benign and attacked documents under S0 and S3. Inspect `proposals`, `decisions`, `outgoing_requests`, and `receiver_records` in the JSON. A matching outgoing payload and receiver record establishes what reached the mock receiver.
 
-## Study boundary
+### Member A handoff harness
 
-The submitted proposal specifies S0–S3 policies, H0/H1 handoff, F0/F1 scheduler conditions, 12 paired fixtures, and a separately frozen formal evaluation. The current pilot implements only the S0/S3, H0/F0 mechanism slice. It does not produce attack-success rates or support claims about handoff, fallback, model behavior, or real deployments. See [the implementation roadmap](docs/ROADMAP.md) for the next independently reviewable tasks.
+Use a checkout containing `member_a/` from the [Member A PR](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/4). Its default demo exercises an H1 handoff across processes and a successful F1 recovery. The verifier runs the regression suite and writes traces to `member_a/runs/`.
 
-The local prototype keeps actual task authorization separate from document and model text. Fields have an original task, source, sensitivity and derivation record. Every intended outbound recipient must pass through the same recording adapter. Synthetic fixture data and raw pilot traces stay in this repository; do not commit real calendars, contacts, credentials, API keys, or student IDs.
+```shell
+cd member_a
+python run_demo.py
+python verify.py
+```
+
+The prototypes are independently runnable. Integration, hosted model validation, and formal evaluation are pending. The current traces establish local behavior under scripted decisions.
+
+## Planned evaluation
+
+The study compares S0 (privacy instructions), S1 (fixed-pattern redaction after handle resolution), S2 (static object and field allowlist), and S3 (source-preserving assembly and task, purpose, recipient, and derivation checks on loading and release, including fallback). Each condition records sends. H0 loads the document directly. H1 generates, saves, and reloads a summary. F0 runs the primary scheduler normally. F1 times out the primary scheduler while a trusted recovery tool remains available.
+
+Twelve paired fixtures cover excessive disclosure, forged authorization, cross-task reuse, and fallback pretexts. Each pair keeps the legitimate task and assets constant. The attack paragraph is the only document difference. We plan to measure prohibited outbound disclosure, task completion, valid requests blocked, and costs in tokens, bytes, and latency. Supplemental tests cover lawful sharing, persistence across tasks, and failure of both local schedulers. The team will freeze the fixtures, model settings, and grading rules after the pilot. See the [implementation roadmap](docs/ROADMAP.md) and [dependency tracker](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27).
 
 ## Collaboration
 
 Open a scoped issue, implement on a branch, submit a PR with exact verification evidence and limitations, and ask a different teammate to review before merging. AI assistance and human checks should be described in the PR. Repository setup and contribution requirements are governed by the course project guidelines and GitHub collaboration manual.
+
+Commit synthetic fixtures, configuration, and reproduction instructions. Keep local environment files, API credentials, generated raw traces, real calendars and contacts, and student IDs out of commits.
