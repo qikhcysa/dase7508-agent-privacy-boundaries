@@ -1,4 +1,4 @@
-# Member A agent workflow
+# Member A XIA ZHANGNING agent workflow
 
 This standalone prototype provides the bounded agent loop, desktop-to-mobile handoff, task isolation, outbound request audit, and trial reset. The desktop process saves a scripted summary with source metadata in SQLite. A separate process reloads it as tool data and continues the meeting task. The runtime applies the selected policy before sending to the controller or mock receiver and records the serialized bytes and observed responses separately.
 
