@@ -33,7 +33,7 @@
 | 原型 | 位置与当前范围 |
 | --- | --- |
 | A 模块离线工作流 | `main` 上的 [`member_a/`](member_a/README.md)，由 [PR #4][p4] 合入。包含有步骤上限的代理循环、跨进程 H1 交接、任务隔离、发送记录和重置。 |
-| T01 出站机制试验 | [PR #2][p2] 提供的 `agent_privacy/` 和 `fixtures/t01.json`。使用脚本控制器运行 H0/F0 下的良性与攻击文档 × S0/S3，共四个场景。 |
+| T01 出站机制试验 | 仓库根目录的 `agent_privacy/` 和 `fixtures/t01.json`，由 [PR #2][p2] 提供。使用脚本控制器运行 H0/F0 下的良性与攻击文档 × S0/S3，共四个场景。 |
 
 两个原型均使用 Python 3.11+、标准库和合成数据，可离线运行。托管模型接入、统一集成及正式实验分别由 [#9][i9]、[#11][i11]、[#20][i20]、[#23][i23] 和 [#24][i24] 跟踪。
 
@@ -45,12 +45,9 @@ python run_demo.py
 python verify.py
 ```
 
-**T01。** 重新从仓库根目录开始。当前 `main` 尚无 `agent_privacy/` 时，从 [PR #2][p2] 检出独立工作目录。已有该目录时，在仓库根目录执行最后两行。
+**T01。** 从包含 `agent_privacy/` 的仓库根目录运行以下两条命令。审查尚未合并的 [PR #2][p2] 时，在独立目录检出该 PR 分支；合并后可直接在更新后的 `main` 运行。
 
 ```sh
-git fetch origin refs/pull/2/head
-git worktree add --detach ../dase7508-t01-preview FETCH_HEAD
-cd ../dase7508-t01-preview
 python -m unittest discover -s tests -v
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
@@ -98,7 +95,7 @@ The evaluation checks actual outbound requests for prohibited fields and uses re
 | Prototype | Location and scope |
 | --- | --- |
 | Member A offline workflow | [`member_a/`](member_a/README.md) on `main` via [PR #4][p4]. It includes the bounded agent loop, cross-process H1 handoff, task isolation, outbound audit, and reset. |
-| T01 release mechanism pilot | `agent_privacy/` and `fixtures/t01.json` in [PR #2][p2]. A scripted controller runs four H0/F0 scenarios across benign and attacked documents and S0/S3. |
+| T01 release mechanism pilot | `agent_privacy/` and `fixtures/t01.json` at the repository root, supplied by [PR #2][p2]. A scripted controller runs four H0/F0 scenarios across benign and attacked documents and S0/S3. |
 
 Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. Hosted model work, joint integration, and formal evaluation are tracked in [#9][i9], [#11][i11], [#20][i20], [#23][i23], and [#24][i24].
 
@@ -110,12 +107,9 @@ python run_demo.py
 python verify.py
 ```
 
-**T01.** Start again from the repository root. If `agent_privacy/` is absent on `main`, use a separate checkout from [PR #2][p2]. If `agent_privacy/` is already present, run the final two commands from the repository root.
+**T01.** Run these two commands from a checkout containing `agent_privacy/`. To review the unmerged [PR #2][p2], check out its branch in a separate directory. After merge, the commands run directly on updated `main`.
 
 ```sh
-git fetch origin refs/pull/2/head
-git worktree add --detach ../dase7508-t01-preview FETCH_HEAD
-cd ../dase7508-t01-preview
 python -m unittest discover -s tests -v
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
