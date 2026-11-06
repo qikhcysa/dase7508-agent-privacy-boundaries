@@ -1,6 +1,6 @@
 # 审查分工表
 
-本表记录 2026-11-06 预分配的 primary reviewer，覆盖 27 个未完成实施任务及协作维护任务 #42。已关闭任务保留实际历史，不追补或虚构审查。
+本表记录 2026-11-06 的 primary reviewer 预分配，分配时覆盖 27 个未完成实施任务及协作维护任务 #42。分配期间，cynic004 合并 PR #2，#1 随之关闭；当前待交付为 26 个实施任务及 #42。保留 #1 的原定审查人作为分配历史，不将其改写成已提交的正式审查。其他已关闭任务保留原有历史。
 
 每条任务仍只有一位实施负责人。Reviewer 负责在交付时独立验收；预分配不表示对方已经接受、开始或完成审查。Issue 的 Assignees 保留实施负责人，审查人写在正文的 `Reviewer:` 一行。现有范围、前置依赖与开工门槛不变。
 
@@ -39,13 +39,13 @@
 
 ## 审查量
 
-| 成员 | 预分配审查数 |
-| --- | ---: |
-| ZHANG Xilong (`qikhcysa`) | 5 |
-| XIA Zhangning (`cynic004`) | 6 |
-| XIA Liyuan (`Sherlyn-Xia`) | 6 |
-| JIN Zhan (`jinzhan857-sketch`) | 5 |
-| JIANG Hanyu (`unicjiang777`) | 6 |
+| 成员 | 本次预分配总数 | 对应任务仍 OPEN |
+| --- | ---: | ---: |
+| ZHANG Xilong (`qikhcysa`) | 5 | 5 |
+| XIA Zhangning (`cynic004`) | 6 | 5 |
+| XIA Liyuan (`Sherlyn-Xia`) | 6 | 6 |
+| JIN Zhan (`jinzhan857-sketch`) | 5 | 5 |
+| JIANG Hanyu (`unicjiang777`) | 6 | 6 |
 
 任务数量用于检查分配是否集中，不代表各项耗时相同。按模块衔接交叉安排：代理与上下文边界互审，数据与排期互审，攻击、防护与实际发送证据交叉核对。张玺龙负责的核心实现由其他组员审查；他的审查集中在模型调用、交接、运行工具、集成和实际回执。
 
@@ -59,7 +59,7 @@
 6. 如指定 reviewer 是该变更的作者或实质共同作者、无法及时审查或缺少所需知识，负责人协调另一位独立组员，并同步 Issue 的 Reviewer 行、本表、路线图 #27 及 PR 的 Reviewers。原来未接受或未完成的审查不得写成已通过。
 7. 合并、确认 Issue CLOSED 和下游开工仍按[合作说明](COLLABORATION.md)执行。审查分配不会自动关闭 Issue，也不会代替合并。
 
-当前根样机 [Issue #1](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/1) / [PR #2](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/2) 的主要审查人为 **XIA Zhangning（cynic004）**。
+根样机 [Issue #1](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/1) / [PR #2](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/2) 原定主要审查人为 **XIA Zhangning（cynic004）**。PR #2 已于 2026-11-06 由 cynic004 合并，#1 已关闭；本次核对时 GitHub 正式 Reviews 列表为空，合并记录与正式审查记录分别记录，不以预分配或合并代替审查证据。
 
 ## 可复制的审查记录
 
