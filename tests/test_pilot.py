@@ -4,6 +4,7 @@ import json
 import unittest
 
 from agent_privacy.pilot import build_registry, load_fixture, run_case, run_pilot, task_authorization
+from agent_privacy.registry import ObjectRecord, ObjectRegistry
 from agent_privacy.release import Authorization, MockReceiver, ReleaseAdapter, ReleaseRequest
 from agent_privacy.scheduler import feasible_slots
 
@@ -64,6 +65,76 @@ class PilotTests(unittest.TestCase):
             )
             self.assertTrue(decision["allowed"])
             self.assertEqual(receiver.records[0]["fields"], {"phone": "SYNTHETIC-PRIVATE-PHONE-555-0100"})
+        finally:
+            registry.close()
+
+    def test_invalid_requests_are_recorded_without_transmission(self) -> None:
+        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar_events"])
+        registry = build_registry(self.fixture, slots)
+        base = {
+            "task_id": "T01", "purpose": "schedule", "recipient": "mock-cloud",
+            "object_id": "schedule.slots", "fields": ("slots",),
+        }
+        cases = [
+            ({"task_id": "T02"}, "request_task_mismatch"),
+            ({"purpose": "debug"}, "recipient_purpose_or_field_not_authorized"),
+            ({"recipient": "other-cloud"}, "unsupported_pilot_recipient"),
+            ({"object_id": "missing"}, "unknown_object"),
+            ({"fields": ()}, "unknown_or_empty_field"),
+            ({"fields": ("missing",)}, "unknown_or_empty_field"),
+        ]
+        try:
+            for changes, expected in cases:
+                with self.subTest(changes=changes):
+                    receiver = MockReceiver()
+                    adapter = ReleaseAdapter(registry, task_authorization("T01"), "S3", receiver)
+                    request = ReleaseRequest(**{**base, **changes})
+                    decision = adapter.send(request)
+                    self.assertFalse(decision["allowed"])
+                    self.assertEqual(decision["reason"], expected)
+                    self.assertEqual(len(adapter.proposals), 1)
+                    self.assertEqual(adapter.decisions, [decision])
+                    self.assertEqual(adapter.outgoing_requests, [])
+                    self.assertEqual(receiver.records, [])
+        finally:
+            registry.close()
+
+    def test_mixed_fields_cannot_expand_explicit_private_authorization(self) -> None:
+        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar_events"])
+        registry = build_registry(self.fixture, slots)
+        receiver = MockReceiver()
+        authorization = Authorization(
+            "T01", {"mock-cloud": {"contact-confirmation": {"contacts.organizer": ("phone",)}}}
+        )
+        adapter = ReleaseAdapter(registry, authorization, "S3", receiver)
+        try:
+            decision = adapter.send(ReleaseRequest(
+                "T01", "contact-confirmation", "mock-cloud", "contacts.organizer", ("phone", "name")
+            ))
+            self.assertEqual(decision["reason"], "private_object_not_authorized")
+            self.assertEqual(adapter.outgoing_requests, [])
+            self.assertEqual(receiver.records, [])
+        finally:
+            registry.close()
+
+    def test_authorized_conditional_fields_still_require_trusted_derivation(self) -> None:
+        registry = ObjectRegistry()
+        registry.add(ObjectRecord(
+            "untrusted.slots", "T01", "attacker-document", "conditional", False,
+            {"slots": self.fixture["candidate_slots"][:1]},
+        ))
+        authorization = Authorization(
+            "T01", {"mock-cloud": {"schedule": {"untrusted.slots": ("slots",)}}}
+        )
+        receiver = MockReceiver()
+        adapter = ReleaseAdapter(registry, authorization, "S3", receiver)
+        try:
+            decision = adapter.send(ReleaseRequest(
+                "T01", "schedule", "mock-cloud", "untrusted.slots", ("slots",)
+            ))
+            self.assertEqual(decision["reason"], "untrusted_derivation")
+            self.assertEqual(adapter.outgoing_requests, [])
+            self.assertEqual(receiver.records, [])
         finally:
             registry.close()
 
