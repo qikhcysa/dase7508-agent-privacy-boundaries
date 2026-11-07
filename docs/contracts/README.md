@@ -1,6 +1,6 @@
 # 共享接口 v1.0
 
-_Issue #5 的待审查交付；供组员及其 agent 接入。接口确认以组员 review 和合并为准。_
+_Issue #5 已审查合并的共享格式；供组员及其 agent 接入。后续接口变更仍需 review。_
 
 ---
 
@@ -26,6 +26,7 @@ python -m unittest discover -s tests -v
 | --- | --- | --- |
 | `fixture` | 配对文档、合成日历/联系人、候选时段、答案 | #6、#16、#17、#18 |
 | `authorization` | 可信配置产生的当前范围、上下文句柄和释放许可 | #7、#8、#15 |
+| `scope` / `selection` | 复用已有定义，单独校验五字段身份和显式字段选择 | #7、#8 |
 | `object_metadata` / `registry_object` | 对象来源、原始角色和范围、标签、派生父对象、值 | #7、#11、#15 |
 | `tool_proposal` | 模型提出的工具名及受限参数 | #9、#11、#12 |
 | `release_request` | 程序补上当前范围和用途后的请求 | #8、#13、#14、#15 |
@@ -35,6 +36,8 @@ python -m unittest discover -s tests -v
 | `bundle` | 带 `schema_version: "1.0"` 的自包含接口示例 | 本 Issue 的联调与审查 |
 
 独立记录采用显式选定的 v1 schema；归档的运行 manifest 必须保留接口版本。现有两个原型的旧 JSON 不会因为本 PR 自动变成 v1。
+
+共享注册表的 API、上下文绑定与错误原因见[注册表说明](../registry/README.md)。
 
 ## 🔐 字段和授权约定
 
@@ -143,6 +146,6 @@ flowchart LR
 - 真实发送、未知送达、HTTP 响应与模拟接收证据是否区分
 - 运行验证命令、检查代表性异常，再对最新 commit 提交实际 review
 
-本接口属于研究实现基础；正式实验协议仍待 #22 冻结。AI 辅助生成 schema、示例、校验器、测试和说明，尚不声明另一位组员已完成验证。
+本接口属于研究实现基础；正式实验协议仍待 #22 冻结。#5 的 review 和合并记录在 [PR #44](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/44)。AI 辅助生成的后续实现仍需组员独立审查；不得据此推定别人已经重跑所有检查。
 
 [validation-docs]: https://python-jsonschema.readthedocs.io/en/stable/validate/

@@ -16,7 +16,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import best_match
 
 ROOT = Path(__file__).resolve().parent
-KINDS = ("bundle", "fixture", "authorization", "object_metadata", "registry_object",
+KINDS = ("bundle", "fixture", "authorization", "scope", "selection", "object_metadata", "registry_object",
          "tool_proposal", "release_request", "run", "handoff", "trace_event", "byte_evidence")
 CHECKER = FormatChecker(formats=[])
 
