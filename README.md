@@ -6,6 +6,8 @@
 
 组员与 agent 开始任务前，请先读[项目合作说明](docs/COLLABORATION.md)：所有前置 Issue 必须全部 CLOSED，且成果已在 main 可用。Members and agents must read the guide before implementation; every prerequisite must be CLOSED and delivered on main.
 
+共享接口及校验命令见 [Shared contracts v1.0 / 共享接口](docs/contracts/README.md)。它约定后续模块的数据格式；当前两个原型仍使用各自的旧接口，组员审查合并后再按依赖适配。
+
 ## 中文
 
 ### 研究问题与系统边界
