@@ -20,6 +20,8 @@
 
 每条实施 Issue 只有一位主负责人，负责验收标准、实施、证据、PR 修改和最终交付。开始前记录另一位组员为 reviewer；有调整就在 Issue 中更新。角色轮换，不能由作者本人或同一个 agent 独自完成最终审查。
 
+各未完成任务的预分配 reviewer 见[审查分工表](REVIEW_ASSIGNMENTS.md)。Issue 正文的 `Reviewer:` 行标明主要审查人；Assignees 仍只记录实施负责人。预分配不表示已经接受或完成审查。
+
 组员使用自己的 GitHub 账号保留提交、PR 和审查记录。集中代建 Issue 不代表创建者完成了该成员的任务。Agent 帮助实现、检查和整理记录，主负责人仍需理解并验证结果。
 
 ## 2. 什么情况下可以开始
@@ -105,6 +107,8 @@ git push -u origin issue-N-short-name
 全部验收条件由这一 PR 交付时，描述写 `Closes #N`。只做部分工作时写 `Refs #N`，Issue 保持 OPEN；最后一条完成全部标准的 PR 才使用关闭关键字。未完成工作可开 Draft PR。负责人完成验证后再标为 Ready for review，并请求已经选定的组员审查。Ready for review 仍是未合并状态，也不会关闭 Issue。
 
 ## 7. 另一位组员审查
+
+负责人准备好 PR 后，在右侧 Reviewers 请求 Issue 已指定的审查人。未来 PR 不会仅因 Issue 写有 Reviewer 而自动发起请求。需要换人，或审查人实质参与了该变更的实现时，先协调另一位独立组员，并同步 Issue、[审查分工表](REVIEW_ASSIGNMENTS.md)、路线图 #27 和 PR 的审查请求。
 
 Reviewer 先读 Issue、前置证据、PR 描述和完整 diff，在独立目录检出 **PR 最新提交**，按验收条件重跑相关检查，并核对一个有代表性的异常情况。结果或文档需要外部资料时核对来源。没有配置自动检查不等于已经测试。
 
