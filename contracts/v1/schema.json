@@ -1,0 +1,1651 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dase7508:contracts:1.0",
+  "title": "DASE7508 shared interfaces v1.0",
+  "$ref": "#/$defs/bundle",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "recipient": {
+      "enum": [
+        "controller",
+        "mock_cloud"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "$ref": "#/$defs/id"
+        },
+        "task_id": {
+          "$ref": "#/$defs/id"
+        },
+        "session_id": {
+          "$ref": "#/$defs/id"
+        },
+        "trial_id": {
+          "$ref": "#/$defs/id"
+        },
+        "device_id": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "user_id",
+        "task_id",
+        "session_id",
+        "trial_id",
+        "device_id"
+      ],
+      "additionalProperties": false
+    },
+    "slot": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "end": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "selection": {
+      "type": "object",
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/id"
+        },
+        "fields": {
+          "$ref": "#/$defs/fields"
+        }
+      },
+      "required": [
+        "handle",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "grant": {
+      "type": "object",
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/id"
+        },
+        "fields": {
+          "$ref": "#/$defs/fields"
+        },
+        "purpose": {
+          "$ref": "#/$defs/id"
+        },
+        "recipient": {
+          "$ref": "#/$defs/recipient"
+        }
+      },
+      "required": [
+        "handle",
+        "fields",
+        "purpose",
+        "recipient"
+      ],
+      "additionalProperties": false
+    },
+    "authorization": {
+      "type": "object",
+      "properties": {
+        "authority": {
+          "const": "trusted_runtime_config"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "context_handles": {
+          "$ref": "#/$defs/ids"
+        },
+        "grants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grant"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "authority",
+        "scope",
+        "context_handles",
+        "grants"
+      ],
+      "additionalProperties": false
+    },
+    "object_metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "enum": [
+            "meeting_document",
+            "local_calendar",
+            "local_contacts",
+            "local_tool",
+            "model_summary",
+            "trusted_user",
+            "runtime"
+          ]
+        },
+        "message_role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant",
+            "tool"
+          ]
+        },
+        "original_scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "confidentiality": {
+          "enum": [
+            "public",
+            "private",
+            "derived"
+          ]
+        },
+        "integrity": {
+          "enum": [
+            "trusted",
+            "untrusted"
+          ]
+        },
+        "purpose": {
+          "$ref": "#/$defs/id"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recipient"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "producer": {
+          "$ref": "#/$defs/id"
+        },
+        "derivation": {
+          "$ref": "#/$defs/ids"
+        }
+      },
+      "required": [
+        "source",
+        "message_role",
+        "original_scope",
+        "confidentiality",
+        "integrity",
+        "purpose",
+        "recipients",
+        "producer",
+        "derivation"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "meeting_document"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message_role": {
+                "const": "tool"
+              },
+              "integrity": {
+                "const": "untrusted"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "model_summary"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message_role": {
+                "const": "assistant"
+              },
+              "integrity": {
+                "const": "untrusted"
+              },
+              "derivation": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "local_calendar"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message_role": {
+                "const": "tool"
+              },
+              "integrity": {
+                "const": "trusted"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "local_contacts"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message_role": {
+                "const": "tool"
+              },
+              "integrity": {
+                "const": "trusted"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "local_tool"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message_role": {
+                "const": "tool"
+              },
+              "integrity": {
+                "const": "trusted"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "trusted_user"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message_role": {
+                "const": "user"
+              },
+              "integrity": {
+                "const": "trusted"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "runtime"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message_role": {
+                "const": "system"
+              },
+              "integrity": {
+                "const": "trusted"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "confidentiality": {
+                "const": "derived"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "derivation": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "registry_object": {
+      "type": "object",
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/id"
+        },
+        "meta": {
+          "$ref": "#/$defs/object_metadata"
+        },
+        "value": {
+          "type": "object",
+          "minProperties": 1
+        }
+      },
+      "required": [
+        "handle",
+        "meta",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "fixture": {
+      "type": "object",
+      "properties": {
+        "fixture_id": {
+          "$ref": "#/$defs/id"
+        },
+        "data_class": {
+          "const": "synthetic"
+        },
+        "user_request": {
+          "type": "string",
+          "minLength": 1
+        },
+        "document_common": {
+          "type": "string",
+          "minLength": 1
+        },
+        "benign_paragraph": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attack_paragraph": {
+          "type": "string",
+          "minLength": 1
+        },
+        "meeting_minutes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "calendar": {
+          "type": "object",
+          "properties": {
+            "handle": {
+              "$ref": "#/$defs/id"
+            },
+            "events": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "$ref": "#/$defs/timestamp"
+                  },
+                  "end": {
+                    "$ref": "#/$defs/timestamp"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "location": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "start",
+                  "end",
+                  "title",
+                  "location"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "handle",
+            "events"
+          ],
+          "additionalProperties": false
+        },
+        "contacts": {
+          "type": "object",
+          "properties": {
+            "handle": {
+              "$ref": "#/$defs/id"
+            },
+            "entries": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "phone": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "name",
+                  "phone"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "handle",
+            "entries"
+          ],
+          "additionalProperties": false
+        },
+        "candidate_slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slot"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "expected_agenda": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "expected_slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slot"
+          },
+          "minItems": 0,
+          "maxItems": 3,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "fixture_id",
+        "data_class",
+        "user_request",
+        "document_common",
+        "benign_paragraph",
+        "attack_paragraph",
+        "meeting_minutes",
+        "calendar",
+        "contacts",
+        "candidate_slots",
+        "expected_agenda",
+        "expected_slots"
+      ],
+      "additionalProperties": false
+    },
+    "tool_proposal": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "proposal_id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "const": "schedule"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "primary",
+                    "recovery"
+                  ]
+                }
+              },
+              "required": [
+                "mode"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "proposal_id",
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "proposal_id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "const": "release"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "handle": {
+                  "$ref": "#/$defs/id"
+                },
+                "fields": {
+                  "$ref": "#/$defs/fields"
+                },
+                "recipient": {
+                  "$ref": "#/$defs/recipient"
+                }
+              },
+              "required": [
+                "handle",
+                "fields",
+                "recipient"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "proposal_id",
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "proposal_id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "const": "save_memory"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "content"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "proposal_id",
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "proposal_id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "const": "load_memory"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "handle": {
+                  "$ref": "#/$defs/id"
+                }
+              },
+              "required": [
+                "handle"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "proposal_id",
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "release_request": {
+      "type": "object",
+      "properties": {
+        "request_id": {
+          "$ref": "#/$defs/id"
+        },
+        "call_id": {
+          "$ref": "#/$defs/id"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "handle": {
+          "$ref": "#/$defs/id"
+        },
+        "fields": {
+          "$ref": "#/$defs/fields"
+        },
+        "purpose": {
+          "$ref": "#/$defs/id"
+        },
+        "recipient": {
+          "$ref": "#/$defs/recipient"
+        }
+      },
+      "required": [
+        "request_id",
+        "call_id",
+        "scope",
+        "handle",
+        "fields",
+        "purpose",
+        "recipient"
+      ],
+      "additionalProperties": false
+    },
+    "byte_evidence": {
+      "type": "object",
+      "properties": {
+        "base64": {
+          "type": "string"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "base64",
+        "byte_length",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "run": {
+      "type": "object",
+      "properties": {
+        "attempt_id": {
+          "$ref": "#/$defs/id"
+        },
+        "fixture_id": {
+          "$ref": "#/$defs/id"
+        },
+        "phase": {
+          "enum": [
+            "development",
+            "identity_control",
+            "formal"
+          ]
+        },
+        "document_variant": {
+          "enum": [
+            "benign",
+            "attacked"
+          ]
+        },
+        "repetition": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policy": {
+          "enum": [
+            "S0",
+            "S1",
+            "S2",
+            "S3"
+          ]
+        },
+        "handoff": {
+          "enum": [
+            "H0",
+            "H1"
+          ]
+        },
+        "fault": {
+          "enum": [
+            "F0",
+            "F1"
+          ]
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "purpose": {
+          "$ref": "#/$defs/id"
+        },
+        "protocol_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "controller": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "enum": [
+                "scripted",
+                "hosted"
+              ]
+            },
+            "model": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "settings": {
+              "type": "object",
+              "properties": {
+                "temperature": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "max_tokens": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "seed": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "max_steps": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max_tool_calls": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "temperature",
+                "max_tokens",
+                "seed",
+                "max_steps",
+                "max_tool_calls"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "mode",
+            "model",
+            "settings"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "attempt_id",
+        "fixture_id",
+        "phase",
+        "document_variant",
+        "repetition",
+        "policy",
+        "handoff",
+        "fault",
+        "scope",
+        "purpose",
+        "protocol_sha256",
+        "controller"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "controller": {
+                "properties": {
+                  "mode": {
+                    "const": "scripted"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "controller": {
+                "properties": {
+                  "model": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "controller": {
+                "properties": {
+                  "mode": {
+                    "const": "hosted"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "controller": {
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "formal"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "protocol_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/id"
+        },
+        "fixture_id": {
+          "$ref": "#/$defs/id"
+        },
+        "document_variant": {
+          "enum": [
+            "benign",
+            "attacked"
+          ]
+        },
+        "repetition": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "summary_handle": {
+          "$ref": "#/$defs/id"
+        },
+        "generation": {
+          "type": "object",
+          "properties": {
+            "trace_ref": {
+              "$ref": "#/$defs/id"
+            },
+            "controller_mode": {
+              "enum": [
+                "scripted",
+                "hosted"
+              ]
+            },
+            "model": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "settings_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "trace_ref",
+            "controller_mode",
+            "model",
+            "settings_sha256"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "artifact_id",
+        "fixture_id",
+        "document_variant",
+        "repetition",
+        "summary_handle",
+        "generation"
+      ],
+      "additionalProperties": false
+    },
+    "trace_event": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "tool_proposal"
+            },
+            "call_id": {
+              "$ref": "#/$defs/id"
+            },
+            "proposal": {
+              "$ref": "#/$defs/tool_proposal"
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "call_id",
+            "proposal"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "release_request"
+            },
+            "request": {
+              "$ref": "#/$defs/release_request"
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "request"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "policy_decision"
+            },
+            "operation": {
+              "enum": [
+                "load",
+                "release"
+              ]
+            },
+            "reference_id": {
+              "$ref": "#/$defs/id"
+            },
+            "allowed": {
+              "type": "boolean"
+            },
+            "reason": {
+              "$ref": "#/$defs/id"
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "operation",
+            "reference_id",
+            "allowed",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "context_loaded"
+            },
+            "handle": {
+              "$ref": "#/$defs/id"
+            },
+            "loaded_message_role": {
+              "const": "tool"
+            },
+            "source_metadata": {
+              "$ref": "#/$defs/object_metadata"
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "handle",
+            "loaded_message_role",
+            "source_metadata"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "egress_decision"
+            },
+            "send_id": {
+              "$ref": "#/$defs/id"
+            },
+            "recipient": {
+              "$ref": "#/$defs/recipient"
+            },
+            "channel": {
+              "enum": [
+                "controller",
+                "release"
+              ]
+            },
+            "selections": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/selection"
+              },
+              "minItems": 0
+            },
+            "body_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "allowed": {
+              "type": "boolean"
+            },
+            "reason": {
+              "$ref": "#/$defs/id"
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "send_id",
+            "recipient",
+            "channel",
+            "selections",
+            "body_sha256",
+            "allowed",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "send_attempt"
+            },
+            "send_id": {
+              "$ref": "#/$defs/id"
+            },
+            "request_id": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "recipient": {
+              "$ref": "#/$defs/recipient"
+            },
+            "channel": {
+              "enum": [
+                "controller",
+                "release"
+              ]
+            },
+            "transport_mode": {
+              "enum": [
+                "scripted",
+                "in_process_mock",
+                "http"
+              ]
+            },
+            "endpoint": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selections": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/selection"
+              },
+              "minItems": 0
+            },
+            "body": {
+              "$ref": "#/$defs/byte_evidence"
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "send_id",
+            "request_id",
+            "recipient",
+            "channel",
+            "transport_mode",
+            "endpoint",
+            "selections",
+            "body"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "send_result"
+            },
+            "send_id": {
+              "$ref": "#/$defs/id"
+            },
+            "transport_mode": {
+              "enum": [
+                "scripted",
+                "in_process_mock",
+                "http"
+              ]
+            },
+            "delivery": {
+              "enum": [
+                "delivery_unknown",
+                "http_response_observed",
+                "mock_receipt_observed",
+                "scripted_response_observed"
+              ]
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 599
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "response": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/byte_evidence"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "error_type": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "latency_ms": {
+              "type": "number",
+              "minimum": 0
+            },
+            "usage": {
+              "type": "object",
+              "properties": {
+                "input_tokens": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "output_tokens": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cost_usd": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "input_tokens",
+                "output_tokens",
+                "cost_usd"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "send_id",
+            "transport_mode",
+            "delivery",
+            "status",
+            "response",
+            "error_type",
+            "latency_ms",
+            "usage"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "receiver_record"
+            },
+            "send_id": {
+              "$ref": "#/$defs/id"
+            },
+            "recipient": {
+              "const": "mock_cloud"
+            },
+            "body": {
+              "$ref": "#/$defs/byte_evidence"
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "send_id",
+            "recipient",
+            "body"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "$ref": "#/$defs/id"
+            },
+            "timestamp": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "attempt_id": {
+              "$ref": "#/$defs/id"
+            },
+            "scope": {
+              "$ref": "#/$defs/scope"
+            },
+            "event": {
+              "const": "run_finished"
+            },
+            "status": {
+              "enum": [
+                "completed",
+                "incomplete",
+                "error"
+              ]
+            },
+            "agenda": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "slots": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/slot"
+              },
+              "minItems": 0,
+              "maxItems": 3,
+              "uniqueItems": true
+            },
+            "error_type": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "event_id",
+            "timestamp",
+            "attempt_id",
+            "scope",
+            "event",
+            "status",
+            "agenda",
+            "slots",
+            "error_type"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "completed"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "agenda": {
+                    "minItems": 1
+                  },
+                  "slots": {
+                    "minItems": 1
+                  },
+                  "error_type": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "error"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "error_type": {
+                    "$ref": "#/$defs/id"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "bundle": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "fixture": {
+          "$ref": "#/$defs/fixture"
+        },
+        "run": {
+          "$ref": "#/$defs/run"
+        },
+        "authorization": {
+          "$ref": "#/$defs/authorization"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/registry_object"
+          },
+          "minItems": 1
+        },
+        "handoff": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/handoff"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trace": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trace_event"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "fixture",
+        "run",
+        "authorization",
+        "objects",
+        "handoff",
+        "trace"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
