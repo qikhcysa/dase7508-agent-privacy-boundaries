@@ -1,12 +1,10 @@
 # 共享接口 v1.0
 
-_Issue #5 已审查合并的共享格式；供组员及其 agent 接入。后续接口变更仍需 review。_
+v1 定义模块交换的数据、授权来源和出站记录格式。[JSON Schema](../../contracts/v1/schema.json) · [H0/F0 和 H1/F1 合成示例](../../contracts/examples/)
 
----
+## 📋 校验命令
 
-## 📋 从这里开始
-
-本目录约定模块之间传什么数据、谁能设置授权，以及如何记录真实发送证据。机器格式在 [schema.json](../../contracts/v1/schema.json)，两份[合成示例](../../contracts/examples/)分别演示正常 H0/F0 和攻击 H1/F1 的记录格式。示例是手工构造的接口说明，**不是运行日志或实验结果**，也没有调用托管模型。
+两份示例为手工构造的接口样例。
 
 从仓库根目录运行，使用 Python 3.11+：
 
@@ -35,7 +33,7 @@ python -m unittest discover -s tests -v
 | `trace_event` / `byte_evidence` | 提议、决定、发送、响应、接收记录及原始字节摘要 | #8、#19、#25、#34 |
 | `bundle` | 带 `schema_version: "1.0"` 的自包含接口示例 | 本 Issue 的联调与审查 |
 
-独立记录采用显式选定的 v1 schema；归档的运行 manifest 必须保留接口版本。现有两个原型的旧 JSON 不会因为本 PR 自动变成 v1。
+校验单条记录时指定记录类型。归档的运行清单须标明接口版本。
 
 共享注册表的 API、上下文绑定与错误原因见[注册表说明](../registry/README.md)。
 
@@ -118,7 +116,7 @@ flowchart LR
 
 中断尝试可以没有 send_result 或 run_finished；缺失不等于成功。保留 API 错误、失败攻击和未完成记录。格式或一致性检查失败时也要归档原始数据并标明错误，不能靠丢弃失败记录改变正式实验分母。
 
-## 🔧 两个旧原型如何接入
+## 🔧 旧原型字段映射
 
 | 现有表示 | v1 约定及适配责任 |
 | --- | --- |
@@ -130,24 +128,12 @@ flowchart LR
 | 两种旧 fixture 布局 | 映射到固定的日历、联系人、配对段落、候选与答案字段；#6 |
 | 两种旧日志布局 | 按新事件和 ID 保留提议、决定、发送尝试、观察结果与接收记录；#8、#19 |
 
-这份交付只约定接口并检查说明用 JSON，不修改旧 registry、scheduler、策略、代理循环或传输层，也不提供 #6 的 fixture loader。旧演示仍使用其原格式。下游实际适配只能在 #5 合并、关闭后按各自前置条件开工。
+非空字段选择、范围与原始来源分离、发送证据的设计吸收了 XIA Zhangning 的建议。[设计讨论](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/5) · [接口草稿](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/35)
 
-本约定吸收了 XIA Zhangning 在 [Issue #5](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/5) 和[已关闭、未合并的 PR #35](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/35) 中提出的非空字段选择、范围/原始来源分离和发送证据建议。该历史草稿不是本接口已获批准的证据。
-
-## 🔍 校验范围和组员审查
+## 🔍 校验范围
 
 校验包括所有类型的结构、日期时间、字段列表、来源/角色组合、自包含对象引用及派生环、事件因果关联、来源保留和字节证据。`bundle` 示例要求相关对象和父对象齐全；实际运行可以逐条验证事件，并在归档时提供可复核的外部依赖 manifest。
 
-校验器不执行 S0–S3 策略、不推断模型意图、不实现调度或评分，也不验证日志是否由真实程序生成。它允许记录 S0 的原始数据外发，也允许如实记录 S3 的错误放行；这类记录是否属于攻击成功，由 #34 根据实际发送和接收证据判断。给一个伪造 bundle 填入正确哈希不能证明实验发生过。
-
-主要 reviewer 为 **XIA Zhangning（cynic004）**。请重点核对：
-
-- 两个原型到新字段的映射是否足够明确，是否统一了空字段列表行为
-- 授权与模型参数是否分离，原始与当前范围、角色是否区分
-- H1 固定摘要的复用身份、生成引用和后续加载是否能被不同组件一致处理
-- 真实发送、未知送达、HTTP 响应与模拟接收证据是否区分
-- 运行验证命令、检查代表性异常，再对最新 commit 提交实际 review
-
-本接口属于研究实现基础；正式实验协议仍待 #22 冻结。#5 的 review 和合并记录在 [PR #44](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/44)。AI 辅助生成的后续实现仍需组员独立审查；不得据此推定别人已经重跑所有检查。
+通过校验表示记录内部一致。实验是否发生以可追溯的运行证据为准，攻击是否成功则按实际发送和接收记录判定。日志可以如实记录 S0 的原始数据外发或 S3 的错误放行。[攻击判定 #34](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/34)
 
 [validation-docs]: https://python-jsonschema.readthedocs.io/en/stable/validate/

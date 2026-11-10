@@ -1,6 +1,6 @@
 # Implementation roadmap from the submitted proposal
 
-The [T01 pilot issue](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/1) checks deterministic mechanics only. The full study must not infer model behavior or formal success rates from this scripted probe.
+See [roadmap #27](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27) for task dependencies and current progress. The [T01 pilot](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/1) covers the scripted outbound mechanism.
 
 | Next work package | Proposal owner | Evidence needed before review |
 | --- | --- | --- |
@@ -11,5 +11,3 @@ The [T01 pilot issue](https://github.com/qikhcysa/dase7508-agent-privacy-boundar
 | Synthetic assets, correct answers, lawful-sharing controls and audit | JIANG Hanyu | Fixture provenance, answer keys, no real personal data, manual audit notes |
 
 After integration, run a small pilot and same-process identity controls; fix tool schemas and reset behavior. Freeze model identifier, generation settings, fixtures, grading, attempt limits, retry rule and spending cap **before** formal trials. The proposal plans 12 paired fixtures, S0–S3, H0/H1, F0/F1, three repetitions and separate supplements. Scale only after the first end-to-end real-model path works and the team verifies costs. Keep failed attacks, API errors, overblocking and degraded refusals visible.
-
-Each issue should have a human owner and a different reviewer. PRs should link the issue, record exact commands and observations, identify AI assistance, and preserve limitations. Do not merge until a teammate verifies the latest changes.

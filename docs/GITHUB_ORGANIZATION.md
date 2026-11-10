@@ -1,8 +1,8 @@
 # GitHub 任务组织与日常用法
 
-共享项目：[DASE7508 Project Roadmap](https://github.com/users/qikhcysa/projects/1)。仓库保持 Private；qikhcysa 为项目 owner，其他四位组员均有项目 Write 权限。任务的负责人和协作规则见 [路线图 #27](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27) 与[协作说明 PR #39](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/39)。
+任务状态见[共享看板](https://github.com/users/qikhcysa/projects/1)，负责人和前置依赖见[路线图 #27](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27)。开工与合并按[协作指南](COLLABORATION.md)执行。
 
-**能否开工取决于前置 Issue，而非看板列或阶段名称：所有前置必须 CLOSED，且需要的成果已在 main。** 原生依赖、Issue 正文和 #27 的依赖表应保持一致；不一致时先澄清，不能挑其中最宽松的一种解释。
+看板用于跟踪状态。开工前核对原生依赖、Issue 正文和 #27，确认全部前置已关闭且成果已合入 main。
 
 ## 直接使用的五个视图
 
@@ -20,14 +20,12 @@
 repo:qikhcysa/dase7508-agent-privacy-boundaries is:issue is:open assignee:@me
 ```
 
-直接使用共享项目的“我的任务”也能达到按本人筛选的目的。
-
 ## 原生关系分别表示什么
 
 - **Parent / Sub-issues**：#27 是总任务，具体工作作为子任务列在其下，展示整体进度。父子关系表示归属，不表示必须先把 #27 关闭；#27 应保留到整个项目完成。
 - **Blocked by / Blocking**：表示执行先后。例如 #5 被 #1 阻塞；从 #1 看，它 blocking #5。前置关闭后，GitHub 会反映新的阻塞状态，组员仍需核对 main 中的实际交付。
-- **Relates to**：只表示相关，不增加前置条件。已关联并行的两个原型 #1/#3，以及协作材料 #36/#38、#38/#40。
-- **Security alert**：用于关联真正的仓库安全告警。合成攻击文档是研究用例，不为它们制造安全告警。
+- **Relates to**：关联相关任务，不改变前置条件。
+- **Security alert**：关联 GitHub 已有的仓库安全告警。
 
 这些原生关系帮助发现阻塞；它们不会禁止人在本地编辑代码或创建分支。组员和 agent 必须执行协作手册中的开工检查。
 
@@ -51,7 +49,7 @@ repo:qikhcysa/dase7508-agent-privacy-boundaries is:issue is:open assignee:@me
 | 04 Formal evaluation | 冻结后的核心与补充实验。 |
 | 05 Analysis and delivery | 统计、案例、审计、复现、报告与展示。 |
 
-阶段分组帮助查看进度，不新增依赖。能否并行以每条 Issue 的前置关系为准。Milestone 没有编造截止日期；确认 Moodle 时间后再由负责人补充。
+阶段用于查看进度。截止日期以 Moodle 为准。
 
 ## 一位组员每天怎么用
 
@@ -62,7 +60,7 @@ repo:qikhcysa/dase7508-agent-privacy-boundaries is:issue is:open assignee:@me
 
 Todo 中可以同时存在被阻塞和已就绪的任务；Todo 不等于可以立即开工。In review 是展示状态，实际审查依据是 GitHub PR 中的 review 和验证记录。
 
-已移除默认的 Auto-close issue 和 Pull request merged 完成流程：拖到 Done 不会自动关闭 Issue，部分 PR 合并也不会自动把任务标为 Done。保留了子任务自动加入项目、任务加入时设置状态、Issue 关闭后标为 Done，以及 PR 关联的进展辅助流程。负责人仍须按实际结果维护状态，不能用看板拖动替代验收。
+子任务自动加入看板，Issue 关闭后移至 Done。拖动看板卡片只更新展示状态。交付完成后按协作流程关闭 Issue。
 
 ## 新任务如何纳入
 
@@ -70,10 +68,4 @@ Todo 中可以同时存在被阻塞和已就绪的任务；Todo 不等于可以�
 
 随后设置 Parent 为 #27、按正文设置原生 Blocked by、选择工作性质/组件标签和 Milestone，并更新 #27 的依赖表。已开启子任务自动加入 Project；核对任务确实出现在“全部任务”中。更新依赖前检查是否形成环；不能仅删除原生阻塞或手动关闭前置来提前开工。
 
-成员账号和仓库权限由小组确认。更换账号时同时更新成员表、实际 Assignee 和项目访问权限；不要从公开显示名推断身份。
-
-## 配置核对记录
-
-2026-11-05 在 [Issue #40](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/40) 下完成组织配置，并读取 GitHub 数据核对：33 个 Issue、54 条原生前置关系、#27 下 32 个子任务、3 条相关关系、12 个分类标签、6 个 Milestone、5 个共享视图。任务数量会随着后续工作变化；以 GitHub 当前状态为准。
-
-这次配置没有关闭实施 Issue，也没有合并 PR。完整的实施、证据、review、merge 与课程提交要求仍按项目合作说明执行。
+更换成员账号时，由小组确认新账号，并同步成员表、Issue 指派和项目访问权限。
