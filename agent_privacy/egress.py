@@ -1,4 +1,4 @@
-"""v1 outbound boundary for the S0 instruction-only baseline."""
+"""v1 outbound boundary for the S0 and S1 baselines."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from member_a.agent_core.transport import (
 )
 
 from .scoped_registry import RegistryError, ScopedRegistry
+from .redaction import RULE_VERSION, redact_payload
 
 
 S0_PRIVACY_INSTRUCTION = (
@@ -53,8 +54,8 @@ class EgressAdapter:
                  controller: HttpTransport | ScriptedTransport, trace_path: str | Path):
         self._run = deepcopy(run)
         validate("run", self._run)
-        if self._run["policy"] != "S0":
-            raise ValueError("This adapter implements the S0 baseline.")
+        if self._run["policy"] not in {"S0", "S1"}:
+            raise ValueError("This adapter implements the S0 and S1 baselines.")
         expected = "http" if self._run["controller"]["mode"] == "hosted" else "scripted"
         if controller.mode != expected:
             raise ValueError("Controller transport does not match the run mode.")
@@ -144,7 +145,7 @@ class EgressAdapter:
         self._record("release_request", request=request)
         self._released_calls.add(call_id)
         self._record("policy_decision", operation="release", reference_id=request["request_id"],
-                     allowed=True, reason="s0_instruction_only")
+                     allowed=True, reason=RULE_VERSION if self._run["policy"] == "S1" else "s0_instruction_only")
         payload = {"task_id": request["scope"]["task_id"], "purpose": request["purpose"],
                    "handle": request["handle"], "fields": values}
         return self._send(payload, recipient="mock_cloud", channel="release", selections=[selection],
@@ -153,12 +154,14 @@ class EgressAdapter:
     def _send(self, payload: dict, *, recipient: str, channel: str,
               selections: list[dict], request_id: str | None = None) -> TransportResponse:
         transport = self._controller if recipient == "controller" else self._cloud
+        if self._run["policy"] == "S1":
+            payload = redact_payload(payload, recipient)
         body = _encode(payload)
         evidence = _evidence(body)
         send_id = uuid4().hex
         self._record("egress_decision", send_id=send_id, recipient=recipient, channel=channel,
                      selections=selections, body_sha256=evidence["sha256"], allowed=True,
-                     reason="s0_instruction_only")
+                     reason=RULE_VERSION if self._run["policy"] == "S1" else "s0_instruction_only")
         self._record("send_attempt", send_id=send_id, request_id=request_id, recipient=recipient,
                      channel=channel, selections=selections, transport_mode=transport.mode,
                      endpoint=transport.endpoint, body=evidence)
