@@ -1,0 +1,30 @@
+name: Request the Issue reviewer
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, ready_for_review, edited]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: write
+
+concurrency:
+  group: issue-review-${{ github.event.pull_request.number }}
+
+jobs:
+  request-review:
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read Issue and request review
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # pull_request_target supplies the trusted base commit in GITHUB_SHA.
+          script="$RUNNER_TEMP/request_issue_review.py"
+          gh api "repos/$GITHUB_REPOSITORY/contents/.github/scripts/request_issue_review.py?ref=$GITHUB_SHA" \
+            --jq '.content' | base64 --decode > "$script"
+          python3 "$script"
