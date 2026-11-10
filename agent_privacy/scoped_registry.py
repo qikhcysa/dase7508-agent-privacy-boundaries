@@ -145,11 +145,14 @@ class ScopedRegistry:
         return handle
 
     def put_record(self, record: dict) -> str:
-        """Insert one canonical record, with parents already present."""
+        """Import a canonical record with an explicit handle and existing parents."""
         frozen = json.loads(_json(record))
         if not isinstance(frozen, dict) or set(frozen) != {"handle", "meta", "value"}:
             raise RegistryError("invalid_record")
-        return self.put(frozen["value"], frozen["meta"], handle=frozen["handle"])
+        handle = frozen["handle"]
+        if handle is None:
+            raise RegistryError("invalid_handle")
+        return self.put(frozen["value"], frozen["meta"], handle=handle)
 
     def inspect_record(self, handle: str) -> dict:
         """Trusted-only raw inspection; never expose this method as a model tool."""

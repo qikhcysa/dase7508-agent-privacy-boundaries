@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 from copy import deepcopy
 from pathlib import Path
+import sqlite3
 import tempfile
 import unittest
 
@@ -239,6 +240,30 @@ class ScopedRegistryTests(unittest.TestCase):
         record["authorization"] = {"grants": "all"}
         self.assert_reason("invalid_record", lambda: self.registry.put_record(record))
         self.assert_reason("invalid_handle", lambda: self.registry.inspect_record("'; DROP TABLE records;--"))
+
+    def test_invalid_import_handles_leave_no_object_or_binding(self):
+        original = self.bundle["objects"][0]
+        missing = {key: original[key] for key in ("meta", "value")}
+        cases = [
+            ("null", dict(original, handle=None), "invalid_handle"),
+            ("missing", missing, "invalid_record"),
+            ("malformed", dict(original, handle="bad/handle"), "invalid_handle"),
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            for name, record, reason in cases:
+                with self.subTest(handle=name):
+                    path = Path(folder) / f"{name}.sqlite3"
+                    with ScopedRegistry(path) as registry:
+                        self.assert_reason(reason, lambda: registry.put_record(record))
+                    with closing(sqlite3.connect(path)) as stored:
+                        self.assertEqual(stored.execute("SELECT COUNT(*) FROM v1_registry_objects").fetchone()[0], 0)
+                        self.assertEqual(stored.execute("SELECT COUNT(*) FROM v1_registry_bindings").fetchone()[0], 0)
+
+    def test_put_generates_handle_for_new_object(self):
+        original = self.bundle["objects"][0]
+        handle = self.registry.put(original["value"], original["meta"])
+        self.assertNotEqual(handle, original["handle"])
+        self.assertEqual(self.registry.get(handle, self.origin), dict(original, handle=handle))
 
 
 if __name__ == "__main__":

@@ -36,3 +36,13 @@ put/get 不判定外发授权。跨任务父链保留供后续策略审计，可
 未重跑 Member A 完整跨进程验证，因为本次没有迁移或修改其 runtime。未运行托管模型、正式实验、攻击率或付费 API；组件探针不能当作这些实验的证据。
 
 请 cynic004 在独立目录检出 PR 最新提交，重跑上述命令，核对原因代码及与已合并 v1 格式的一致性，并记录实际 review。Agent 不自行批准、合并或关闭 #7；#8 仍等 #7 合并并关闭，#14 等 #8，#15 等 #7/#8/#11。
+
+## 2026-11-10 审查修复
+
+cynic004 在 `5dfc229` 上发现，`put_record()` 会把 `handle=null` 当成新建对象的请求，自动生成句柄并保存记录。新回归测试在原实现上复现了错误。修复后，导入需要显式句柄，`put(value, meta)` 仍可为新对象生成句柄。[审查记录](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/45#pullrequestreview-5817886550)
+
+- `python -m unittest discover -s tests -v` 通过全部 56 项。新增测试确认空值、缺失和格式错误的句柄均被拒绝，且每次拒绝后 SQLite 对象表和绑定表均没有新增记录。另一个测试确认新建对象可以自动生成句柄并按上下文读取。
+- `python -m agent_privacy.registry_demo` 与 `python -m contracts.validate` 均通过，五字段上下文校验、来源标签和两个契约示例符合预期。
+- `python -m agent_privacy.pilot --output artifacts/issue7-review-t01.json` 的四个场景均完成本地任务。仅 attacked/S0 的模拟接收方收到原始合成日历。
+
+以上为 Codex 本地复测，修复提交待 cynic004 复审。
