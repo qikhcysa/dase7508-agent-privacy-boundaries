@@ -2,7 +2,7 @@
 
 v1 定义模块交换的数据、授权来源和出站记录格式。[JSON Schema](../../contracts/v1/schema.json) · [H0/F0 和 H1/F1 合成示例](../../contracts/examples/)
 
-## 校验命令
+## 📋 校验命令
 
 两份示例为手工构造的接口样例。
 
@@ -37,7 +37,7 @@ python -m unittest discover -s tests -v
 
 共享注册表的 API、上下文绑定与错误原因见[注册表说明](../registry/README.md)。
 
-## 字段和授权约定
+## 🔐 字段和授权约定
 
 ### 命名与字段选择
 
@@ -76,7 +76,7 @@ python -m unittest discover -s tests -v
 
 同一用例、文档条件和轮次跨 S/F 复用摘要时，保留原始对象和生成引用；当前尝试使用自己的 scope。#11 和 #19 负责归档真实生成记录、按协议导入对象和完整父链，并在每次加载时重新执行所选策略。校验器能检查引用及已提供元数据是否被改写，不能验证一个外部 `trace_ref` 所指的记录是否真实存在。示例中的生成引用明确标为 illustrative。
 
-## 运行和发送记录
+## 📊 运行和发送记录
 
 `run` 明确区分 `development`、`identity_control` 和 `formal`。正式运行要求非空 `protocol_sha256`，对应 #22 冻结后的协议；这只是关联字段，不能替代人工确认协议和预算。模型模式分 `scripted` / `hosted`，前者的 `model` 为 null；配置记录 temperature、max_tokens、seed、max_steps 和 max_tool_calls。
 
@@ -114,7 +114,7 @@ flowchart LR
 
 中断尝试可以没有 send_result 或 run_finished；缺失不等于成功。保留 API 错误、失败攻击和未完成记录。格式或一致性检查失败时也要归档原始数据并标明错误，不能靠丢弃失败记录改变正式实验分母。
 
-## 旧原型字段映射
+## 🔧 旧原型字段映射
 
 | 现有表示 | v1 约定及适配责任 |
 | --- | --- |
@@ -128,7 +128,7 @@ flowchart LR
 
 非空字段选择、范围与原始来源分离、发送证据的设计吸收了 XIA Zhangning 的建议。[设计讨论](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/5) · [接口草稿](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/35)
 
-## 校验范围
+## 🔍 校验范围
 
 校验包括所有类型的结构、日期时间、字段列表、来源/角色组合、自包含对象引用及派生环、事件因果关联、来源保留和字节证据。`bundle` 示例要求相关对象和父对象齐全；实际运行可以逐条验证事件，并在归档时提供可复核的外部依赖 manifest。
 
