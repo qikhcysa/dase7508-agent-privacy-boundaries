@@ -4,9 +4,7 @@
 
 [简体中文](#中文) · [English](#english) · [项目路线图 / Project roadmap][i27] · [协作流程 / Collaboration](docs/COLLABORATION.md)
 
-组员与 agent 开始任务前，请先读[项目合作说明](docs/COLLABORATION.md)：所有前置 Issue 必须全部 CLOSED，且成果已在 main 可用。Members and agents must read the guide before implementation; every prerequisite must be CLOSED and delivered on main.
-
-共享接口及校验命令见 [Shared contracts v1.0 / 共享接口](docs/contracts/README.md)。它约定后续模块的数据格式；当前两个原型仍使用各自的旧接口，组员审查合并后再按依赖适配。
+[共享接口 / Shared contracts v1.0](docs/contracts/README.md) · [对象注册表 / Scoped registry](docs/registry/README.md)
 
 ## 中文
 
@@ -14,7 +12,7 @@
 
 一个会议助理从桌面切换到模拟手机，或在本地日程工具超时后改用恢复路径时，攻击者能否通过会议文档，诱导它发送超出当前任务授权的日历和联系人信息？正常任务需要解释公开议程，并返回最多三个可用时段。
 
-实验在一台计算机上模拟桌面、手机和云端接收方。可信的本地工具根据合成日历计算时段。原始事件标题、地点和电话号码存储在本地，所选实验策略决定如何处理对外释放请求。计划中的托管模型和模拟云端接收方都位于本地信任边界之外。请求经过统一的出站适配器，分别记录模型提议、策略决定、实际序列化的请求，以及观察到的响应或回执。
+实验在一台计算机上模拟桌面、手机和云端接收方。本地工具根据合成日历计算时段，原始事件标题、地点和电话号码存储在本地。实验策略决定哪些数据可以发往托管模型或模拟云端。集成方案通过统一的出站适配器分别记录模型提议、策略决定、请求字节以及响应或回执。
 
 攻击者只能修改一份会议文档的正文。实验程序控制用户请求、可信标签、授权规则和故障开关。交接摘要保留原始来源、消息角色和任务范围。模型或文档声称获得了授权时，程序仍以可信策略为准。完整系统的组件依赖以 [Issue #27][i27] 为准。
 
@@ -32,10 +30,11 @@
 
 ### 当前可运行内容与复现
 
-| 原型 | 位置与当前范围 |
+| 组件 | 位置与用途 |
 | --- | --- |
-| A 模块离线工作流 | `main` 上的 [`member_a/`](member_a/README.md)，由 [PR #4][p4] 合入。包含有步骤上限的代理循环、跨进程 H1 交接、任务隔离、发送记录和重置。 |
-| T01 出站机制试验 | 仓库根目录的 `agent_privacy/` 和 `fixtures/t01.json`，由 [PR #2][p2] 提供。使用脚本控制器运行 H0/F0 下的良性与攻击文档 × S0/S3，共四个场景。 |
+| A 模块离线工作流 | [`member_a/`](member_a/README.md) 包含有步骤上限的代理循环、跨进程 H1 交接、任务隔离、发送记录和重置。 |
+| T01 出站机制试验 | 使用 `fixtures/t01.json` 和脚本控制器，比较 H0/F0 下良性与攻击文档在 S0/S3 下的表现，共四个场景。 |
+| 共享接口与注册表 | [接口校验](docs/contracts/README.md)检查 v1 数据格式和日志的一致性，[注册表演示](docs/registry/README.md)验证对象来源与上下文隔离。 |
 
 两个原型均使用 Python 3.11+、标准库和合成数据，可离线运行。托管模型接入、统一集成及正式实验分别由 [#9][i9]、[#11][i11]、[#20][i20]、[#23][i23] 和 [#24][i24] 跟踪。
 
@@ -47,18 +46,15 @@ python run_demo.py
 python verify.py
 ```
 
-**T01。** 从包含 `agent_privacy/` 的仓库根目录运行以下两条命令。审查尚未合并的 [PR #2][p2] 时，在独立目录检出该 PR 分支；合并后可直接在更新后的 `main` 运行。
+**T01。** 从 `main` 分支的仓库根目录运行。
 
 ```sh
-python -m unittest discover -s tests -v
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
 
 在 T01 输出中对照 `proposals`、`decisions`、`outgoing_requests` 和 `receiver_records`。脚本设置下，只有 S0 攻击场景的模拟接收方收到原始合成日历信息，四个场景均完成本地日程路径。此处验证的是本地机制，真实模型行为和正式攻击率留待集成后评估。
 
 ### 五位组员分工与 Issue
-
-以下姓名与完整 GitHub 用户名的对应关系由小组于 **2026-11-05** 确认，作为 Issue 指派和贡献归属的依据。`qikhcysa` 是张玺龙的账号，同时也是本仓库所属账号。金展的“jinzhan”是简称，完整用户名是 `jinzhan857-sketch`。
 
 | 角色 | 组员 | GitHub 用户名 | 分工 | 主要任务 |
 | --- | --- | --- | --- | --- |
@@ -68,15 +64,13 @@ python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 | D | 张玺龙 · ZHANG Xilong | [qikhcysa](https://github.com/qikhcysa) | 协调接口约定，负责可信注册表、上下文组装、统一出站、S2/S3 和允许或拒绝原因。 | [#5][i5] · [#7][i7] · [#8][i8] · [#14][i14] · [#15][i15] |
 | E | 江函谕 · JIANG Hanyu | [unicjiang777](https://github.com/unicjiang777) | 合成数据与良性文档、答案与字段规则、补充用例、泄露与合法分享审计、报告和展示整理。 | [#6][i6] · [#16][i16] · [#18][i18] · [#26][i26] · [#32][i32] |
 
-每条实施 Issue 由一位成员主责，其他成员通过接口配合和 PR 审查参与。推进顺序为原型 → 接口约定 → 按依赖开发组件 → 集成、开发试验和协议冻结 → 正式实验 → 统计、攻击分析、泄露审计和复现 → 报告。以 [路线图 #27][i27] 的逐项依赖和各 Issue 的验收条件安排工作。提 PR 前先查已有 Issue，说明验证命令和观察结果，再由另一位组员审查。版本库可保存合成数据、配置和复现说明。API 密钥、真实日历或联系人、学号和本地生成的运行产物留在本地。
-
 ## English
 
 ### Research question and system boundary
 
 Can an attacker who controls a meeting document induce an assistant to send calendar or contact data beyond the active task's authorization after a desktop-to-mobile handoff or a local scheduling timeout? The legitimate task is to explain the public agenda and return up to three feasible slots.
 
-The testbed simulates the desktop, mobile runtime, and cloud receiver on one computer. Trusted local tools compute slots from synthetic calendars. The testbed stores raw event titles, locations, and phone numbers locally. The selected experimental policy governs requests to release them. The planned hosted model and the mock cloud receiver both sit outside the local trust boundary. A common outbound adapter records proposals, policy decisions, actual serialized requests, and observed responses or receipts separately.
+The testbed simulates the desktop, mobile runtime, and cloud receiver on one computer. Local tools compute slots from synthetic calendars. Raw event titles, locations, and phone numbers are stored locally. The experimental policy controls what may be sent to the hosted model or mock cloud. The integration design uses a shared outbound adapter to record model proposals, policy decisions, request bytes, and responses or receipts separately.
 
 The attacker can edit only the body of one meeting document. The harness controls the user request, trusted labels, authorization, and fault settings. Handoff summaries retain the original source, message role, and task scope. The runtime bases release decisions on trusted policy even when a document or model claims authorization. [Component dependencies and ownership][i27]
 
@@ -92,12 +86,13 @@ The plan calls for 12 matched synthetic document pairs covering excessive disclo
 
 The evaluation checks actual outbound requests for prohibited fields and uses receiver evidence where available. Proposed releases, denials, and unknown delivery outcomes are recorded separately. Utility covers correct agenda facts and feasible slots as well as legitimate requests blocked. The study also records API errors, tokens, bytes, and latency. [Analysis plan][i25]
 
-### Runnable prototypes and reproduction
+### Runnable components and reproduction
 
-| Prototype | Location and scope |
+| Component | Location and scope |
 | --- | --- |
-| Member A offline workflow | [`member_a/`](member_a/README.md) on `main` via [PR #4][p4]. It includes the bounded agent loop, cross-process H1 handoff, task isolation, outbound audit, and reset. |
-| T01 release mechanism pilot | `agent_privacy/` and `fixtures/t01.json` at the repository root, supplied by [PR #2][p2]. A scripted controller runs four H0/F0 scenarios across benign and attacked documents and S0/S3. |
+| Member A offline workflow | [`member_a/`](member_a/README.md) includes the bounded agent loop, cross-process H1 handoff, task isolation, outbound audit, and reset. |
+| T01 release mechanism pilot | A scripted controller uses `fixtures/t01.json` to run four H0/F0 scenarios across benign and attacked documents and S0/S3. |
+| Shared contracts and registry | [Contract checks](docs/contracts/README.md) validate v1 formats and trace consistency. The [registry demo](docs/registry/README.md) checks provenance and context isolation. |
 
 Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. Hosted model work, joint integration, and formal evaluation are tracked in [#9][i9], [#11][i11], [#20][i20], [#23][i23], and [#24][i24].
 
@@ -109,18 +104,15 @@ python run_demo.py
 python verify.py
 ```
 
-**T01.** Run these two commands from a checkout containing `agent_privacy/`. To review the unmerged [PR #2][p2], check out its branch in a separate directory. After merge, the commands run directly on updated `main`.
+**T01.** Run from the repository root on `main`.
 
 ```sh
-python -m unittest discover -s tests -v
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
 
 Compare `proposals`, `decisions`, `outgoing_requests`, and `receiver_records` in the T01 output. In these scripted scenarios, the mock receiver gets raw synthetic calendar data only in the attacked S0 case, and all four local scheduling paths complete. The traces validate local mechanisms. Hosted model behavior and formal attack rates remain part of the integrated evaluation.
 
 ### Team and issue ownership
-
-The team confirmed the following member-to-account mapping on **2026-11-05**. Use these exact usernames for issue assignment and contribution attribution. `qikhcysa` is ZHANG Xilong's account and the repository owner. "jinzhan" is shorthand for JIN Zhan's full username, `jinzhan857-sketch`.
 
 | Role | Member | GitHub username | Responsibilities | Key issues |
 | --- | --- | --- | --- | --- |
@@ -130,11 +122,6 @@ The team confirmed the following member-to-account mapping on **2026-11-05**. Us
 | D | ZHANG Xilong · 张玺龙 | [qikhcysa](https://github.com/qikhcysa) | Interface contracts, trusted registry, context assembly, outbound mediation, S2/S3, and policy decision reasons. | [#5][i5] · [#7][i7] · [#8][i8] · [#14][i14] · [#15][i15] |
 | E | JIANG Hanyu · 江函谕 | [unicjiang777](https://github.com/unicjiang777) | Synthetic data and benign documents, answer keys and field rules, supplements, exposure/lawful-sharing audit, and report/presentation coordination. | [#6][i6] · [#16][i16] · [#18][i18] · [#26][i26] · [#32][i32] |
 
-Each implementation issue has one accountable owner; other members contribute through agreed interfaces and PR review. The sequence is prototypes, shared contracts, dependent component work, integration/pilot/freeze, formal runs, separate analysis/audit/reproduction, and the report. Follow the dependency table in [roadmap #27][i27] and each issue's acceptance criteria. Link the existing issue in each PR, record commands and observations, and have a different teammate review the changes. Commit synthetic data, configuration, and reproduction instructions. Keep API keys, real calendars or contacts, student IDs, and local run outputs out of commits.
-
-[p2]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/2
-[p4]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/4
-[i1]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/1
 [i3]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/3
 [i5]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/5
 [i6]: https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/6
