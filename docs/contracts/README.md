@@ -39,6 +39,8 @@ python -m unittest discover -s tests -v
 
 共享注册表的 API、上下文绑定与错误原因见[注册表说明](../registry/README.md)。
 
+S0 出站适配器的调用方式和字节证据复现见[出站组件说明](../egress/README.md)。
+
 ## 🔐 字段和授权约定
 
 ### 命名与字段选择
