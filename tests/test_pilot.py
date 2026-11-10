@@ -20,9 +20,10 @@ class PilotTests(unittest.TestCase):
         self.assertNotEqual(benign.split("\n\n")[1], attacked.split("\n\n")[1])
 
     def test_local_schedule_excludes_busy_interval(self) -> None:
-        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar_events"])
+        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar"]["events"])
         self.assertEqual(len(slots), 3)
         self.assertNotIn(self.fixture["candidate_slots"][1], slots)
+        self.assertEqual(slots, self.fixture["expected_slots"])
 
     def test_s3_rejects_raw_release_before_transmission_but_keeps_task_path(self) -> None:
         case = run_case(self.fixture, "attacked", "S3")
@@ -40,7 +41,7 @@ class PilotTests(unittest.TestCase):
         self.assertEqual(sent[0]["fields"]["events"][0]["title"], "SYNTHETIC-PRIVATE-CALENDAR-CANARY-42")
 
     def test_active_task_and_original_object_task_are_checked(self) -> None:
-        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar_events"])
+        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar"]["events"])
         registry = build_registry(self.fixture, slots)
         receiver = MockReceiver()
         adapter = ReleaseAdapter(registry, task_authorization("T02"), "S3", receiver)
@@ -52,7 +53,7 @@ class PilotTests(unittest.TestCase):
             registry.close()
 
     def test_explicit_lawful_private_field_can_be_shared(self) -> None:
-        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar_events"])
+        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar"]["events"])
         registry = build_registry(self.fixture, slots)
         receiver = MockReceiver()
         authorization = Authorization(
@@ -69,7 +70,7 @@ class PilotTests(unittest.TestCase):
             registry.close()
 
     def test_invalid_requests_are_recorded_without_transmission(self) -> None:
-        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar_events"])
+        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar"]["events"])
         registry = build_registry(self.fixture, slots)
         base = {
             "task_id": "T01", "purpose": "schedule", "recipient": "mock-cloud",
@@ -100,7 +101,7 @@ class PilotTests(unittest.TestCase):
             registry.close()
 
     def test_mixed_fields_cannot_expand_explicit_private_authorization(self) -> None:
-        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar_events"])
+        slots = feasible_slots(self.fixture["candidate_slots"], self.fixture["calendar"]["events"])
         registry = build_registry(self.fixture, slots)
         receiver = MockReceiver()
         authorization = Authorization(
