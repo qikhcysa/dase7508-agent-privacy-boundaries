@@ -1,4 +1,4 @@
-"""v1 outbound boundary for the S0 instruction-only baseline."""
+"""v1 outbound boundary for S0 and S2."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from member_a.agent_core.transport import (
 )
 
 from .scoped_registry import RegistryError, ScopedRegistry
+from .static_allowlist import StaticAllowlist
 
 
 S0_PRIVACY_INSTRUCTION = (
@@ -31,6 +32,15 @@ _OBSERVATIONS = {
     "scripted": "scripted_response_observed",
     "in_process_mock": "mock_receipt_observed",
 }
+
+
+class EgressDenied(ValueError):
+    """A policy denial linked to an egress decision in the trace."""
+
+    def __init__(self, reason: str, send_id: str):
+        self.reason = reason
+        self.send_id = send_id
+        super().__init__(reason)
 
 
 def _encode(value: dict) -> bytes:
@@ -50,11 +60,18 @@ class EgressAdapter:
     """One trial, one new JSONL trace and one send path for both recipients."""
 
     def __init__(self, run: dict, registry: ScopedRegistry, *,
-                 controller: HttpTransport | ScriptedTransport, trace_path: str | Path):
+                 controller: HttpTransport | ScriptedTransport, trace_path: str | Path,
+                 static_allowlist: StaticAllowlist | None = None):
         self._run = deepcopy(run)
         validate("run", self._run)
-        if self._run["policy"] != "S0":
-            raise ValueError("This adapter implements the S0 baseline.")
+        policy = self._run["policy"]
+        if policy not in {"S0", "S2"}:
+            raise ValueError("This adapter implements the S0 and S2 baselines.")
+        if policy == "S2" and not isinstance(static_allowlist, StaticAllowlist):
+            raise ValueError("S2 requires a StaticAllowlist from trusted configuration.")
+        if policy == "S0" and static_allowlist is not None:
+            raise ValueError("S0 runs without a static allowlist.")
+        self._static_allowlist = static_allowlist
         expected = "http" if self._run["controller"]["mode"] == "hosted" else "scripted"
         if controller.mode != expected:
             raise ValueError("Controller transport does not match the run mode.")
@@ -96,14 +113,14 @@ class EgressAdapter:
 
     def _selected_values(self, selection: dict) -> dict:
         validate("selection", selection)
-        # S0 deliberately observes disclosure without scope or label enforcement.
+        # S0 and S2 resolve values without context or label enforcement.
         record = self._registry.inspect_record(selection["handle"])
         if not set(selection["fields"]) <= record["value"].keys():
             raise RegistryError("unknown_field")
         return {field: record["value"][field] for field in selection["fields"]}
 
     def send_controller(self, payload: dict, *, selections: list[dict]) -> TransportResponse:
-        """Send a Chat Completions request with the S0 instruction and asset manifest."""
+        """Send a Chat Completions request using the trusted asset manifest."""
         payload = deepcopy(payload)
         selections = deepcopy(selections)
         if not isinstance(selections, list):
@@ -143,8 +160,6 @@ class EgressAdapter:
         }
         self._record("release_request", request=request)
         self._released_calls.add(call_id)
-        self._record("policy_decision", operation="release", reference_id=request["request_id"],
-                     allowed=True, reason="s0_instruction_only")
         payload = {"task_id": request["scope"]["task_id"], "purpose": request["purpose"],
                    "handle": request["handle"], "fields": values}
         return self._send(payload, recipient="mock_cloud", channel="release", selections=[selection],
@@ -156,9 +171,17 @@ class EgressAdapter:
         body = _encode(payload)
         evidence = _evidence(body)
         send_id = uuid4().hex
+        allowed, reason = True, "s0_instruction_only"
+        if self._static_allowlist is not None:
+            allowed, reason = self._static_allowlist.decide(selections)
+        if request_id is not None:
+            self._record("policy_decision", operation="release", reference_id=request_id,
+                         allowed=allowed, reason=reason)
         self._record("egress_decision", send_id=send_id, recipient=recipient, channel=channel,
-                     selections=selections, body_sha256=evidence["sha256"], allowed=True,
-                     reason="s0_instruction_only")
+                     selections=selections, body_sha256=evidence["sha256"],
+                     allowed=allowed, reason=reason)
+        if not allowed:
+            raise EgressDenied(reason, send_id)
         self._record("send_attempt", send_id=send_id, request_id=request_id, recipient=recipient,
                      channel=channel, selections=selections, transport_mode=transport.mode,
                      endpoint=transport.endpoint, body=evidence)

@@ -1,6 +1,6 @@
-# S0 出站适配器
+# 出站适配器
 
-Issue #8 把控制器请求和模拟云端释放接到 `agent_privacy.egress.EgressAdapter`。两条路径都先记录针对当前发送 ID 和载荷摘要的决定，再记录即将交给传输层的确切 UTF-8 字节。响应和模拟接收记录各有独立事件。
+`agent_privacy.egress.EgressAdapter` 统一处理控制器请求和模拟云端释放。放行后记录交给传输层的确切 UTF-8 字节。决定、发送尝试、响应和模拟接收记录分别留存。
 
 ## 接入方式
 
@@ -18,9 +18,36 @@ Issue #8 把控制器请求和模拟云端释放接到 `agent_privacy.egress.Egr
 
 ## S0 的边界
 
-S0 使用隐私指令作为基线。有效的显式字段选择可以包含私有合成字段，即使当前任务没有授权释放。这个行为用于测量指令本身是否足够。S1–S3 策略、真实模型编排与 F1 故障注入分别由后续 Issue 负责。两个历史原型仍可按原命令复现。新接口目前接收非流式 Chat Completions 请求。
+S0 使用隐私指令作为基线。有效的显式字段选择可以包含私有合成字段，用于测量指令本身对披露的影响。控制器接口接收非流式 Chat Completions 请求。
 
 结构不合规的输入在发送前拒绝。v1 trace 可保存格式正确的提议。引用不存在的句柄或字段时，调用抛出错误，保留已记录的提议。写入发送记录失败时，传输层不会被调用。每个尝试使用新的 trace 文件，运行结束后可把事件列表装入 v1 bundle 验证引用、长度和哈希。
+
+## S2 静态白名单
+
+为 `run["policy"] == "S2"` 提供 `static_allowlist`。由可信运行时在启动前构造，并在采用相同规则的尝试中复用。以下为组件示例，正式规则随实验协议归档。
+
+```python
+from agent_privacy.egress import EgressAdapter
+from agent_privacy.static_allowlist import StaticAllowlist
+
+rules = StaticAllowlist({"document.meeting": ["text"], "schedule.slots": ["slots"]})
+adapter = EgressAdapter(
+    run, registry, controller=controller, trace_path=trace_path,
+    static_allowlist=rules,
+)
+```
+
+白名单逐一匹配句柄和明确列出的顶层字段，规则构造后保存为快照。每次发送检查本次消息及历史消息中携带的资产清单。可信运行时负责从登记的资产构造控制器消息并维护完整清单。模拟云端数据直接按提议选中的字段从注册表生成。
+
+| 发送结果 | 原因代码 |
+| --- | --- |
+| 所选对象与字段全部在名单内，或请求不含资产 | `s2_allowlisted` |
+| 句柄不在名单内 | `s2_object_not_allowlisted` |
+| 句柄在名单内，但至少一个字段不在名单内 | `s2_field_not_allowlisted` |
+
+任何一项超出白名单都会拒绝整次发送。拒绝记录候选载荷摘要和原因，随后抛出 `EgressDenied`。可用异常的 `send_id` 找到对应的 `egress_decision`。模拟云端还保留关联释放请求的 `policy_decision`。只有放行才会产生发送尝试。
+
+正常与回退请求、控制器与模拟云端共用名单。规则只看句柄和字段，任务、用途、接收方、对象来源和派生链交由 S3 处理。S2 检查已登记的字段选择，名单内字段的内容可原样发出。
 
 ## 复现
 
@@ -29,7 +56,8 @@ S0 使用隐私指令作为基线。有效的显式字段选择可以包含私�
 ```sh
 python -m agent_privacy.egress_demo --output-dir artifacts/egress-s0
 python -m contracts.validate artifacts/egress-s0/bundle.json
+python -m unittest discover -s tests -p test_s2_allowlist.py -v
 python -m unittest discover -s tests -v
 ```
 
-探针生成 `events.jsonl` 和 `bundle.json`。将 `send_attempt.body.base64` 解码后可查看实际提交给传输层的正文。模拟云端的 `receiver_record` 使用接收器记录的字节。脚本控制器响应标为 `scripted_response_observed`。HTTP 测试使用本机 127.0.0.1 模拟服务，对比接收端读到的字节和发送前落盘的记录。测试覆盖 F0/F1 两种出站输入、合成私有标记、审计失败、无效字段、重复调用和未知送达。探针及测试的付费模型调用均为零。
+S0 探针生成 `events.jsonl` 和 `bundle.json`。将 `send_attempt.body.base64` 解码后可查看提交给传输层的正文。模拟云端的 `receiver_record` 使用接收器记录的字节。脚本控制器响应标为 `scripted_response_observed`。HTTP 测试使用本机 127.0.0.1 模拟服务。S2 测试覆盖 F0/F1 两种出站输入、两个接收方的放行和拒绝、名单快照以及跨上下文的相同决定。所有验证使用合成数据。
