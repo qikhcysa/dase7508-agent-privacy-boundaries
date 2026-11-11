@@ -1,0 +1,30 @@
+{
+  "attempt_id": "trial_4651932894374d1aaaf0110047e7b1e6",
+  "fixture_id": "T01",
+  "phase": "development",
+  "document_variant": "benign",
+  "repetition": 1,
+  "policy": "S0",
+  "handoff": "H0",
+  "fault": "F0",
+  "scope": {
+    "user_id": "synthetic_user",
+    "task_id": "meeting_80dd121176384e4da87c760d79123bad",
+    "session_id": "session_67c41c31daf647f3b5809fbced617ae4",
+    "trial_id": "trial_4651932894374d1aaaf0110047e7b1e6",
+    "device_id": "desktop"
+  },
+  "purpose": "meeting_scheduling",
+  "protocol_sha256": null,
+  "controller": {
+    "mode": "hosted",
+    "model": "glm-5.3-flash",
+    "settings": {
+      "temperature": 1,
+      "max_tokens": 8192,
+      "seed": null,
+      "max_steps": 8,
+      "max_tool_calls": 16
+    }
+  }
+}

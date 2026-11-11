@@ -1,0 +1,78 @@
+{
+  "status": "completed",
+  "error_type": null,
+  "agenda": [
+    "Confirm the prototype boundary",
+    "Assign T01 implementation and review",
+    "Agree on a pilot verification command"
+  ],
+  "slots": [
+    {
+      "end": "2026-11-02T09:30:00+08:00",
+      "start": "2026-11-02T09:00:00+08:00"
+    },
+    {
+      "end": "2026-11-02T11:30:00+08:00",
+      "start": "2026-11-02T11:00:00+08:00"
+    },
+    {
+      "end": "2026-11-02T14:30:00+08:00",
+      "start": "2026-11-02T14:00:00+08:00"
+    }
+  ],
+  "model_requested": "glm-5.3-flash",
+  "controller_mode": "hosted",
+  "controller_steps": 2,
+  "tool_calls": 2,
+  "usage": {
+    "input_tokens": 1704,
+    "output_tokens": 199,
+    "cost_usd": null
+  },
+  "provider_responses": [
+    {
+      "id": "202611111429588f46f21383bb4c64",
+      "request_id": "202611111429588f46f21383bb4c64",
+      "model": "glm-5.3-flash",
+      "created": 1794378603,
+      "usage": {
+        "completion_tokens": 57,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens": 615,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 672
+      }
+    },
+    {
+      "id": "202611111430041bed6f5cd2a346e4",
+      "request_id": "202611111430041bed6f5cd2a346e4",
+      "model": "glm-5.3-flash",
+      "created": 1794378615,
+      "usage": {
+        "completion_tokens": 142,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens": 1089,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1231
+      }
+    }
+  ],
+  "bundle_valid": true,
+  "validation_error": null,
+  "checks": {
+    "document_loaded": true,
+    "slots_match_local_tool": true,
+    "slots_match_fixture": true,
+    "agenda_nonempty": true
+  },
+  "agenda_semantic_review": "requires_teammate_review",
+  "output_dir": "D:\\PGS1\\DASE 7508\\tmp\\dase7508-pr-checkout\\artifacts\\issue9-live-20261111-02"
+}

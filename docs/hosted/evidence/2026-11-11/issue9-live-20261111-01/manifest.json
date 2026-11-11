@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "phase": "development",
+  "conditions": "benign/H0/F0/S0",
+  "created_at": "2026-11-11T06:29:14.972130+00:00",
+  "endpoint": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+  "source_sha256": {
+    "agent_privacy/hosted.py": "857370be39204393722c5adcb495f1298190b2a7fa0f3a83919a521fced23dc7",
+    "agent_privacy/hosted_config.py": "095e60605079d975753442f329630b08a6b9d1b8c1016f5168317bab0beb0310",
+    "agent_privacy/egress.py": "567c794317411f456604397fac07477b50f538cefd2976383224794bd2223b55",
+    "agent_privacy/fixture_loader.py": "d546dc3d7b111e7b3b868f8c1675c288f3469319be68eb7acac827ad8d972560",
+    "agent_privacy/scoped_registry.py": "90a8427e1cdb27474c8f57662f3f0135cfa276f18818cd3df352ac38026e6e55",
+    "agent_privacy/scheduler.py": "988514ce53e7275401dd5d58e28a20d867680af99406ce83474144195c6a8ef7",
+    "member_a/agent_core/runtime.py": "8dd13279168142c7952f8ec10ad4dc49b87db8bbaa4103bfaaf0f6ff4f5eb619",
+    "member_a/agent_core/transport.py": "7ade47c9ec52b6e1753765d97479bcc61ce8e56cd0bd5c905938ce05b2f03681",
+    "contracts/v1/schema.json": "ecc82ca7a4d0c3282772712423667876fa74c06c4baae1484819677babdc89d5",
+    "contracts/validate.py": "2850e07ba4b780ca6e544912953ccf9f3518f3a1b675fdf93435db4e5590bba0"
+  },
+  "artifacts": {
+    "run.json": "76389b89601095ad25c2d6d92065227732a717022666532da086ec8b95029bd6",
+    "events.jsonl": "c6bf7256522a827b9bedb7d3d9e5dcd4e5dba3c7f5eb369e51010c69d3eff69d",
+    "bundle.json": "326a9dab2dd2c147303008507639ade3c9807056cb873686834df9d76ae9d4cb",
+    "conversation.json": "c7f4c2fa632878ef18afeba86937e252add97c9fc98968c09161b3b55cbff40a",
+    "result.json": "08fa1d8c54a5824cb52e040c30acb712e94ad7c50e46bcbf5b1d7bcbf4f58861"
+  },
+  "model_options": {
+    "model": "glm-5.3-flash",
+    "tool_choice": "auto",
+    "stream": false,
+    "temperature": 1,
+    "max_tokens": 8192,
+    "thinking": {
+      "type": "enabled",
+      "clear_thinking": false
+    },
+    "reasoning_effort": "high",
+    "top_p": 0.95
+  },
+  "limits": "One development attempt; no retries, provider fallback, H1, F1, or formal scoring."
+}

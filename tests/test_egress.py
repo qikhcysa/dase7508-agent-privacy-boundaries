@@ -164,6 +164,19 @@ class EgressTests(unittest.TestCase):
         self.assertEqual(event["error_type"], "http_status")
         self.assertEqual(recorded_bytes(event["response"]), response.body)
 
+    def test_usage_parser_failure_keeps_received_response_bytes(self):
+        self.bundle["run"]["controller"].update(mode="hosted", model="synthetic-model")
+        controller = HttpTransport("https://provider.example.invalid/v1/chat/completions")
+        adapter = self.adapter(controller)
+        response = TransportResponse(status=200, body=b"[" * 20000 + b"0" + b"]" * 20000)
+        with patch.object(controller, "send", return_value=response):
+            self.assertEqual(adapter.send_controller(dict(self.payload, model="synthetic-model"),
+                                                     selections=[]), response)
+        event = self.verified_trace(adapter)[-1]
+        self.assertEqual(event["event"], "send_result")
+        self.assertEqual(recorded_bytes(event["response"]), response.body)
+        self.assertIsNone(event["usage"]["input_tokens"])
+
     def test_bad_proposals_and_fields_do_not_send(self):
         controller = ScriptedTransport([{"scripted": True}])
         adapter = self.adapter(controller)

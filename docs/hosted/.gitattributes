@@ -1,0 +1,2 @@
+# These archived files are exact-byte evidence, including JSONL line endings.
+evidence/** -text whitespace=cr-at-eol
