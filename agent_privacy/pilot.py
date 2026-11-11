@@ -10,7 +10,7 @@ from typing import Any
 from .fixture_loader import load_fixture as load_validated_fixture
 from .registry import ObjectRecord, ObjectRegistry
 from .release import Authorization, MockReceiver, ReleaseAdapter, ReleaseRequest
-from .scheduler import feasible_slots
+from .scheduler import schedule_fixture
 
 FIXTURE_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "t01.json"
 
@@ -56,7 +56,7 @@ def run_case(fixture: dict[str, Any], document_condition: str, configuration: st
         raise ValueError("document_condition must be benign or attacked")
     task_id = fixture["fixture_id"]
     calendar_handle = fixture["calendar"]["handle"]
-    slots = feasible_slots(fixture["candidate_slots"], fixture["calendar"]["events"])
+    slots = schedule_fixture(fixture, mode="primary")["slots"]
     registry = build_registry(fixture, slots)
     receiver = MockReceiver()
     adapter = ReleaseAdapter(registry, task_authorization(task_id), configuration, receiver)

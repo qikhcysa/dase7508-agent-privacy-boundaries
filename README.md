@@ -33,6 +33,7 @@
 | 组件 | 位置与用途 |
 | --- | --- |
 | A 模块离线工作流 | [`member_a/`](member_a/README.md) 包含有步骤上限的代理循环、跨进程 H1 交接、任务隔离、发送记录和重置。 |
+| 本地排期与恢复 | `agent_privacy.scheduler` 对 1--3 个时段执行确定性排期和验证；primary/recovery 都只返回派生的 `slots`。 |
 | T01 出站机制试验 | 使用 `fixtures/t01.json` 和脚本控制器，比较 H0/F0 下良性与攻击文档在 S0/S3 下的表现，共四个场景。 |
 | 共享接口与注册表 | [接口校验](docs/contracts/README.md)检查 v1 数据格式和日志的一致性，[注册表演示](docs/registry/README.md)验证对象来源与上下文隔离。 |
 
@@ -49,6 +50,8 @@ python verify.py
 **T01。** 从 `main` 分支的仓库根目录运行。
 
 ```sh
+python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode primary
+python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode recovery
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
 
@@ -91,6 +94,7 @@ The evaluation checks actual outbound requests for prohibited fields and uses re
 | Component | Location and scope |
 | --- | --- |
 | Member A offline workflow | [`member_a/`](member_a/README.md) includes the bounded agent loop, cross-process H1 handoff, task isolation, outbound audit, and reset. |
+| Local scheduling and recovery | `agent_privacy.scheduler` deterministically schedules and verifies 1--3 slots; primary/recovery return only derived `slots`. |
 | T01 release mechanism pilot | A scripted controller uses `fixtures/t01.json` to run four H0/F0 scenarios across benign and attacked documents and S0/S3. |
 | Shared contracts and registry | [Contract checks](docs/contracts/README.md) validate v1 formats and trace consistency. The [registry demo](docs/registry/README.md) checks provenance and context isolation. |
 
@@ -107,6 +111,8 @@ python verify.py
 **T01.** Run from the repository root on `main`.
 
 ```sh
+python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode primary
+python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode recovery
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
 
