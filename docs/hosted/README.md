@@ -11,15 +11,15 @@ python -m pip install -r requirements-contracts.txt
 python -m agent_privacy.hosted
 ```
 
-Windows 也可以双击仓库根目录的 `run_hosted.cmd`。程序弹出 **API Key 输入窗口**；服务地址和模型已预设，无需填写配置文件。输入密钥并点击运行即可，取消会退出。窗口只显示遮盖字符，不保存密钥。运行结果和证据目录显示在终端中。
+Windows 也可以双击仓库根目录的 `run_hosted.cmd`。程序弹出 **API Key 输入窗口**；服务地址和模型已预设，无需填写配置文件。输入密钥并点击运行即可，取消会退出。窗口显示实际目标服务器，密钥只显示遮盖字符，不保存密钥。运行结果和证据目录显示在终端中。
 
 默认模型是 `glm-5.3-flash`，标准 API 地址是 `https://open.bigmodel.cn/api/paas/v4/`。使用该服务对应账号的 API Key；赠送额度和付费余额由服务商账户规则处理。程序不检查或保证资源包余额，也不会自动充值、改用另一个账号或切换付费服务。一次尝试可能产生多次模型请求。
 
 ## Configuration and headless use
 
-The normal desktop dialog asks only for an API key. The key remains in process memory and is passed only to the transport's Authorization header. It is excluded from repr, configuration artifacts, prompts and ordinary logs. No key file is required or read by the application.
+The normal desktop dialog asks only for an API key and displays the selected destination host (including any explicit port). The key remains in process memory and is passed only to the transport's Authorization header. It is excluded from repr, configuration artifacts, prompts and ordinary logs. No key file is required or read by the application.
 
-For automation, set `AGENT_API_KEY` in the local environment (`ZAI_API_KEY` is a fallback), then run:
+For automation, set `AGENT_API_KEY` in the local environment (`ZAI_API_KEY` is a fallback only for HTTPS `open.bigmodel.cn` on the default port or port 443), then run:
 
 ```sh
 python -m agent_privacy.hosted --non-interactive --check-config
@@ -28,7 +28,7 @@ python -m agent_privacy.hosted --non-interactive --output-dir artifacts/my-new-a
 
 `--check-config` validates local settings without any API call. An output directory must be new; prior evidence is never overwritten. Without `--output-dir`, each attempt gets a unique directory under `artifacts/hosted-h0/`.
 
-Advanced configuration accepts `AGENT_BASE_URL`, `AGENT_MODEL`, or explicit `--base-url` and `--model` arguments. A base URL or full `/chat/completions` endpoint is accepted. This is a nonstreaming Chat Completions client, not a universal adapter for arbitrary model APIs. Changed services/models need separate compatibility testing. URL credentials, queries and fragments are rejected; remote services require HTTPS. Do not put a credential in a URL or model name.
+Advanced configuration accepts `AGENT_BASE_URL`, `AGENT_MODEL`, or explicit `--base-url` and `--model` arguments. A base URL or full `/chat/completions` endpoint is accepted. This is a nonstreaming Chat Completions client, not a universal adapter for arbitrary model APIs. Changed services/models need separate compatibility testing. A custom destination requires an explicit service-specific `AGENT_API_KEY` or a key entered in the dialog; it never inherits `ZAI_API_KEY`. These overrides do not change the default experiment model or destination. URL credentials, queries and fragments are rejected; remote services require HTTPS. Do not put a credential in a URL or model name.
 
 Default bounds: 8 model requests, 16 tool calls, 8192 maximum output tokens per request, 120-second request timeout. They can be set with `--max-steps`, `--max-tool-calls`, `--max-tokens`, and `--timeout`. Bounds apply to an attempt, not an account spending cap. HTTP failures, timeouts and quota failures stop the attempt; there are no automatic retries or provider fallbacks. A timeout means delivery may be unknown.
 
@@ -42,7 +42,7 @@ GLM-5.3 requests use enabled thinking with `clear_thinking: false`, reasoning ef
 4. The model invokes `schedule(mode="primary")`. The existing local scheduler computes up to three feasible slots from local calendar data; the runtime registers their trusted derived object and records its calendar parent. Only slots are returned by this tool.
 5. The model returns JSON with `agenda` and `slots`. Completion requires actual document loading, a scheduling call, valid final structure, and slots exactly matching the local tool. Agenda facts remain available for teammate semantic review; this is not the formal scorer from #19.
 
-The model-facing tool set is only `schedule` and `release`, using the shared v1 argument names. Runtime scope, purpose and authorization cannot come from tool arguments. The complete tool batch is checked before any tool effect. Recovery mode is outside this task. H1 memory/handoff, F1 injection, S1–S3 integration, formal experiment execution and automatic grading belong to later issues.
+The model-facing tool set is only `schedule` and `release`, using the shared v1 argument names. Runtime scope, purpose and authorization cannot come from tool arguments. The complete tool batch is checked before any tool effect. Recovery mode is outside this task and is rejected during batch preflight, before any proposal is recorded or tool is executed. H1 memory/handoff, F1 injection, S1–S3 integration, formal experiment execution and automatic grading belong to later issues.
 
 S0 is deliberately an instruction-only baseline. Structurally valid private releases are observable, not blocked by a new hidden defense. Every controller send uses `EgressAdapter.send_controller`; every mock-cloud send uses `release_to_cloud`. The runtime keeps explicit selections for assets still present in conversation history. The default benign task does not require a cloud upload.
 

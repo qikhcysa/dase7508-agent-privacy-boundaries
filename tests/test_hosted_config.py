@@ -146,6 +146,32 @@ class HostedConfigTests(unittest.TestCase):
         with patch.dict(os.environ, {"ZAI_API_KEY": "fallback_synthetic_key"}, clear=True):
             self.assertEqual(configure(interactive=False).api_key, "fallback_synthetic_key")
 
+    def test_zhipu_fallback_is_bound_to_official_https_destination(self):
+        for address in (DEFAULT_BASE_URL, "https://OPEN.BIGMODEL.CN:443/api/paas/v4"):
+            with self.subTest(address=address), patch.dict(os.environ, {
+                    "ZAI_API_KEY": "zhipu_synthetic_key", "AGENT_BASE_URL": address}, clear=True):
+                self.assertEqual(configure(interactive=False).api_key, "zhipu_synthetic_key")
+        for address in ("https://other.example/v1", "https://open.bigmodel.cn.evil.test/v1",
+                        "https://open.bigmodel.cn:8443/v1", "http://127.0.0.1:8080/v1"):
+            for override in (False, True):
+                with self.subTest(address=address, cli_override=override), patch.dict(os.environ, {
+                        "ZAI_API_KEY": "zhipu_synthetic_key", "AGENT_BASE_URL": address}, clear=True):
+                    with self.assertRaises(ValueError):
+                        configure(interactive=False, base_url=address if override else None)
+
+    def test_custom_destination_requires_explicit_key_and_dialog_shows_host(self):
+        with patch.dict(os.environ, {"ZAI_API_KEY": "zhipu_synthetic_key",
+                                    "AGENT_BASE_URL": "https://custom.example:8443/v1"}, clear=True), \
+                patch("agent_privacy.hosted_config.prompt_api_key", return_value="custom_synthetic_key") as popup:
+            config = configure()
+            self.assertEqual(config.api_key, "custom_synthetic_key")
+            self.assertEqual(popup.call_args.kwargs["environment_key"], "")
+            self.assertEqual(popup.call_args.kwargs["destination_host"], "custom.example:8443")
+        with patch.dict(os.environ, {"AGENT_API_KEY": "custom_synthetic_key",
+                                    "ZAI_API_KEY": "zhipu_synthetic_key"}, clear=True):
+            config = configure(interactive=False, base_url="https://custom.example/v1")
+            self.assertEqual(config.api_key, "custom_synthetic_key")
+
     def test_interactive_default_uses_popup_and_presets(self):
         with patch.dict(os.environ, {}, clear=True), \
                 patch("agent_privacy.hosted_config.prompt_api_key", return_value="typed_synthetic_key") as popup:
@@ -155,6 +181,7 @@ class HostedConfigTests(unittest.TestCase):
         self.assertEqual(config.base_url, DEFAULT_BASE_URL)
         self.assertEqual(config.api_key, "typed_synthetic_key")
         self.assertEqual(popup.call_args.kwargs["model"], DEFAULT_MODEL)
+        self.assertEqual(popup.call_args.kwargs["destination_host"], "open.bigmodel.cn")
         popup.call_args.kwargs["validate_key"]("another_synthetic_key")
         with self.assertRaises(ValueError):
             popup.call_args.kwargs["validate_key"]("")
@@ -214,17 +241,17 @@ class HostedConfigTests(unittest.TestCase):
 
         tk, state = fake_tk(actions)
         with patch.dict(sys.modules, {"tkinter": tk}):
-            key = prompt_api_key(model=DEFAULT_MODEL, environment_key="",
+            key = prompt_api_key(model=DEFAULT_MODEL, destination_host="open.bigmodel.cn", environment_key="",
                                  validate_key=lambda candidate: HostedConfig(candidate))
         self.assertEqual(key, "synthetic_gui_key")
         self.assertTrue(state.destroyed)
         self.assertEqual(state.variables[0].get(), "")
-        self.assertFalse(any(DEFAULT_BASE_URL in str(w.options) for w in state.widgets))
+        self.assertTrue(any("open.bigmodel.cn" in str(w.options) for w in state.widgets))
 
     def test_popup_blank_reuses_environment_key_and_clears_widget(self):
         tk, state = fake_tk(lambda state: state.buttons["运行"]())
         with patch.dict(sys.modules, {"tkinter": tk}):
-            key = prompt_api_key(model=DEFAULT_MODEL, environment_key="environment_synthetic_key",
+            key = prompt_api_key(model=DEFAULT_MODEL, destination_host="open.bigmodel.cn", environment_key="environment_synthetic_key",
                                  validate_key=lambda candidate: HostedConfig(candidate))
         self.assertEqual(key, "environment_synthetic_key")
         self.assertNotIn(key, str([w.options for w in state.widgets]))
@@ -239,7 +266,7 @@ class HostedConfigTests(unittest.TestCase):
 
         tk, _state = fake_tk(actions)
         with patch.dict(sys.modules, {"tkinter": tk}), self.assertRaises(ConfigurationCancelled):
-            prompt_api_key(model=DEFAULT_MODEL, environment_key="",
+            prompt_api_key(model=DEFAULT_MODEL, destination_host="open.bigmodel.cn", environment_key="",
                            validate_key=lambda candidate: HostedConfig(candidate))
 
 

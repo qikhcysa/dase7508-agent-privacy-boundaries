@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 import math
 import os
 from typing import Callable
+from urllib.parse import urlsplit
 
 from member_a.agent_core.transport import HttpTransport
 
@@ -18,7 +19,7 @@ class ConfigurationCancelled(ValueError):
     """The person closed the credential window without starting a request."""
 
 
-def prompt_api_key(*, model: str, environment_key: str,
+def prompt_api_key(*, model: str, destination_host: str, environment_key: str,
                    validate_key: Callable[[str], None]) -> str:
     """Show a key-only window; validation does not send requests or save files."""
     try:
@@ -39,7 +40,7 @@ def prompt_api_key(*, model: str, environment_key: str,
     frame.columnconfigure(0, weight=1)
     ttk.Label(frame, text="填写您的 API Key", font=("Microsoft YaHei UI", 13, "bold")).grid(
         row=0, column=0, sticky="w")
-    ttk.Label(frame, text=f"模型：{model}").grid(row=1, column=0, sticky="w", pady=(8, 12))
+    ttk.Label(frame, text=f"模型：{model}\n目标服务器：{destination_host}").grid(row=1, column=0, sticky="w", pady=(8, 12))
     key_value = tk.StringVar(master=window, value="")
     entry = ttk.Entry(frame, textvariable=key_value, show="*", width=58)
     entry.grid(row=2, column=0, sticky="ew")
@@ -158,23 +159,24 @@ def configure(*, interactive: bool = True, base_url: str | None = None,
     """
     address = base_url if base_url is not None else os.environ.get("AGENT_BASE_URL", DEFAULT_BASE_URL)
     chosen_model = model if model is not None else os.environ.get("AGENT_MODEL", DEFAULT_MODEL)
-    key = os.environ.get("AGENT_API_KEY") or os.environ.get("ZAI_API_KEY", "")
+    # Validate the destination before selecting credentials or opening a dialog.
+    validated = HostedConfig(api_key="configuration_validation_only", base_url=address,
+                             model=chosen_model, timeout=timeout, max_tokens=max_tokens,
+                             max_steps=max_steps, max_tool_calls=max_tool_calls)
+    destination = urlsplit(validated.endpoint)
+    official_zhipu = (destination.scheme == "https"
+                      and destination.hostname == "open.bigmodel.cn"
+                      and destination.port in (None, 443))
+    key = os.environ.get("AGENT_API_KEY", "")
+    if not key and official_zhipu:
+        key = os.environ.get("ZAI_API_KEY", "")
     if interactive:
-        # Advanced settings must be valid before the key-only window opens.
-        if not isinstance(address, str) or not isinstance(chosen_model, str):
-            raise ValueError("Service address and model must be text.")
-        try:
-            HostedConfig(api_key="configuration_validation_only", base_url=address,
-                         model=chosen_model, timeout=timeout, max_tokens=max_tokens,
-                         max_steps=max_steps, max_tool_calls=max_tool_calls)
-        except ValueError:
-            raise ValueError("Service address, model or execution limits are invalid.") from None
-
         def validate_key(candidate: str) -> None:
             HostedConfig(api_key=candidate, base_url=address, model=chosen_model, timeout=timeout,
                          max_tokens=max_tokens, max_steps=max_steps, max_tool_calls=max_tool_calls)
 
-        key = prompt_api_key(model=chosen_model, environment_key=key, validate_key=validate_key)
+        key = prompt_api_key(model=chosen_model, destination_host=destination.netloc,
+                             environment_key=key, validate_key=validate_key)
     return HostedConfig(api_key=key, base_url=address, model=chosen_model,
                         timeout=timeout, max_tokens=max_tokens, max_steps=max_steps,
                         max_tool_calls=max_tool_calls)

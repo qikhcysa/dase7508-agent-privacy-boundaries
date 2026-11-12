@@ -149,6 +149,20 @@ class HostedTests(unittest.TestCase):
         self.assertFalse(any(e["event"] == "tool_proposal" for e in bundle["trace"]))
         self.assertFalse(any(o["meta"]["source"] == "local_tool" for o in bundle["objects"]))
 
+    def test_recovery_rejects_whole_batch_without_scheduling_effects(self):
+        for modes in (["recovery"], ["primary", "recovery"], ["recovery", "primary"]):
+            with self.subTest(modes=modes):
+                calls = [call(f"schedule_{i}", "schedule", {"mode": mode})
+                         for i, mode in enumerate(modes)]
+                model = SyntheticModel(lambda _p, _n: reply({"role": "assistant", "tool_calls": calls}))
+                result, bundle = self.run_attempt(model, name="_".join(modes))
+                self.assertEqual(result["status"], "error")
+                self.assertEqual(result["error_type"], "recovery_outside_h0_f0_scope")
+                self.assertEqual(result["tool_calls"], 0)
+                self.assertEqual(len(model.requests), 1)
+                self.assertFalse(any(e["event"] == "tool_proposal" for e in bundle["trace"]))
+                self.assertFalse(any(o["meta"]["source"] == "local_tool" for o in bundle["objects"]))
+
     def test_rejects_duplicate_calls_unknown_handles_and_forged_authority(self):
         cases = {
             "duplicate": ([call("same", "schedule", {"mode": "primary"})] * 2, "duplicate_call_id"),

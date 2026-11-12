@@ -133,6 +133,8 @@ def _batch(calls: list, issued: set[str], remaining: int) -> list[dict]:
         proposal = {"proposal_id": "proposal_" + uuid4().hex, "name": function["name"],
                     "arguments": _parse(function["arguments"])}
         validate("tool_proposal", proposal)
+        if proposal["name"] == "schedule" and proposal["arguments"]["mode"] != "primary":
+            raise AgentError("recovery_outside_h0_f0_scope")
         result.append(proposal)
         batch_ids.add(call_id)
     return result
@@ -274,8 +276,6 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
                     tool_count += 1
                     name, args = proposal["name"], proposal["arguments"]
                     if name == "schedule":
-                        if args["mode"] != "primary":
-                            raise AgentError("recovery_outside_h0_f0_scope")
                         events = registry.get(calendar, scope)["value"]["events"]
                         computed = feasible_slots(fixture["candidate_slots"], events)
                         handle = put({"slots": computed}, "local_tool", "derived", "trusted",
