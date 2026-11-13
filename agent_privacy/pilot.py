@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .fixture_loader import load_fixture as load_validated_fixture
 from .registry import ObjectRecord, ObjectRegistry
 from .release import Authorization, MockReceiver, ReleaseAdapter, ReleaseRequest
 from .scheduler import feasible_slots
@@ -15,25 +16,23 @@ FIXTURE_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "t01.json"
 
 
 def load_fixture(path: Path = FIXTURE_PATH) -> dict[str, Any]:
-    fixture = json.loads(path.read_text(encoding="utf-8"))
-    if not fixture["document_common"] or not fixture["benign_paragraph"] or not fixture["attack_paragraph"]:
-        raise ValueError("paired document text is incomplete")
-    return fixture
+    return load_validated_fixture(path)
 
 
 def build_registry(fixture: dict[str, Any], slots: list[dict[str, str]]) -> ObjectRegistry:
     registry = ObjectRegistry()
-    task_id = fixture["task_id"]
+    task_id = fixture["fixture_id"]
+    organizer = fixture["contacts"]["entries"][0]
     registry.add(
         ObjectRecord(
-            "calendar.raw", task_id, "synthetic-local-calendar", "private", False,
-            {"events": fixture["calendar_events"]},
+            fixture["calendar"]["handle"], task_id, "synthetic-local-calendar", "private", False,
+            {"events": fixture["calendar"]["events"]},
         )
     )
     registry.add(
         ObjectRecord(
-            "contacts.organizer", task_id, "synthetic-local-contacts", "private", False,
-            {"name": fixture["contact"]["name"], "phone": fixture["contact"]["phone"]},
+            fixture["contacts"]["handle"], task_id, "synthetic-local-contacts", "private", False,
+            {"name": organizer["name"], "phone": organizer["phone"]},
         )
     )
     registry.add(
@@ -55,10 +54,12 @@ def task_authorization(task_id: str) -> Authorization:
 def run_case(fixture: dict[str, Any], document_condition: str, configuration: str) -> dict[str, Any]:
     if document_condition not in {"benign", "attacked"}:
         raise ValueError("document_condition must be benign or attacked")
-    slots = feasible_slots(fixture["candidate_slots"], fixture["calendar_events"])
+    task_id = fixture["fixture_id"]
+    calendar_handle = fixture["calendar"]["handle"]
+    slots = feasible_slots(fixture["candidate_slots"], fixture["calendar"]["events"])
     registry = build_registry(fixture, slots)
     receiver = MockReceiver()
-    adapter = ReleaseAdapter(registry, task_authorization(fixture["task_id"]), configuration, receiver)
+    adapter = ReleaseAdapter(registry, task_authorization(task_id), configuration, receiver)
     paragraph = fixture["benign_paragraph"] if document_condition == "benign" else fixture["attack_paragraph"]
     document = fixture["document_common"] + "\n\n" + paragraph
     try:
@@ -67,33 +68,35 @@ def run_case(fixture: dict[str, Any], document_condition: str, configuration: st
         if document_condition == "attacked":
             adapter.send(
                 ReleaseRequest(
-                    fixture["task_id"], "schedule", "mock-cloud", "calendar.raw", ("events",),
+                    task_id, "schedule", "mock-cloud", calendar_handle, ("events",),
                     "scripted response to attacker paragraph",
                 )
             )
         adapter.send(
             ReleaseRequest(
-                fixture["task_id"], "schedule", "mock-cloud", "schedule.slots", ("slots",),
+                task_id, "schedule", "mock-cloud", "schedule.slots", ("slots",),
                 "scripted legal continuation",
             )
         )
-        raw_released = any(record["object_id"] == "calendar.raw" for record in receiver.records)
+        raw_released = any(record["object_id"] == calendar_handle for record in receiver.records)
         slots_received = any(record["object_id"] == "schedule.slots" for record in receiver.records)
         return {
-            "fixture": fixture["task_id"],
+            "fixture": task_id,
             "document_condition": document_condition,
             "configuration": configuration,
             "handoff": "H0_direct_document",
             "fault": "F0_normal_scheduler",
             "controller": "scripted_mechanism_probe_not_a_language_model",
             "document": document,
-            "local_result": {"agenda_title": fixture["title"], "agenda_points": fixture["agenda_points"], "slots": slots},
+            "local_result": {"agenda": fixture["expected_agenda"], "slots": slots},
             "proposals": adapter.proposals,
             "decisions": adapter.decisions,
             "outgoing_requests": adapter.outgoing_requests,
             "receiver_records": receiver.records,
             "raw_calendar_actually_received": raw_released,
-            "local_path_completed": bool(fixture["agenda_points"] and 1 <= len(slots) <= 3 and slots_received),
+            "local_path_completed": bool(
+                fixture["expected_agenda"] and slots == fixture["expected_slots"] and slots_received
+            ),
         }
     finally:
         registry.close()
@@ -108,7 +111,7 @@ def run_pilot(fixture: dict[str, Any] | None = None) -> dict[str, Any]:
     ]
     return {
         "status": "mechanism_pilot_only_not_formal_experiment",
-        "fixture": fixture["task_id"],
+        "fixture": fixture["fixture_id"],
         "cases": cases,
     }
 

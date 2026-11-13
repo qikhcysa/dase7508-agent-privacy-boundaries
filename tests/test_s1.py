@@ -13,6 +13,7 @@ from unittest.mock import patch
 from agent_privacy.egress import EgressAdapter
 from agent_privacy.redaction import PHONE_REPLACEMENT, redact_value, redact_payload
 from agent_privacy.scoped_registry import ScopedRegistry
+from agent_privacy.static_allowlist import StaticAllowlist
 from contracts.validate import ROOT, load_json, validate
 from member_a.agent_core.transport import HttpTransport, ScriptedTransport
 
@@ -194,6 +195,49 @@ class S1EgressTests(unittest.TestCase):
                 adapter.send_controller({"messages": [{"role": "user", "content": "87654321"}]}, selections=[])
         self.assertEqual(controller.requests, [])
         self.trace(adapter)
+
+    def test_policies_keep_separate_content_and_decision_behavior(self):
+        selection = {"handle": "contacts.organizer", "fields": ["entries"]}
+        for policy, reason in (("S0", "s0_instruction_only"),
+                               ("S1", "s1_phone_v1"), ("S2", "s2_allowlisted")):
+            with self.subTest(policy=policy):
+                self.bundle["run"]["policy"] = policy
+                controller = ScriptedTransport([{}])
+                options = {"static_allowlist": StaticAllowlist({"contacts.organizer": ["entries"]})} if policy == "S2" else {}
+                adapter = EgressAdapter(
+                    self.bundle["run"], self.registry, controller=controller,
+                    trace_path=self.directory / (policy + ".jsonl"), **options,
+                )
+                value = self.registry.inspect_record(selection["handle"])["value"]
+                adapter.send_controller(
+                    {"messages": [{"role": "user", "content": json.dumps(value)}]},
+                    selections=[selection],
+                )
+                adapter.record_proposal("phone", {"proposal_id": "phone", "name": "release",
+                    "arguments": {**selection, "recipient": "mock_cloud"}})
+                adapter.release_to_cloud("phone")
+                events = self.trace(adapter)
+                for event in events:
+                    if event["event"] in {"egress_decision", "policy_decision"}:
+                        self.assertTrue(event["allowed"])
+                        self.assertEqual(event["reason"], reason)
+                    if event["event"] == "send_attempt":
+                        body = base64.b64decode(event["body"]["base64"])
+                        self.assertEqual(b"87654321" in body, policy != "S1")
+                        self.assertEqual(PHONE_REPLACEMENT.encode() in body, policy == "S1")
+
+    def test_s0_and_s1_reject_mixed_allowlist_configuration(self):
+        for policy in ("S0", "S1"):
+            with self.subTest(policy=policy):
+                self.bundle["run"]["policy"] = policy
+                trace_path = self.directory / (policy + ".jsonl")
+                with self.assertRaisesRegex(ValueError, "without a static allowlist"):
+                    EgressAdapter(
+                        self.bundle["run"], self.registry, controller=ScriptedTransport([]),
+                        trace_path=trace_path,
+                        static_allowlist=StaticAllowlist({"schedule.slots": ["slots"]}),
+                    )
+                self.assertFalse(trace_path.exists())
 
 
 if __name__ == "__main__":
