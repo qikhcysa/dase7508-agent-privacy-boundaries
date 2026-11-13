@@ -57,6 +57,23 @@ def _evidence(body: bytes) -> dict:
     }
 
 
+def _usage(body: bytes) -> dict:
+    """Normalize observed token counts; unknown counts and cost stay null."""
+    result = {"input_tokens": None, "output_tokens": None, "cost_usd": None}
+    try:
+        parsed = json.loads(body)
+        usage = parsed.get("usage") if isinstance(parsed, dict) else None
+        if isinstance(usage, dict):
+            for target, source in (("input_tokens", "prompt_tokens"),
+                                   ("output_tokens", "completion_tokens")):
+                count = usage.get(source)
+                if type(count) is int and count >= 0:
+                    result[target] = count
+    except (ValueError, UnicodeError, RecursionError):
+        pass
+    return result
+
+
 class EgressAdapter:
     """One trial, one new JSONL trace and one send path for both recipients."""
 
@@ -112,6 +129,20 @@ class EgressAdapter:
         self._proposals[call_id] = proposal
         self._proposal_ids.add(proposal_id)
 
+    def record_context_load(self, handle: str) -> dict:
+        """S0 loads retain the trusted ingestion metadata and tool role."""
+        record = self._registry.inspect_record(handle)
+        self._record("policy_decision", operation="load", reference_id=handle,
+                     allowed=True, reason="s0_instruction_only")
+        self._record("context_loaded", handle=handle, loaded_message_role="tool",
+                     source_metadata=record["meta"])
+        return record
+
+    def finish(self, *, status: str, agenda: list, slots: list,
+               error_type: str | None) -> None:
+        self._record("run_finished", status=status, agenda=agenda, slots=slots,
+                     error_type=error_type)
+
     def _selected_values(self, selection: dict) -> dict:
         validate("selection", selection)
         # These baselines resolve values without context or label enforcement.
@@ -166,6 +197,27 @@ class EgressAdapter:
         return self._send(payload, recipient="mock_cloud", channel="release", selections=[selection],
                           request_id=request["request_id"])
 
+    def release_to_controller(self, call_id: str) -> dict:
+        """Resolve tool-result data; the following controller send is separately gated."""
+        proposal = self._proposals.get(call_id)
+        if proposal is None or proposal["name"] != "release":
+            raise ValueError("A recorded release proposal is required.")
+        if call_id in self._released_calls:
+            raise ValueError("This release call has already been handled.")
+        arguments = proposal["arguments"]
+        if arguments["recipient"] != "controller":
+            raise ValueError("The controller tool requires the controller recipient.")
+        values = self._selected_values({"handle": arguments["handle"], "fields": arguments["fields"]})
+        request = {"request_id": uuid4().hex, "call_id": call_id,
+                   "scope": self._run["scope"], "purpose": self._run["purpose"], **arguments}
+        self._record("release_request", request=request)
+        self._released_calls.add(call_id)
+        self._record("policy_decision", operation="release", reference_id=request["request_id"],
+                     allowed=True, reason="s0_instruction_only")
+        record = self.record_context_load(arguments["handle"])
+        return {"handle": record["handle"], "source_metadata": record["meta"],
+                "loaded_message_role": "tool", "value": values}
+
     def _send(self, payload: dict, *, recipient: str, channel: str,
               selections: list[dict], request_id: str | None = None) -> TransportResponse:
         transport = self._controller if recipient == "controller" else self._cloud
@@ -200,6 +252,7 @@ class EgressAdapter:
                          latency_ms=(perf_counter() - started) * 1000)
             raise
         latency_ms = (perf_counter() - started) * 1000
+        result["usage"] = _usage(response.body)
         if recipient == "mock_cloud":
             self._record("receiver_record", send_id=send_id, recipient=recipient,
                          body=_evidence(self._cloud.receipts[-1]))

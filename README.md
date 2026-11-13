@@ -34,9 +34,10 @@
 | --- | --- |
 | A 模块离线工作流 | [`member_a/`](member_a/README.md) 包含有步骤上限的代理循环、跨进程 H1 交接、任务隔离、发送记录和重置。 |
 | T01 出站机制试验 | 使用 `fixtures/t01.json` 和脚本控制器，比较 H0/F0 下良性与攻击文档在 S0/S3 下的表现，共四个场景。 |
+| 云端正常任务 | [agent_privacy.hosted](docs/hosted/README.md) 默认 GLM-5.3-Flash；弹窗输入各自密钥，执行一次 benign/H0/F0/S0 开发尝试。 |
 | 共享接口与注册表 | [接口校验](docs/contracts/README.md)检查 v1 数据格式和日志的一致性，[注册表演示](docs/registry/README.md)验证对象来源与上下文隔离。 |
 
-两个原型均使用 Python 3.11+、标准库和合成数据，可离线运行。托管模型接入、统一集成及正式实验分别由 [#9][i9]、[#11][i11]、[#20][i20]、[#23][i23] 和 [#24][i24] 跟踪。
+两个原型使用 Python 3.11+、标准库和合成数据，可离线运行。新增的[云端正常任务](docs/hosted/README.md)需要模型 API、接口校验依赖和桌面弹窗支持。托管模型接入、统一集成及正式实验分别由 [#9][i9]、[#11][i11]、[#20][i20]、[#23][i23] 和 [#24][i24] 跟踪。
 
 **A 模块。** 从含 `member_a/` 的仓库根目录运行。默认演示跨进程加载 H1 摘要，并在主日程工具超时后通过 F1 恢复路径完成任务。输出位于 `member_a/runs/`，可查看 `validation.json` 和各场景的 `events.jsonl`。
 
@@ -92,9 +93,10 @@ The evaluation checks actual outbound requests for prohibited fields and uses re
 | --- | --- |
 | Member A offline workflow | [`member_a/`](member_a/README.md) includes the bounded agent loop, cross-process H1 handoff, task isolation, outbound audit, and reset. |
 | T01 release mechanism pilot | A scripted controller uses `fixtures/t01.json` to run four H0/F0 scenarios across benign and attacked documents and S0/S3. |
+| Hosted benign task | [agent_privacy.hosted](docs/hosted/README.md) defaults to GLM-5.3-Flash, prompts for a per-user key in a desktop dialog and runs one benign/H0/F0/S0 development attempt. |
 | Shared contracts and registry | [Contract checks](docs/contracts/README.md) validate v1 formats and trace consistency. The [registry demo](docs/registry/README.md) checks provenance and context isolation. |
 
-Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. Hosted model work, joint integration, and formal evaluation are tracked in [#9][i9], [#11][i11], [#20][i20], [#23][i23], and [#24][i24].
+Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. The new [hosted benign task](docs/hosted/README.md) requires a model API, contract dependencies and desktop dialog support. Hosted model work, joint integration, and formal evaluation are tracked in [#9][i9], [#11][i11], [#20][i20], [#23][i23], and [#24][i24].
 
 **Member A.** From the root of a checkout containing `member_a/`, run the commands below. The default demo reloads an H1 summary across processes and uses F1 recovery after the primary scheduler times out. Find `validation.json` and the per-scenario `events.jsonl` files under `member_a/runs/`.
 

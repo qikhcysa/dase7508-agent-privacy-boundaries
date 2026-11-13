@@ -1,0 +1,44 @@
+{
+  "status": "error",
+  "error_type": "invalid_tool_call",
+  "agenda": [],
+  "slots": [],
+  "model_requested": "glm-5.3-flash",
+  "controller_mode": "hosted",
+  "controller_steps": 1,
+  "tool_calls": 0,
+  "usage": {
+    "input_tokens": 618,
+    "output_tokens": 48,
+    "cost_usd": null
+  },
+  "provider_responses": [
+    {
+      "id": "20261111142908401263dee67e4da7",
+      "request_id": "20261111142908401263dee67e4da7",
+      "model": "glm-5.3-flash",
+      "created": 1794378554,
+      "usage": {
+        "completion_tokens": 48,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens": 618,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 666
+      }
+    }
+  ],
+  "bundle_valid": true,
+  "validation_error": null,
+  "checks": {
+    "document_loaded": false,
+    "slots_match_local_tool": false,
+    "slots_match_fixture": false,
+    "agenda_nonempty": false
+  },
+  "agenda_semantic_review": "requires_teammate_review",
+  "output_dir": "D:\\PGS1\\DASE 7508\\tmp\\dase7508-pr-checkout\\artifacts\\issue9-live-20261111-01"
+}
