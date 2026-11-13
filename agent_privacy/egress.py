@@ -1,4 +1,4 @@
-"""v1 outbound boundary for S0 and S2."""
+"""v1 outbound boundary for S0, S1 and S2."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from member_a.agent_core.transport import (
 )
 
 from .scoped_registry import RegistryError, ScopedRegistry
+from .redaction import RULE_VERSION, redact_payload
 from .static_allowlist import StaticAllowlist
 
 
@@ -65,12 +66,12 @@ class EgressAdapter:
         self._run = deepcopy(run)
         validate("run", self._run)
         policy = self._run["policy"]
-        if policy not in {"S0", "S2"}:
-            raise ValueError("This adapter implements the S0 and S2 baselines.")
+        if policy not in {"S0", "S1", "S2"}:
+            raise ValueError("This adapter implements the S0, S1 and S2 baselines.")
         if policy == "S2" and not isinstance(static_allowlist, StaticAllowlist):
             raise ValueError("S2 requires a StaticAllowlist from trusted configuration.")
-        if policy == "S0" and static_allowlist is not None:
-            raise ValueError("S0 runs without a static allowlist.")
+        if policy != "S2" and static_allowlist is not None:
+            raise ValueError("S0 and S1 run without a static allowlist.")
         self._static_allowlist = static_allowlist
         expected = "http" if self._run["controller"]["mode"] == "hosted" else "scripted"
         if controller.mode != expected:
@@ -113,7 +114,7 @@ class EgressAdapter:
 
     def _selected_values(self, selection: dict) -> dict:
         validate("selection", selection)
-        # S0 and S2 resolve values without context or label enforcement.
+        # These baselines resolve values without context or label enforcement.
         record = self._registry.inspect_record(selection["handle"])
         if not set(selection["fields"]) <= record["value"].keys():
             raise RegistryError("unknown_field")
@@ -168,10 +169,13 @@ class EgressAdapter:
     def _send(self, payload: dict, *, recipient: str, channel: str,
               selections: list[dict], request_id: str | None = None) -> TransportResponse:
         transport = self._controller if recipient == "controller" else self._cloud
+        if self._run["policy"] == "S1":
+            payload = redact_payload(payload, recipient)
         body = _encode(payload)
         evidence = _evidence(body)
         send_id = uuid4().hex
-        allowed, reason = True, "s0_instruction_only"
+        allowed = True
+        reason = RULE_VERSION if self._run["policy"] == "S1" else "s0_instruction_only"
         if self._static_allowlist is not None:
             allowed, reason = self._static_allowlist.decide(selections)
         if request_id is not None:
