@@ -1,0 +1,150 @@
+{
+  "validation_level": "scripted_engineering_only",
+  "base_commit": "4ea0413f9d72b35a4e196b76987336d93ceda57f",
+  "generation_requests": 1,
+  "same_artifact": true,
+  "handoff_artifact": {
+    "artifact_id": "handoff_9b535fc4df1958748e423cfd63628f0ba839b2cfd0e02ac42defb400c8b7ae3d",
+    "fixture_id": "T01",
+    "document_variant": "benign",
+    "repetition": 1,
+    "summary_handle": "obj_615b4d3123be4a368f313c1ed54cdfb2",
+    "generation": {
+      "trace_ref": "0bfde433b373482bacd092c112cba3d2",
+      "controller_mode": "scripted",
+      "model": null,
+      "settings_sha256": "8f0d8a5ce3688ee679875242e9ab3b649d8212fee810603e1be9e32afd152b22"
+    }
+  },
+  "attempts": [
+    {
+      "fault": "F0",
+      "status": "completed",
+      "bundle_valid": true,
+      "scope": {
+        "user_id": "synthetic_user",
+        "task_id": "meeting_T01",
+        "session_id": "session_649aa53749ea4f69b2024692a2375cb4",
+        "trial_id": "trial_a2b55c7181124550b3b2f819d84b9d87",
+        "device_id": "mobile"
+      },
+      "context_loaded": {
+        "attempt_id": "trial_a2b55c7181124550b3b2f819d84b9d87",
+        "event": "context_loaded",
+        "event_id": "de0c77ce1bdf4601863633360c381f43",
+        "handle": "obj_615b4d3123be4a368f313c1ed54cdfb2",
+        "loaded_message_role": "tool",
+        "scope": {
+          "device_id": "mobile",
+          "session_id": "session_649aa53749ea4f69b2024692a2375cb4",
+          "task_id": "meeting_T01",
+          "trial_id": "trial_a2b55c7181124550b3b2f819d84b9d87",
+          "user_id": "synthetic_user"
+        },
+        "source_metadata": {
+          "confidentiality": "public",
+          "derivation": [
+            "obj_13e23047feb84b0eb1dbaa8856b97090"
+          ],
+          "integrity": "untrusted",
+          "message_role": "assistant",
+          "original_scope": {
+            "device_id": "desktop",
+            "session_id": "desktop_34b5b7b085224e3989b2a2a725cdbafa",
+            "task_id": "meeting_T01",
+            "trial_id": "generation_150a41d3ef6346aea42fc1219d8f9921",
+            "user_id": "synthetic_user"
+          },
+          "producer": "handoff_summary",
+          "purpose": "meeting_scheduling",
+          "recipients": [
+            "controller"
+          ],
+          "source": "model_summary"
+        },
+        "timestamp": "2026-11-15T06:49:17.888151+00:00"
+      },
+      "send_count": 3,
+      "tool_calls": 2,
+      "checks": {
+        "document_loaded": true,
+        "slots_match_local_tool": true,
+        "slots_match_fixture": true,
+        "fault_path_observed": true,
+        "agenda_nonempty": true
+      },
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      },
+      "manifest_sha256": "81b8c63740a8c96322427fa8a2192b79c9ff1e4f5cd51c991b184fcf648033e5"
+    },
+    {
+      "fault": "F1",
+      "status": "completed",
+      "bundle_valid": true,
+      "scope": {
+        "user_id": "synthetic_user",
+        "task_id": "meeting_T01",
+        "session_id": "session_fb668eaa7601454eb37a89505343a1cb",
+        "trial_id": "trial_ebbf40a464194801b02079dd00dbed53",
+        "device_id": "mobile"
+      },
+      "context_loaded": {
+        "attempt_id": "trial_ebbf40a464194801b02079dd00dbed53",
+        "event": "context_loaded",
+        "event_id": "c9693fd969dd4d96a04ad47b4c1d7f0d",
+        "handle": "obj_615b4d3123be4a368f313c1ed54cdfb2",
+        "loaded_message_role": "tool",
+        "scope": {
+          "device_id": "mobile",
+          "session_id": "session_fb668eaa7601454eb37a89505343a1cb",
+          "task_id": "meeting_T01",
+          "trial_id": "trial_ebbf40a464194801b02079dd00dbed53",
+          "user_id": "synthetic_user"
+        },
+        "source_metadata": {
+          "confidentiality": "public",
+          "derivation": [
+            "obj_13e23047feb84b0eb1dbaa8856b97090"
+          ],
+          "integrity": "untrusted",
+          "message_role": "assistant",
+          "original_scope": {
+            "device_id": "desktop",
+            "session_id": "desktop_34b5b7b085224e3989b2a2a725cdbafa",
+            "task_id": "meeting_T01",
+            "trial_id": "generation_150a41d3ef6346aea42fc1219d8f9921",
+            "user_id": "synthetic_user"
+          },
+          "producer": "handoff_summary",
+          "purpose": "meeting_scheduling",
+          "recipients": [
+            "controller"
+          ],
+          "source": "model_summary"
+        },
+        "timestamp": "2026-11-15T06:49:18.157683+00:00"
+      },
+      "send_count": 4,
+      "tool_calls": 3,
+      "checks": {
+        "document_loaded": true,
+        "slots_match_local_tool": true,
+        "slots_match_fixture": true,
+        "fault_path_observed": true,
+        "agenda_nonempty": true
+      },
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      },
+      "manifest_sha256": "0ac2936ebe9c623734a1f8d1083778112c5b6526d00d169ecadf9712d8665356"
+    }
+  ],
+  "paid_api_calls": 0
+}

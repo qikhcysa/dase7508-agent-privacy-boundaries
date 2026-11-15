@@ -1,4 +1,4 @@
-"""Bounded, development-only benign H0/F0-or-F1/S0 agent over the shared v1 boundary."""
+"""Bounded H0/H1, F0/F1, S0 development attempts over the v1 boundary."""
 
 from __future__ import annotations
 
@@ -16,8 +16,9 @@ from contracts.validate import ContractError, validate
 from member_a.agent_core.runtime import tool_schema
 from member_a.agent_core.transport import HttpTransport, ScriptedTransport, TransportError
 
-from .egress import EgressAdapter
+from .egress import EgressAdapter, EgressDenied
 from .fixture_loader import load_fixture
+from .handoff import HandoffError, load_handoff
 from .scheduler import schedule_fixture
 from .scoped_registry import RegistryError, ScopedRegistry
 
@@ -152,7 +153,7 @@ def _write(path: Path, value) -> None:
 def _source_hashes() -> dict:
     paths = ["agent_privacy/hosted.py", "agent_privacy/hosted_config.py", "agent_privacy/egress.py",
              "agent_privacy/fixture_loader.py", "agent_privacy/scoped_registry.py",
-             "agent_privacy/scheduler.py", "member_a/agent_core/runtime.py",
+             "agent_privacy/scheduler.py", "agent_privacy/handoff.py", "member_a/agent_core/runtime.py",
              "member_a/agent_core/transport.py", "contracts/v1/schema.json", "contracts/validate.py"]
     # Git checkouts may use CRLF on Windows and LF elsewhere; hash the same source text.
     return {path: hashlib.sha256((ROOT / path).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
@@ -160,23 +161,40 @@ def _source_hashes() -> dict:
 
 
 def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.json",
-              output_dir: str | Path, transport=None, fault: str = "F0") -> dict:
+              output_dir: str | Path, transport=None, handoff_path=None,
+              document_variant="benign", repetition=1, fault: str = "F0",
+              user_id="synthetic_user", task_id=None) -> dict:
     """Run one fresh attempt. An injected scripted/loopback transport is only a test."""
     if fault not in FAULTS:
         raise ValueError("fault must be F0 or F1")
+    if document_variant not in {"benign", "attacked"} or type(repetition) is not int or repetition < 1:
+        raise ValueError("invalid_attempt_condition")
     fixture = load_fixture(fixture_path)
     source_sha256 = _source_hashes()
     directory = Path(output_dir).resolve()
     directory.mkdir(parents=True, exist_ok=False)
-    scope = {"user_id": "synthetic_user", "task_id": "meeting_" + uuid4().hex,
+    handoff = None
+    if handoff_path is not None:
+        try:
+            handoff = load_handoff(handoff_path, fixture=fixture, document_variant=document_variant,
+                                   repetition=repetition, user_id=user_id, task_id=task_id)
+        except HandoffError as exc:
+            _write(directory / "handoff-load.json", {"allowed": False, "reason": str(exc),
+                                                      "summary_loaded": False})
+            _write(directory / "reset.json", {"bindings_before": 0, "bindings_after": 0,
+                                               "conversation_cleared": True, "audit_preserved": True})
+            raise
+        task_id = handoff["scope"]["task_id"]
+    scope = {"user_id": user_id, "task_id": "meeting_" + uuid4().hex if task_id is None else task_id,
              "session_id": "session_" + uuid4().hex, "trial_id": "trial_" + uuid4().hex,
-             "device_id": "desktop"}
+             "device_id": "mobile" if handoff else "desktop"}
+    validate("scope", scope)
     controller = transport if transport is not None else HttpTransport(
         config.endpoint, api_key=config.api_key, timeout=config.timeout)
     mode = "hosted" if controller.mode == "http" else "scripted"
     run = {"attempt_id": scope["trial_id"], "fixture_id": fixture["fixture_id"],
-           "phase": "development", "document_variant": "benign", "repetition": 1,
-           "policy": "S0", "handoff": "H0", "fault": fault, "scope": scope,
+           "phase": "development", "document_variant": document_variant, "repetition": repetition,
+           "policy": "S0", "handoff": "H1" if handoff else "H0", "fault": fault, "scope": scope,
            "purpose": PURPOSE, "protocol_sha256": None,
            "controller": {"mode": mode, "model": config.model if mode == "hosted" else None,
                           "settings": {"temperature": 1, "max_tokens": config.max_tokens,
@@ -185,7 +203,7 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
     bundle = {"schema_version": "1.0", "fixture": fixture, "run": run,
               "authorization": {"authority": "trusted_runtime_config", "scope": scope,
                                 "context_handles": [], "grants": []},
-              "objects": [], "handoff": None, "trace": []}
+              "objects": [], "handoff": deepcopy(handoff["handoff"]) if handoff else None, "trace": []}
     _write(directory / "run.json", run)
     messages, selections, responses = [], [], []
     issued, steps, tool_count = set(), 0, 0
@@ -215,18 +233,42 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
             bundle["authorization"]["grants"].append(
                 {"handle": handle, "fields": fields, "purpose": PURPOSE, "recipient": recipient})
 
-        document = put({"text": fixture["document_common"] + "\n\n" + fixture["benign_paragraph"]},
-                       "meeting_document", "public", "untrusted", "tool", "fixture_loader",
-                       recipients=["controller"])
+        if handoff:
+            # Only the trusted importer can create a mobile binding. The summary
+            # and its document parent retain their complete original metadata.
+            for record in handoff["records"]:
+                registry.put_record(record)
+                bundle["objects"].append(deepcopy(record))
+            document = handoff["handoff"]["summary_handle"]
+            registry.bind_context(document, scope, binding_ref=handoff["handoff"]["artifact_id"])
+            _write(directory / "handoff-load.json", {
+                "allowed": True, "reason": "verified_same_task_handoff", "summary_loaded": False,
+                "artifact_id": handoff["handoff"]["artifact_id"],
+                "summary_sha256": handoff["summary_sha256"],
+                "generation": handoff["handoff"]["generation"]})
+            # Copy the verified snapshot for review; no dependency on a mutable
+            # conversation or registry from another attempt remains.
+            _write(directory / "handoff-artifact.json", handoff)
+            for name, expected_sha256 in handoff["evidence_sha256"].items():
+                evidence = (Path(handoff_path).resolve().parent / name).read_bytes()
+                if hashlib.sha256(evidence).hexdigest() != expected_sha256:
+                    raise HandoffError("generation_evidence_changed")
+                (directory / name).write_bytes(evidence)
+        else:
+            document = put({"text": fixture["document_common"] + "\n\n" + fixture[
+                "benign_paragraph" if document_variant == "benign" else "attack_paragraph"]},
+                           "meeting_document", "public", "untrusted", "tool", "fixture_loader",
+                           recipients=["controller"])
         calendar = put({"events": fixture["calendar"]["events"]}, "local_calendar", "private",
                        "trusted", "tool", "fixture_loader")
         contacts = put({"entries": fixture["contacts"]["entries"]}, "local_contacts", "private",
                        "trusted", "tool", "fixture_loader")
-        catalog = [{"kind": "meeting_document", "handle": document, "fields": ["text"]},
+        catalog = [{"kind": "meeting_summary" if handoff else "meeting_document", "handle": document, "fields": ["text"]},
                    {"kind": "private_calendar", "handle": calendar, "fields": ["events"]},
                    {"kind": "private_contacts", "handle": contacts, "fields": ["entries"]}]
-        assets = put({"instructions": INSTRUCTIONS, "tools": TOOLS, "assets": catalog},
-                     "runtime", "public", "trusted", "system", "hosted_h0_runtime",
+        instructions = INSTRUCTIONS.replace("meeting document", "meeting summary") if handoff else INSTRUCTIONS
+        assets = put({"instructions": instructions, "tools": TOOLS, "assets": catalog},
+                     "runtime", "public", "trusted", "system", "hosted_h1_runtime" if handoff else "hosted_h0_runtime",
                      recipients=["controller"])
         user = put({"text": fixture["user_request"]}, "trusted_user", "public", "trusted",
                    "user", "fixture_loader", recipients=["controller"])
@@ -235,7 +277,7 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
             grant(handle, fields)
         grant(document, ["text"])
         bundle["authorization"]["context_handles"] = [document]
-        messages.extend([{"role": "system", "content": INSTRUCTIONS + "\nAsset catalog: " + _json(catalog)},
+        messages.extend([{"role": "system", "content": instructions + "\nAsset catalog: " + _json(catalog)},
                          {"role": "user", "content": fixture["user_request"]}])
         adapter = EgressAdapter(run, registry, controller=controller,
                                 trace_path=directory / "events.jsonl")
@@ -322,7 +364,7 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
                                      "content": _json(tool_result)})
         except KeyboardInterrupt:
             status, error_type = "incomplete", "interrupted"
-        except (AgentError, RegistryError) as exc:
+        except (AgentError, RegistryError, EgressDenied) as exc:
             status, error_type = "error", str(exc)
         except ContractError:
             status, error_type = "error", "contract_error"
@@ -331,12 +373,30 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         except Exception as exc:
             # Never echo arbitrary exceptions, provider errors or credentials.
             status, error_type = "error", "runtime_" + type(exc).__name__
-        adapter.finish(status=status, agenda=agenda, slots=slots, error_type=error_type)
+        try:
+            adapter.finish(status=status, agenda=agenda, slots=slots, error_type=error_type)
+        finally:
+            # End an ordinary attempt without deleting its immutable evidence.
+            # Only the frozen summary can be reused in another fresh registry.
+            conversation = deepcopy(messages)
+            messages.clear()
+            issued.clear()
+            selections.clear()
+            bindings_before = len(registry.list_handles(scope))
+            registry.unbind_context(scope)
+            reset = {"bindings_before": bindings_before, "bindings_after": len(registry.list_handles(scope)),
+                     "conversation_cleared": not messages, "audit_preserved": adapter.trace_path.is_file()}
+            _write(directory / "reset.json", reset)
+        if handoff:
+            _write(directory / "handoff-load.json", {
+                "allowed": True, "reason": "verified_same_task_handoff", "summary_loaded": document_loaded,
+                "artifact_id": handoff["handoff"]["artifact_id"], "summary_sha256": handoff["summary_sha256"],
+                "generation": handoff["handoff"]["generation"]})
     bundle["trace"] = [json.loads(line) for line in
                        adapter.trace_path.read_text(encoding="utf-8").splitlines()]
     # Save originals before checking consistency so failures are not discarded.
     _write(directory / "bundle.json", bundle)
-    _write(directory / "conversation.json", messages)
+    _write(directory / "conversation.json", conversation)
     validation_error = None
     try:
         validate("bundle", bundle)
@@ -354,6 +414,7 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
               "controller_steps": steps, "tool_calls": tool_count, "usage": usage,
               "provider_responses": responses, "bundle_valid": validation_error is None,
               "validation_error": validation_error,
+              "reset": reset,
               "checks": {"document_loaded": document_loaded,
                          "slots_match_local_tool": computed is not None and slots == computed,
                          "slots_match_fixture": slots == fixture["expected_slots"],
@@ -365,24 +426,30 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
               "agenda_semantic_review": "requires_teammate_review",
               "output_dir": str(directory)}
     _write(directory / "result.json", result)
+    artifact_names = ["run.json", "events.jsonl", "bundle.json", "conversation.json", "result.json", "reset.json"]
+    if handoff:
+        artifact_names.extend(["handoff-load.json", "handoff-artifact.json", *handoff["evidence_sha256"]])
     _write(directory / "manifest.json", {
         "schema_version": "1.0", "phase": "development",
-        "conditions": f"benign/H0/{fault}/S0",
+        "conditions": "/".join((document_variant, run["handoff"], fault, "S0")),
         "created_at": datetime.now(timezone.utc).isoformat(), "endpoint": controller.endpoint,
         "source_sha256": source_sha256,
         "source_hash_encoding": "UTF-8; CRLF normalized to LF",
         "artifacts": {name: hashlib.sha256((directory / name).read_bytes()).hexdigest()
-                      for name in ("run.json", "events.jsonl", "bundle.json", "conversation.json", "result.json")},
+                      for name in artifact_names},
+        "handoff_artifact_sha256": hashlib.sha256((directory / "handoff-artifact.json").read_bytes()).hexdigest()
+        if handoff else None,
+        "handoff_generation_evidence": deepcopy(handoff["evidence_sha256"]) if handoff else None,
         "model_options": {key: value for key, value in payload.items()
                           if key not in {"messages", "tools"}},
-        "limits": "One development attempt; no retries, provider fallback, H1, or formal scoring."})
+        "limits": "One S0 development attempt; no retries, provider fallback, S1-S3 orchestration, or formal scoring."})
     return result
 
 
 def main(argv: list[str] | None = None) -> int:
     from .hosted_config import ConfigurationCancelled, configure
 
-    parser = argparse.ArgumentParser(description="Run one benign H0/F0-or-F1/S0 hosted agent task.")
+    parser = argparse.ArgumentParser(description="Run one H0/H1 F0/F1 S0 hosted development task.")
     parser.add_argument("--base-url", help="API base URL or complete chat/completions endpoint")
     parser.add_argument("--model", help="Requested model ID")
     parser.add_argument("--non-interactive", action="store_true", help="Read key from environment without prompts")
@@ -391,6 +458,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fault", choices=sorted(FAULTS), default="F0",
                         help="Trusted runtime fault condition")
     parser.add_argument("--output-dir", type=Path)
+    parser.add_argument("--handoff-path", type=Path, help="Verified artifact.json generated on the desktop")
+    parser.add_argument("--document-variant", choices=("benign", "attacked"), default="benign")
+    parser.add_argument("--repetition", type=int, default=1)
+    parser.add_argument("--user-id", default="synthetic_user")
+    parser.add_argument("--task-id", help="Expected task ID; reject a handoff belonging to another task")
     parser.add_argument("--timeout", type=float, default=120)
     parser.add_argument("--max-tokens", type=int, default=8192)
     parser.add_argument("--max-steps", type=int, default=8)
@@ -408,7 +480,9 @@ def main(argv: list[str] | None = None) -> int:
             datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid4().hex[:8])
         print("Running one development task; API usage may consume quota or balance.", flush=True)
         result = run_agent(config, fixture_path=args.fixture, output_dir=directory,
-                           fault=args.fault)
+                           handoff_path=args.handoff_path, document_variant=args.document_variant,
+                           repetition=args.repetition, fault=args.fault, user_id=args.user_id,
+                           task_id=args.task_id)
         print(f"Status: {result['status']}; error: {result['error_type']}")
         print("Agenda: " + _json(result["agenda"]))
         print("Slots: " + _json(result["slots"]))
