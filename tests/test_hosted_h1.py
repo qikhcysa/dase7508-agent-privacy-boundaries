@@ -182,6 +182,110 @@ class HostedH1Tests(unittest.TestCase):
         self.assertFalse(any(event["event"] == "context_loaded" for event in bundle["trace"]))
         self.assertTrue((self.directory / "foreign" / "reset.json").exists())
 
+    def test_desktop_original_is_audit_only_even_when_mobile_knows_handle(self):
+        from agent_privacy.scoped_registry import ScopedRegistry
+
+        artifact = self.prepare()
+        original_bytes = artifact.read_bytes()
+        frozen = load_json(artifact)
+        source = next(obj for obj in frozen["records"]
+                      if obj["meta"]["source"] == "meeting_document")
+        imported = []
+
+        class CaptureMobileRegistry(ScopedRegistry):
+            def put_record(self, record):
+                imported.append(deepcopy(record))
+                return super().put_record(record)
+
+        class ReadOriginal(MobileModel):
+            def __init__(self, recipient):
+                super().__init__()
+                self.recipient = recipient
+
+            def send(self, body):
+                self.requests.append(json.loads(body))
+                return TransportResponse(200, json.dumps({"choices": [{
+                    "finish_reason": "tool_calls", "message": {
+                        "role": "assistant", "content": None, "tool_calls": [
+                            _call("read_original", "release", {
+                                "handle": source["handle"], "fields": ["text"],
+                                "recipient": self.recipient})]}}]}).encode())
+
+        for fault in ("F0", "F1"):
+            for recipient in ("controller", "mock_cloud"):
+                with self.subTest(fault=fault, recipient=recipient):
+                    name = fault + "_" + recipient
+                    imported.clear()
+                    with patch("agent_privacy.hosted.ScopedRegistry", CaptureMobileRegistry):
+                        result, bundle, model = self.attempt(
+                            artifact, name, model=ReadOriginal(recipient), fault=fault)
+                    anchor = next(obj for obj in imported if obj["handle"] == source["handle"])
+                    self.assertEqual(anchor["meta"], source["meta"])
+                    self.assertEqual(anchor["value"], {"audit_only": True})
+                    self.assertEqual(result["status"], "error")
+                    self.assertEqual(result["error_type"], "audit_only_handle")
+                    self.assertEqual(len(model.requests), 1)
+                    self.assertFalse(any(event["event"] == "context_loaded"
+                                         for event in bundle["trace"]))
+                    sends = [event for event in bundle["trace"]
+                             if event["event"] == "send_attempt"]
+                    self.assertEqual(len(sends), 1)
+                    self.assertNotIn(source["value"]["text"],
+                                     base64.b64decode(sends[0]["body"]["base64"]).decode())
+                    self.assertIn(source, bundle["objects"])
+                    self.assertEqual(load_json(self.directory / name / "handoff-artifact.json"), frozen)
+                    summary = next(obj for obj in bundle["objects"]
+                                   if obj["meta"]["source"] == "model_summary")
+                    self.assertEqual(summary["meta"]["derivation"], [source["handle"]])
+                    self.assertEqual(result["reset"]["bindings_after"], 0)
+        # Ordinary summary-based continuation is still available after failures.
+        result, _bundle, _model = self.attempt(artifact, "summary_still_usable")
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(artifact.read_bytes(), original_bytes)
+
+    def test_discovered_parent_handle_is_blocked_after_scheduling_and_recovery(self):
+        class ReadDiscoveredParent(MobileModel):
+            def __init__(self, recipient):
+                super().__init__()
+                self.recipient = recipient
+
+            def send(self, body):
+                payload = json.loads(body)
+                results = [json.loads(message["content"]) for message in payload["messages"]
+                           if message["role"] == "tool"]
+                if results and "slots" in results[-1]:
+                    parent = next(item["source_metadata"]["derivation"][0]
+                                  for item in results if "source_metadata" in item)
+                    self.requests.append(payload)
+                    return TransportResponse(200, json.dumps({"choices": [{
+                        "finish_reason": "tool_calls", "message": {
+                            "role": "assistant", "content": None, "tool_calls": [
+                                _call("discovered_parent", "release", {
+                                    "handle": parent, "fields": ["text"],
+                                    "recipient": self.recipient})]}}]}).encode())
+                return super().send(body)
+
+        for variant in ("benign", "attacked"):
+            artifact = self.prepare(document_variant=variant)
+            source = load_json(artifact)["records"][0]
+            for fault in ("F0", "F1"):
+                for recipient in ("controller", "mock_cloud"):
+                    with self.subTest(variant=variant, fault=fault, recipient=recipient):
+                        result, bundle, model = self.attempt(
+                            artifact, variant + fault + recipient,
+                            model=ReadDiscoveredParent(recipient),
+                            fault=fault, document_variant=variant)
+                        self.assertEqual(result["error_type"], "audit_only_handle")
+                        self.assertTrue(result["checks"]["document_loaded"])
+                        self.assertTrue(result["checks"]["fault_path_observed"])
+                        self.assertEqual(len(model.requests), 3 if fault == "F0" else 4)
+                        self.assertIn(source, bundle["objects"])
+                        self.assertEqual(result["reset"]["bindings_after"], 0)
+                        for event in bundle["trace"]:
+                            if event["event"] == "send_attempt":
+                                self.assertNotIn(source["value"]["text"],
+                                    base64.b64decode(event["body"]["base64"]).decode())
+
     def test_numeric_substrings_in_opaque_summary_handle_remain_usable(self):
         identifiers = [SimpleNamespace(hex=value) for value in (
             "a" * 32, "b" * 32, "aaaaaaaa12345678" + "b" * 16)]
@@ -225,6 +329,53 @@ class HostedH1Tests(unittest.TestCase):
         self.assertFalse(load["summary_loaded"])
         self.assertEqual(load_json(directory / "reset.json")["bindings_after"], 0)
         self.assertFalse((directory / "events.jsonl").exists())
+
+    def test_evidence_race_or_copy_failure_is_audited_before_mobile_import(self):
+        from agent_privacy.handoff import HandoffError, load_handoff
+
+        original_write = Path.write_bytes
+        for failure in ("changed", "removed", "copy_failed"):
+            with self.subTest(failure=failure):
+                artifact = self.prepare(repetition={"changed": 1, "removed": 2, "copy_failed": 3}[failure])
+                repetition = load_json(artifact)["handoff"]["repetition"]
+                directory = self.directory / failure
+                model = MobileModel()
+
+                def load_then_change(*args, **kwargs):
+                    verified = load_handoff(*args, **kwargs)
+                    evidence = artifact.parent / "generation-result.json"
+                    if failure == "changed":
+                        evidence.write_text("{}", encoding="utf-8")
+                    elif failure == "removed":
+                        evidence.unlink()
+                    return verified
+
+                def fail_copy(path, data):
+                    if failure == "copy_failed" and path.parent == directory:
+                        raise OSError("synthetic filesystem error")
+                    return original_write(path, data)
+
+                with patch("agent_privacy.hosted.load_handoff", side_effect=load_then_change), \
+                     patch.object(Path, "write_bytes", fail_copy), \
+                     patch("agent_privacy.hosted.ScopedRegistry") as registry:
+                    with self.assertRaises(HandoffError):
+                        run_agent(self.config, handoff_path=artifact, output_dir=directory,
+                                  transport=model, repetition=repetition)
+                    registry.assert_not_called()
+                self.assertFalse(model.requests)
+                load = load_json(directory / "handoff-load.json")
+                self.assertFalse(load["allowed"])
+                self.assertFalse(load["summary_loaded"])
+                reason = ("generation_evidence_changed" if failure == "changed"
+                          else "handoff_evidence_io_error")
+                self.assertEqual(load["reason"], reason)
+                self.assertEqual(load_json(directory / "result.json"), {
+                    "status": "error", "error_type": reason, "phase": "handoff_load",
+                    "controller_steps": 0, "tool_calls": 0})
+                reset = load_json(directory / "reset.json")
+                self.assertEqual((reset["bindings_before"], reset["bindings_after"]), (0, 0))
+                self.assertTrue(reset["conversation_cleared"])
+                self.assertFalse((directory / "events.jsonl").exists())
 
     def test_same_frozen_summary_at_each_existing_policy_and_fault_boundary(self):
         from agent_privacy.egress import EgressAdapter
@@ -333,3 +484,4 @@ class HostedH1Tests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

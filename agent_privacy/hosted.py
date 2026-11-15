@@ -178,12 +178,27 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         try:
             handoff = load_handoff(handoff_path, fixture=fixture, document_variant=document_variant,
                                    repetition=repetition, user_id=user_id, task_id=task_id)
-        except HandoffError as exc:
-            _write(directory / "handoff-load.json", {"allowed": False, "reason": str(exc),
+            # Freeze and archive verified bytes before creating mobile bindings or
+            # reporting a successful load. Source files may change after validation.
+            evidence_snapshot = {}
+            for name, expected_sha256 in handoff["evidence_sha256"].items():
+                evidence = (Path(handoff_path).resolve().parent / name).read_bytes()
+                if hashlib.sha256(evidence).hexdigest() != expected_sha256:
+                    raise HandoffError("generation_evidence_changed")
+                evidence_snapshot[name] = evidence
+            _write(directory / "handoff-artifact.json", handoff)
+            for name, evidence in evidence_snapshot.items():
+                (directory / name).write_bytes(evidence)
+        except (HandoffError, OSError) as exc:
+            reason = str(exc) if isinstance(exc, HandoffError) else "handoff_evidence_io_error"
+            _write(directory / "handoff-load.json", {"allowed": False, "reason": reason,
                                                       "summary_loaded": False})
             _write(directory / "reset.json", {"bindings_before": 0, "bindings_after": 0,
                                                "conversation_cleared": True, "audit_preserved": True})
-            raise
+            _write(directory / "result.json", {"status": "error", "error_type": reason,
+                                                "phase": "handoff_load", "controller_steps": 0,
+                                                "tool_calls": 0})
+            raise HandoffError(reason) from None
         task_id = handoff["scope"]["task_id"]
     scope = {"user_id": user_id, "task_id": "meeting_" + uuid4().hex if task_id is None else task_id,
              "session_id": "session_" + uuid4().hex, "trial_id": "trial_" + uuid4().hex,
@@ -209,6 +224,7 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
     issued, steps, tool_count = set(), 0, 0
     agenda, slots, computed = [], [], None
     document_loaded = False
+    audit_only_handles = set()
     primary_attempted = False
     primary_timed_out = False
     recovery_completed = False
@@ -234,26 +250,24 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
                 {"handle": handle, "fields": fields, "purpose": PURPOSE, "recipient": recipient})
 
         if handoff:
-            # Only the trusted importer can create a mobile binding. The summary
-            # and its document parent retain their complete original metadata.
-            for record in handoff["records"]:
-                registry.put_record(record)
-                bundle["objects"].append(deepcopy(record))
+            # H1 transfers summary values, not the desktop document. Keep parent
+            # metadata as lineage anchors, but never put their values into the
+            # mobile registry: S0 tools can inspect records without a binding.
+            # The canonical full records remain in the audit bundle/artifact.
             document = handoff["handoff"]["summary_handle"]
+            for record in handoff["records"]:
+                mobile_record = deepcopy(record)
+                if record["handle"] != document:
+                    mobile_record["value"] = {"audit_only": True}
+                    audit_only_handles.add(record["handle"])
+                registry.put_record(mobile_record)
+                bundle["objects"].append(deepcopy(record))
             registry.bind_context(document, scope, binding_ref=handoff["handoff"]["artifact_id"])
             _write(directory / "handoff-load.json", {
                 "allowed": True, "reason": "verified_same_task_handoff", "summary_loaded": False,
                 "artifact_id": handoff["handoff"]["artifact_id"],
                 "summary_sha256": handoff["summary_sha256"],
                 "generation": handoff["handoff"]["generation"]})
-            # Copy the verified snapshot for review; no dependency on a mutable
-            # conversation or registry from another attempt remains.
-            _write(directory / "handoff-artifact.json", handoff)
-            for name, expected_sha256 in handoff["evidence_sha256"].items():
-                evidence = (Path(handoff_path).resolve().parent / name).read_bytes()
-                if hashlib.sha256(evidence).hexdigest() != expected_sha256:
-                    raise HandoffError("generation_evidence_changed")
-                (directory / name).write_bytes(evidence)
         else:
             document = put({"text": fixture["document_common"] + "\n\n" + fixture[
                 "benign_paragraph" if document_variant == "benign" else "attack_paragraph"]},
@@ -352,6 +366,8 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
                             select(handle, ["slots"])
                             grant(handle, ["slots"])
                             tool_result = {"handle": handle, "slots": computed}
+                    elif args["handle"] in audit_only_handles:
+                        raise RegistryError("audit_only_handle")
                     elif args["recipient"] == "controller":
                         tool_result = adapter.release_to_controller(call["id"])
                         select(args["handle"], args["fields"])
@@ -503,3 +519,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
