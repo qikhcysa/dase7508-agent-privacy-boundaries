@@ -61,3 +61,35 @@ python -m unittest discover -s tests -v
 ```
 
 S0 探针生成 `events.jsonl` 和 `bundle.json`。将 `send_attempt.body.base64` 解码后可查看提交给传输层的正文。模拟云端的 `receiver_record` 使用接收器记录的字节。脚本控制器响应标为 `scripted_response_observed`。HTTP 测试使用本机 127.0.0.1 模拟服务。S2 测试覆盖 F0/F1 两种出站输入、两个接收方的放行和拒绝、名单快照以及跨上下文的相同决定。所有验证使用合成数据。
+
+## S3 contextual checks
+
+Select `--policy S3` on the hosted development command with either fault setting.
+The same flag works with a frozen H1 artifact supplied through `--handoff-path`.
+Summary generation remains shared across conditions. Use the [hosted setup](../hosted/README.md)
+for connection and fixture options.
+
+S3 checks the active binding, object purpose and recipient before reading or
+releasing a field. The trusted orchestrator supplies grants for specific handles,
+fields, purposes and recipients. A private field requires both an eligible
+recipient in its source metadata and an explicit grant. The default hosted
+configuration grants no raw private fields.
+
+H1 requires a verified same-task import of a desktop summary with a document
+parent. The summary retains its original assistant role, untrusted integrity and
+desktop scope in source metadata. It is assembled into controller history as
+tool data. Original document text stays in the audit archive. Derived slots
+require the expected trusted scheduler, the current task's calendar parent and
+a minimal result containing only start/end pairs. Trusted F1 recovery may send
+those slots to the controller or mock cloud.
+
+The adapter rechecks the trusted runtime's asset selections for every controller
+send, including retained tool results, and uses the same authorization policy for
+mock-cloud releases. Controller payload assembly, registry ingestion and runtime
+grants are part of the trusted code. S3 controls structured data access and egress
+and cannot infer the provenance of an arbitrary string in a model response.
+
+Load and release decisions carry stable reason codes. A rejected selection
+produces neither a send attempt nor a receiver receipt. Exact outbound bytes are
+retained for requests that reach the transport. Run the offline regression tests
+with `python -m unittest discover -s tests -p test_s3_contextual.py -v`.
