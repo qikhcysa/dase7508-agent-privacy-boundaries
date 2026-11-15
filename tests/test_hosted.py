@@ -52,10 +52,16 @@ class SyntheticModel:
             value = reply({"role": "assistant", "content": None,
                            "tool_calls": [call("local_schedule", "schedule", {"mode": "primary"})]})
         else:
-            slots = json.loads(payload["messages"][-1]["content"])["slots"]
-            value = reply({"role": "assistant", "content": json.dumps({
-                "agenda": ["Confirm the prototype boundary", "Assign T01 implementation and review",
-                           "Agree on a pilot verification command"], "slots": slots})}, "stop")
+            tool_result = json.loads(payload["messages"][-1]["content"])
+            if tool_result.get("reason") == "primary_timeout":
+                value = reply({"role": "assistant", "content": None,
+                               "tool_calls": [call("recovery_schedule", "schedule",
+                                                   {"mode": "recovery"})]})
+            else:
+                slots = tool_result["slots"]
+                value = reply({"role": "assistant", "content": json.dumps({
+                    "agenda": ["Confirm the prototype boundary", "Assign T01 implementation and review",
+                               "Agree on a pilot verification command"], "slots": slots})}, "stop")
         return TransportResponse(200, json.dumps(value).encode())
 
 
@@ -66,10 +72,10 @@ class HostedTests(unittest.TestCase):
         self.directory = Path(folder.name)
         self.config = HostedConfig(api_key="synthetic_header_only_secret")
 
-    def run_attempt(self, model=None, config=None, name="attempt"):
+    def run_attempt(self, model=None, config=None, name="attempt", fault="F0"):
         directory = self.directory / name
         result = run_agent(config or self.config, output_dir=directory,
-                           transport=model if model is not None else SyntheticModel())
+                           transport=model if model is not None else SyntheticModel(), fault=fault)
         bundle = load_json(directory / "bundle.json")
         validate("bundle", bundle)
         self.assertTrue(result["bundle_valid"])
@@ -100,6 +106,85 @@ class HostedTests(unittest.TestCase):
         self.assertEqual(bundle["trace"][-1]["event"], "run_finished")
         for path in (self.directory / "attempt").glob("*.json*"):
             self.assertNotIn(self.config.api_key, path.read_text(encoding="utf-8"))
+
+    def test_f1_timeout_uses_common_recovery_and_preserves_completion(self):
+        model = SyntheticModel()
+        result, bundle = self.run_attempt(model, name="f1", fault="F1")
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(result["tool_calls"], 3)
+        self.assertTrue(all(result["checks"].values()))
+        self.assertEqual(bundle["run"]["fault"], "F1")
+        proposals = [event["proposal"] for event in bundle["trace"]
+                     if event["event"] == "tool_proposal"]
+        self.assertEqual([proposal["arguments"].get("mode") for proposal in proposals
+                          if proposal["name"] == "schedule"], ["primary", "recovery"])
+        tools = [json.loads(message["content"]) for message in
+                 load_json(self.directory / "f1" / "conversation.json")
+                 if message["role"] == "tool"]
+        self.assertIn({"status": "blocked_or_failed", "reason": "primary_timeout"}, tools)
+        producers = [obj["meta"]["producer"] for obj in bundle["objects"]
+                     if obj["meta"]["source"] == "local_tool"]
+        self.assertEqual(producers, ["minimal_scheduler"])
+        self.assertEqual(len(model.requests), 4)
+
+    def test_f0_and_f1_share_setup_except_declared_fault(self):
+        f0_model, f1_model = SyntheticModel(), SyntheticModel()
+        _f0_result, f0 = self.run_attempt(f0_model, name="paired_f0", fault="F0")
+        _f1_result, f1 = self.run_attempt(f1_model, name="paired_f1", fault="F1")
+        for run in (f0["run"], f1["run"]):
+            run.pop("attempt_id")
+            run.pop("scope")
+        f0_fault, f1_fault = f0["run"].pop("fault"), f1["run"].pop("fault")
+        self.assertEqual((f0_fault, f1_fault), ("F0", "F1"))
+        self.assertEqual(f0["run"], f1["run"])
+        self.assertEqual(f0["fixture"], f1["fixture"])
+        f0_instructions = f0_model.requests[0]["messages"][1]["content"].split("\nAsset catalog: ")[0]
+        f1_instructions = f1_model.requests[0]["messages"][1]["content"].split("\nAsset catalog: ")[0]
+        self.assertEqual(f0_instructions, f1_instructions)
+
+    def test_fault_is_trusted_runtime_configuration_only(self):
+        directory = self.directory / "invalid_fault"
+        with self.assertRaisesRegex(ValueError, "fault must be F0 or F1"):
+            run_agent(self.config, output_dir=directory, transport=SyntheticModel(), fault="F2")
+        self.assertFalse(directory.exists())
+
+    def test_f0_and_f1_offloads_use_the_common_egress_adapter(self):
+        for fault in ("F0", "F1"):
+            with self.subTest(fault=fault):
+                state = {}
+
+                def offload(payload, _step):
+                    latest = payload["messages"][-1]
+                    if latest["role"] != "tool":
+                        return None
+                    tool_result = json.loads(latest["content"])
+                    if tool_result.get("reason") == "primary_timeout":
+                        return reply({"role": "assistant", "content": None, "tool_calls": [
+                            call("recovery_schedule", "schedule", {"mode": "recovery"})]})
+                    if "slots" in tool_result and "slots" not in state:
+                        state["slots"] = tool_result["slots"]
+                        return reply({"role": "assistant", "content": None, "tool_calls": [
+                            call("release_slots", "release", {
+                                "handle": tool_result["handle"], "fields": ["slots"],
+                                "recipient": "mock_cloud"})]})
+                    if tool_result.get("status") == "mock_response_observed":
+                        return reply({"role": "assistant", "content": json.dumps({
+                            "agenda": ["Use the lawful local schedule"],
+                            "slots": state["slots"]})}, "stop")
+                    return None
+
+                result, bundle = self.run_attempt(SyntheticModel(offload),
+                                                  name="offload_" + fault, fault=fault)
+                self.assertEqual(result["status"], "completed")
+                sends = [event for event in bundle["trace"]
+                         if event["event"] == "send_attempt" and event["channel"] == "release"]
+                self.assertEqual(len(sends), 1)
+                self.assertEqual(sends[0]["recipient"], "mock_cloud")
+                self.assertTrue(any(event["event"] == "release_request"
+                                    for event in bundle["trace"]))
+                self.assertTrue(any(event["event"] == "receiver_record"
+                                    and event["send_id"] == sends[0]["send_id"]
+                                    for event in bundle["trace"]))
 
     def test_loopback_http_uses_bearer_header_and_records_exact_bytes(self):
         model, observed = SyntheticModel(), []
@@ -157,11 +242,22 @@ class HostedTests(unittest.TestCase):
                 model = SyntheticModel(lambda _p, _n: reply({"role": "assistant", "tool_calls": calls}))
                 result, bundle = self.run_attempt(model, name="_".join(modes))
                 self.assertEqual(result["status"], "error")
-                self.assertEqual(result["error_type"], "recovery_outside_h0_f0_scope")
+                self.assertEqual(result["error_type"], "recovery_without_primary_timeout")
                 self.assertEqual(result["tool_calls"], 0)
                 self.assertEqual(len(model.requests), 1)
                 self.assertFalse(any(e["event"] == "tool_proposal" for e in bundle["trace"]))
                 self.assertFalse(any(o["meta"]["source"] == "local_tool" for o in bundle["objects"]))
+
+    def test_f1_recovery_requires_timeout_in_an_earlier_batch(self):
+        for modes in (["recovery"], ["primary", "recovery"], ["recovery", "primary"]):
+            with self.subTest(modes=modes):
+                calls = [call(f"schedule_{i}", "schedule", {"mode": mode})
+                         for i, mode in enumerate(modes)]
+                model = SyntheticModel(lambda _p, _n: reply({"role": "assistant", "tool_calls": calls}))
+                result, bundle = self.run_attempt(model, name="f1_" + "_".join(modes), fault="F1")
+                self.assertEqual(result["error_type"], "recovery_without_primary_timeout")
+                self.assertEqual(result["tool_calls"], 0)
+                self.assertFalse(any(e["event"] == "tool_proposal" for e in bundle["trace"]))
 
     def test_rejects_duplicate_calls_unknown_handles_and_forged_authority(self):
         cases = {
@@ -169,6 +265,7 @@ class HostedTests(unittest.TestCase):
             "unknown": ([call("unknown", "release", {"handle": "obj_unknown", "fields": ["text"],
                                                       "recipient": "controller"})], "unknown_handle"),
             "authority": ([call("forged", "schedule", {"mode": "primary", "scope": {}})], "contract_error"),
+            "fault": ([call("fault", "schedule", {"mode": "primary", "fault": "F0"})], "contract_error"),
             "memory": ([call("memory", "save_memory", {"content": "untrusted"})], "unsupported_tool"),
         }
         for name, (calls, expected) in cases.items():

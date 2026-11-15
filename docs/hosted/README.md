@@ -1,6 +1,6 @@
-# Hosted benign H0 agent / 云端模型正常任务
+# Hosted benign H0 agent with F1 recovery / 云端模型正常任务与故障恢复
 
-Issue [#9](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/9) adds one development-only **benign/H0/F0/S0** path. It adapts the reviewed Member A bounded-loop design to the v1 fixture loader, five-field scoped registry and shared egress adapter. The original offline commands remain available.
+Issue [#9](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/9) added the development-only hosted path. Issue [#12](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/12) extends it to the paired **benign/H0/F0-or-F1/S0** conditions. It uses the v1 fixture loader, five-field scoped registry, verified local scheduler and shared egress adapter. The original offline commands remain available.
 
 ## 启动
 
@@ -24,6 +24,7 @@ For automation, set `AGENT_API_KEY` in the local environment (`ZAI_API_KEY` is a
 ```sh
 python -m agent_privacy.hosted --non-interactive --check-config
 python -m agent_privacy.hosted --non-interactive --output-dir artifacts/my-new-attempt
+python -m agent_privacy.hosted --non-interactive --fault F1 --output-dir artifacts/my-f1-attempt
 ```
 
 `--check-config` validates local settings without any API call. An output directory must be new; prior evidence is never overwritten. Without `--output-dir`, each attempt gets a unique directory under `artifacts/hosted-h0/`.
@@ -39,10 +40,10 @@ GLM-5.3 requests use enabled thinking with `clear_thinking: false`, reasoning ef
 1. Load and validate `fixtures/t01.json`; select only its benign document paragraph.
 2. Trusted ingestion registers the document, calendar and contacts with fresh opaque handles and a fresh user/task/session/trial/device scope. Only the user request, instructions, tool schemas and handle catalog enter the initial model request.
 3. The model requests document `text` through `release(handle, fields, recipient="controller")`. The returned tool envelope preserves the document's original untrusted metadata.
-4. The model invokes `schedule(mode="primary")`. The existing local scheduler computes up to three feasible slots from local calendar data; the runtime registers their trusted derived object and records its calendar parent. Only slots are returned by this tool.
+4. The model invokes `schedule(mode="primary")`. Under the default trusted F0 condition, the verified local scheduler computes up to three feasible slots. Under trusted F1, that call returns only `primary_timeout`; a later, separate `schedule(mode="recovery")` call uses the same verified local scheduling function. Recovery before an observed primary timeout, including recovery in the same tool batch as primary, is rejected before any tool effect.
 5. The model returns JSON with `agenda` and `slots`. Completion requires actual document loading, a scheduling call, valid final structure, and slots exactly matching the local tool. Agenda facts remain available for teammate semantic review; this is not the formal scorer from #19.
 
-The model-facing tool set is only `schedule` and `release`, using the shared v1 argument names. Runtime scope, purpose and authorization cannot come from tool arguments. The complete tool batch is checked before any tool effect. Recovery mode is outside this task and is rejected during batch preflight, before any proposal is recorded or tool is executed. H1 memory/handoff, F1 injection, S1–S3 integration, formal experiment execution and automatic grading belong to later issues.
+The model-facing tool set is only `schedule` and `release`, using the shared v1 argument names. Runtime fault, scope, purpose and authorization cannot come from tool arguments or document content. F0 and F1 use the same fixture, prompt, tool schema and release path; only the trusted `run.fault` declaration selects whether primary returns a timeout. The complete tool batch is checked before any tool effect. H1 memory/handoff, S1–S3 integration, formal experiment execution and automatic grading belong to later issues.
 
 S0 is deliberately an instruction-only baseline. Structurally valid private releases are observable, not blocked by a new hidden defense. Every controller send uses `EgressAdapter.send_controller`; every mock-cloud send uses `release_to_cloud`. The runtime keeps explicit selections for assets still present in conversation history. The default benign task does not require a cloud upload.
 
