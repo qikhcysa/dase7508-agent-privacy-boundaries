@@ -1,4 +1,4 @@
-"""Bounded H0/H1, F0/F1, S0 development attempts over the v1 boundary."""
+"""Bounded H0/H1, F0/F1, S0/S3 development attempts over the v1 boundary."""
 
 from __future__ import annotations
 
@@ -151,7 +151,7 @@ def _write(path: Path, value) -> None:
 
 
 def _source_hashes() -> dict:
-    paths = ["agent_privacy/hosted.py", "agent_privacy/hosted_config.py", "agent_privacy/egress.py",
+    paths = ["agent_privacy/hosted.py", "agent_privacy/hosted_config.py", "agent_privacy/egress.py", "agent_privacy/contextual_policy.py",
              "agent_privacy/fixture_loader.py", "agent_privacy/scoped_registry.py",
              "agent_privacy/scheduler.py", "agent_privacy/handoff.py", "member_a/agent_core/runtime.py",
              "member_a/agent_core/transport.py", "contracts/v1/schema.json", "contracts/validate.py"]
@@ -163,8 +163,10 @@ def _source_hashes() -> dict:
 def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.json",
               output_dir: str | Path, transport=None, handoff_path=None,
               document_variant="benign", repetition=1, fault: str = "F0",
-              user_id="synthetic_user", task_id=None) -> dict:
+              user_id="synthetic_user", task_id=None, policy="S0") -> dict:
     """Run one fresh attempt. An injected scripted/loopback transport is only a test."""
+    if policy not in {"S0", "S3"}:
+        raise ValueError("policy must be S0 or S3")
     if fault not in FAULTS:
         raise ValueError("fault must be F0 or F1")
     if document_variant not in {"benign", "attacked"} or type(repetition) is not int or repetition < 1:
@@ -209,7 +211,7 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
     mode = "hosted" if controller.mode == "http" else "scripted"
     run = {"attempt_id": scope["trial_id"], "fixture_id": fixture["fixture_id"],
            "phase": "development", "document_variant": document_variant, "repetition": repetition,
-           "policy": "S0", "handoff": "H1" if handoff else "H0", "fault": fault, "scope": scope,
+           "policy": policy, "handoff": "H1" if handoff else "H0", "fault": fault, "scope": scope,
            "purpose": PURPOSE, "protocol_sha256": None,
            "controller": {"mode": mode, "model": config.model if mode == "hosted" else None,
                           "settings": {"temperature": 1, "max_tokens": config.max_tokens,
@@ -294,7 +296,8 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         messages.extend([{"role": "system", "content": instructions + "\nAsset catalog: " + _json(catalog)},
                          {"role": "user", "content": fixture["user_request"]}])
         adapter = EgressAdapter(run, registry, controller=controller,
-                                trace_path=directory / "events.jsonl")
+                                trace_path=directory / "events.jsonl",
+                                authorization=bundle["authorization"] if policy == "S3" else None)
         try:
             while steps < config.max_steps:
                 payload = {"model": config.model, "messages": messages, "tools": TOOLS,
@@ -365,6 +368,8 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
                                          recipients=["controller", "mock_cloud"])
                             select(handle, ["slots"])
                             grant(handle, ["slots"])
+                            if policy == "S3":
+                                grant(handle, ["slots"], "mock_cloud")
                             tool_result = {"handle": handle, "slots": computed}
                     elif args["handle"] in audit_only_handles:
                         raise RegistryError("audit_only_handle")
@@ -447,7 +452,7 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         artifact_names.extend(["handoff-load.json", "handoff-artifact.json", *handoff["evidence_sha256"]])
     _write(directory / "manifest.json", {
         "schema_version": "1.0", "phase": "development",
-        "conditions": "/".join((document_variant, run["handoff"], fault, "S0")),
+        "conditions": "/".join((document_variant, run["handoff"], fault, policy)),
         "created_at": datetime.now(timezone.utc).isoformat(), "endpoint": controller.endpoint,
         "source_sha256": source_sha256,
         "source_hash_encoding": "UTF-8; CRLF normalized to LF",
@@ -458,19 +463,20 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         "handoff_generation_evidence": deepcopy(handoff["evidence_sha256"]) if handoff else None,
         "model_options": {key: value for key, value in payload.items()
                           if key not in {"messages", "tools"}},
-        "limits": "One S0 development attempt; no retries, provider fallback, S1-S3 orchestration, or formal scoring."})
+        "limits": "One development attempt; no retries, provider fallback, or formal scoring."})
     return result
 
 
 def main(argv: list[str] | None = None) -> int:
     from .hosted_config import ConfigurationCancelled, configure
 
-    parser = argparse.ArgumentParser(description="Run one H0/H1 F0/F1 S0 hosted development task.")
+    parser = argparse.ArgumentParser(description="Run one H0/H1 F0/F1 S0/S3 hosted development task.")
     parser.add_argument("--base-url", help="API base URL or complete chat/completions endpoint")
     parser.add_argument("--model", help="Requested model ID")
     parser.add_argument("--non-interactive", action="store_true", help="Read key from environment without prompts")
     parser.add_argument("--check-config", action="store_true", help="Check configuration without any API call")
     parser.add_argument("--fixture", type=Path, default=ROOT / "fixtures" / "t01.json")
+    parser.add_argument("--policy", choices=("S0", "S3"), default="S0")
     parser.add_argument("--fault", choices=sorted(FAULTS), default="F0",
                         help="Trusted runtime fault condition")
     parser.add_argument("--output-dir", type=Path)
@@ -497,7 +503,7 @@ def main(argv: list[str] | None = None) -> int:
         print("Running one development task; API usage may consume quota or balance.", flush=True)
         result = run_agent(config, fixture_path=args.fixture, output_dir=directory,
                            handoff_path=args.handoff_path, document_variant=args.document_variant,
-                           repetition=args.repetition, fault=args.fault, user_id=args.user_id,
+                           repetition=args.repetition, fault=args.fault, user_id=args.user_id, policy=args.policy,
                            task_id=args.task_id)
         print(f"Status: {result['status']}; error: {result['error_type']}")
         print("Agenda: " + _json(result["agenda"]))

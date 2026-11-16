@@ -1,4 +1,4 @@
-"""v1 outbound boundary for S0, S1 and S2."""
+"""v1 outbound boundary for S0 through S3."""
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ from member_a.agent_core.transport import (
     HttpTransport, InProcessReceiver, ScriptedTransport, TransportError, TransportResponse,
 )
 
+from .contextual_policy import ContextualPolicy
 from .scoped_registry import RegistryError, ScopedRegistry
 from .redaction import RULE_VERSION, redact_payload
 from .static_allowlist import StaticAllowlist
@@ -79,16 +80,21 @@ class EgressAdapter:
 
     def __init__(self, run: dict, registry: ScopedRegistry, *,
                  controller: HttpTransport | ScriptedTransport, trace_path: str | Path,
-                 static_allowlist: StaticAllowlist | None = None):
+                 static_allowlist: StaticAllowlist | None = None,
+                 authorization: dict | None = None):
         self._run = deepcopy(run)
         validate("run", self._run)
         policy = self._run["policy"]
-        if policy not in {"S0", "S1", "S2"}:
-            raise ValueError("This adapter implements the S0, S1 and S2 baselines.")
+        if (policy == "S3") != (authorization is not None):
+            raise ValueError("Only S3 requires trusted contextual authorization.")
+        self._contextual_policy = (ContextualPolicy(self._run, registry, authorization)
+                                   if policy == "S3" else None)
         if policy == "S2" and not isinstance(static_allowlist, StaticAllowlist):
             raise ValueError("S2 requires a StaticAllowlist from trusted configuration.")
-        if policy != "S2" and static_allowlist is not None:
+        if policy in {"S0", "S1"} and static_allowlist is not None:
             raise ValueError("S0 and S1 run without a static allowlist.")
+        if policy == "S3" and static_allowlist is not None:
+            raise ValueError("S3 runs without a static allowlist.")
         self._static_allowlist = static_allowlist
         expected = "http" if self._run["controller"]["mode"] == "hosted" else "scripted"
         if controller.mode != expected:
@@ -129,11 +135,21 @@ class EgressAdapter:
         self._proposals[call_id] = proposal
         self._proposal_ids.add(proposal_id)
 
-    def record_context_load(self, handle: str) -> dict:
-        """S0 loads retain the trusted ingestion metadata and tool role."""
+    def record_context_load(self, handle: str, *, fields: list[str] | None = None) -> dict:
+        """Record the allowed data projection with the object's original metadata."""
         record = self._registry.inspect_record(handle)
+        reason = None
+        if self._contextual_policy is not None:
+            fields = list(record["value"]) if fields is None else fields
+            selection = {"handle": handle, "fields": fields}
+            validate("selection", selection)
+            reason = self._contextual_policy.denial([selection], "controller")
         self._record("policy_decision", operation="load", reference_id=handle,
-                     allowed=True, reason="s0_instruction_only")
+                     allowed=reason is None, reason=reason or self._allow_reason())
+        if reason:
+            raise RegistryError(reason)
+        if self._contextual_policy is not None:
+            record = self._registry.select_fields(handle, fields, self._run["scope"])
         self._record("context_loaded", handle=handle, loaded_message_role="tool",
                      source_metadata=record["meta"])
         return record
@@ -143,12 +159,27 @@ class EgressAdapter:
         self._record("run_finished", status=status, agenda=agenda, slots=slots,
                      error_type=error_type)
 
-    def _selected_values(self, selection: dict) -> dict:
+    def _allow_reason(self) -> str:
+        return "s3_context_authorized" if self._contextual_policy else "s0_instruction_only"
+
+    def _check_release(self, request: dict, selection: dict) -> None:
+        if self._contextual_policy is None:
+            return
+        reason = self._contextual_policy.denial([selection], request["recipient"])
+        if reason:
+            self._record("policy_decision", operation="release", reference_id=request["request_id"],
+                         allowed=False, reason=reason)
+            raise EgressDenied(reason, request["request_id"])
+
+    def _selection_record(self, selection: dict) -> dict:
         validate("selection", selection)
-        # These baselines resolve values without context or label enforcement.
         record = self._registry.inspect_record(selection["handle"])
         if not set(selection["fields"]) <= record["value"].keys():
             raise RegistryError("unknown_field")
+        return record
+
+    def _selected_values(self, selection: dict) -> dict:
+        record = self._selection_record(selection)
         return {field: record["value"][field] for field in selection["fields"]}
 
     def send_controller(self, payload: dict, *, selections: list[dict]) -> TransportResponse:
@@ -182,7 +213,8 @@ class EgressAdapter:
         if arguments["recipient"] != "mock_cloud":
             raise ValueError("The cloud tool requires the mock_cloud recipient.")
         selection = {"handle": arguments["handle"], "fields": arguments["fields"]}
-        values = self._selected_values(selection)
+        # The evidence contract requires release requests to refer to real fields.
+        self._selection_record(selection)
         request = {
             "request_id": uuid4().hex,
             "call_id": call_id,
@@ -192,8 +224,9 @@ class EgressAdapter:
         }
         self._record("release_request", request=request)
         self._released_calls.add(call_id)
+        self._check_release(request, selection)
         payload = {"task_id": request["scope"]["task_id"], "purpose": request["purpose"],
-                   "handle": request["handle"], "fields": values}
+                   "handle": request["handle"], "fields": self._selected_values(selection)}
         return self._send(payload, recipient="mock_cloud", channel="release", selections=[selection],
                           request_id=request["request_id"])
 
@@ -207,16 +240,20 @@ class EgressAdapter:
         arguments = proposal["arguments"]
         if arguments["recipient"] != "controller":
             raise ValueError("The controller tool requires the controller recipient.")
-        values = self._selected_values({"handle": arguments["handle"], "fields": arguments["fields"]})
+        selection = {"handle": arguments["handle"], "fields": arguments["fields"]}
+        # The evidence contract requires release requests to refer to real fields.
+        self._selection_record(selection)
         request = {"request_id": uuid4().hex, "call_id": call_id,
                    "scope": self._run["scope"], "purpose": self._run["purpose"], **arguments}
         self._record("release_request", request=request)
         self._released_calls.add(call_id)
+        self._check_release(request, selection)
         self._record("policy_decision", operation="release", reference_id=request["request_id"],
-                     allowed=True, reason="s0_instruction_only")
-        record = self.record_context_load(arguments["handle"])
+                     allowed=True, reason=self._allow_reason())
+        record = self.record_context_load(arguments["handle"], fields=arguments["fields"])
         return {"handle": record["handle"], "source_metadata": record["meta"],
-                "loaded_message_role": "tool", "value": values}
+                "loaded_message_role": "tool",
+                "value": {field: record["value"][field] for field in arguments["fields"]}}
 
     def _send(self, payload: dict, *, recipient: str, channel: str,
               selections: list[dict], request_id: str | None = None) -> TransportResponse:
@@ -230,6 +267,9 @@ class EgressAdapter:
         reason = RULE_VERSION if self._run["policy"] == "S1" else "s0_instruction_only"
         if self._static_allowlist is not None:
             allowed, reason = self._static_allowlist.decide(selections)
+        if self._contextual_policy is not None:
+            denial = self._contextual_policy.denial(selections, recipient)
+            allowed, reason = denial is None, denial or self._allow_reason()
         if request_id is not None:
             self._record("policy_decision", operation="release", reference_id=request_id,
                          allowed=allowed, reason=reason)

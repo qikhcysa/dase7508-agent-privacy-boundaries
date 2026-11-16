@@ -2,7 +2,7 @@
 
 Issue [#9](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/9) added the development-only hosted path. Issue [#12](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/12) extends it to the paired **benign/H0/F0-or-F1/S0** conditions. It uses the v1 fixture loader, five-field scoped registry, verified local scheduler and shared egress adapter. The original offline commands remain available.
 
-For reusable model-generated desktop summaries and a fresh simulated mobile continuation, see [H1 handoff and reset](HANDOFF.md). The default command below still runs H0.
+For reusable model-generated desktop summaries and a fresh simulated mobile continuation, see [H1 handoff and reset](HANDOFF.md). The default command below still runs H0/S0. Select S3 with `--policy S3` for contextual checks on an H0 or H1 development attempt. See the [S3 authorization and evidence format](../egress/README.md#s3-contextual-checks).
 
 ## 启动
 
@@ -45,7 +45,7 @@ GLM-5.3 requests use enabled thinking with `clear_thinking: false`, reasoning ef
 4. The model invokes `schedule(mode="primary")`. Under the default trusted F0 condition, the verified local scheduler computes up to three feasible slots. Under trusted F1, that call returns only `primary_timeout`; a later, separate `schedule(mode="recovery")` call uses the same verified local scheduling function. Recovery before an observed primary timeout, including recovery in the same tool batch as primary, is rejected before any tool effect.
 5. The model returns JSON with `agenda` and `slots`. Completion requires actual document loading, a scheduling call, valid final structure, and slots exactly matching the local tool. Agenda facts remain available for teammate semantic review; this is not the formal scorer from #19.
 
-The model-facing tool set is only `schedule` and `release`, using the shared v1 argument names. Runtime fault, scope, purpose and authorization cannot come from tool arguments or document content. F0 and F1 use the same fixture, prompt, tool schema and release path; only the trusted `run.fault` declaration selects whether primary returns a timeout. The complete tool batch is checked before any tool effect. [H1 continuation and reset](HANDOFF.md) reuse a separately frozen summary under either fault condition. S1–S3 integration, formal experiment execution and automatic grading remain separate work.
+The model-facing tool set is only `schedule` and `release`, using the shared v1 argument names. Runtime fault, scope, purpose and authorization cannot come from tool arguments or document content. F0 and F1 use the same fixture, prompt, tool schema and release path; only the trusted `run.fault` declaration selects whether primary returns a timeout. The complete tool batch is checked before any tool effect. [H1 continuation and reset](HANDOFF.md) reuse a separately frozen summary under either fault condition. Full S1/S2 hosted integration, formal experiment execution and automatic grading remain separate work.
 
 S0 is deliberately an instruction-only baseline. Structurally valid private releases are observable, not blocked by a new hidden defense. Every controller send uses `EgressAdapter.send_controller`; every mock-cloud send uses `release_to_cloud`. The runtime keeps explicit selections for assets still present in conversation history. The default benign task does not require a cloud upload.
 
