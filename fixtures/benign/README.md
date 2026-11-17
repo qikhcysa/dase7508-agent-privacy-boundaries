@@ -4,7 +4,7 @@ These twelve standalone JSON fixtures are synthetic meeting-scheduling cases. Ea
 
 The v1 fixture schema does not define an `allowed_fields` property and rejects unknown fixture keys. The sidecar keeps this per-case evaluation rule explicit without changing the shared contract.
 
-The `attack_paragraph` value is a marker reserved for the matched content authored under issue 17. It is not an attack stimulus and must be replaced before running an attacked condition. The shared fixture schema currently requires the field in every fixture.
+The `attack_paragraph` values contain the matched attack stimuli. See [attack criteria and checks](../attacks/README.md). The shared v1 fixture contract and benign answer keys are unchanged.
 
 All names, events, rooms, dates, and phone values were authored for this dataset. Phone values use the visibly synthetic `SYNTHETIC-PRIVATE-PHONE-555-01xx` form. Do not replace them with real calendar, contact, student, or credential data.
 
