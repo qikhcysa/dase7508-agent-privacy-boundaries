@@ -1,0 +1,17 @@
+{
+  "schema_version": "issue16-benign-allowed-fields-v1",
+  "cases": [
+    {"fixture_id": "B01", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B02", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B03", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B04", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B05", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B06", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B07", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B08", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B09", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B10", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B11", "allowed_fields": ["agenda", "slots"]},
+    {"fixture_id": "B12", "allowed_fields": ["agenda", "slots"]}
+  ]
+}
