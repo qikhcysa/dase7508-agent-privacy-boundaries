@@ -37,6 +37,7 @@
 | T01 出站机制试验 | 使用 `fixtures/t01.json` 和脚本控制器，比较 H0/F0 下良性与攻击文档在 S0/S3 下的表现，共四个场景。 |
 | 云端正常任务 | [agent_privacy.hosted](docs/hosted/README.md) 默认 GLM-5.3-Flash；弹窗输入各自密钥，可执行 benign/H0/F0 或 F1/S0 开发尝试。 |
 | 共享接口与注册表 | [接口校验](docs/contracts/README.md)检查 v1 数据格式和日志的一致性，[注册表演示](docs/registry/README.md)验证对象来源与上下文隔离。 |
+| 补充用例输入 | [补充用例清单](fixtures/supplements/README.md)定义合法分享、双任务持久化和 H1 双工具失败的 240 次计划尝试及答案键；尚未运行正式实验。 |
 | H1 摘要交接 | [摘要交接](docs/hosted/HANDOFF.md)支持一次生成、独立进程手机续接、来源校验与尝试后重置。 |
 
 两个原型使用 Python 3.11+、标准库和合成数据，可离线运行。新增的[云端正常任务](docs/hosted/README.md)需要模型 API、接口校验依赖和桌面弹窗支持。托管模型接入、统一集成及正式实验分别由 [#9][i9]、[#11][i11]、[#20][i20]、[#23][i23] 和 [#24][i24] 跟踪。
@@ -101,6 +102,7 @@ The evaluation checks actual outbound requests for prohibited fields and uses re
 | T01 release mechanism pilot | A scripted controller uses `fixtures/t01.json` to run four H0/F0 scenarios across benign and attacked documents and S0/S3. |
 | Hosted benign task | [agent_privacy.hosted](docs/hosted/README.md) defaults to GLM-5.3-Flash, prompts for a per-user key in a desktop dialog and runs one benign/H0/F0-or-F1/S0 development attempt. |
 | Shared contracts and registry | [Contract checks](docs/contracts/README.md) validate v1 formats and trace consistency. The [registry demo](docs/registry/README.md) checks provenance and context isolation. |
+| Supplemental inputs | The [supplement manifest](fixtures/supplements/README.md) specifies 240 planned lawful-sharing, two-task persistence, and H1 double-failure attempts with answer keys. Formal evaluation has not run. |
 | H1 summary handoff | [Summary handoff](docs/hosted/HANDOFF.md) supports persisted generation, separate-process mobile continuation, provenance verification and ordinary-attempt reset. |
 
 Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. The new [hosted benign task](docs/hosted/README.md) requires a model API, contract dependencies and desktop dialog support. Hosted model work, joint integration, and formal evaluation are tracked in [#9][i9], [#11][i11], [#20][i20], [#23][i23], and [#24][i24].
