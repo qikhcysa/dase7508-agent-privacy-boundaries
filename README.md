@@ -61,6 +61,8 @@ python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 
 在 T01 输出中对照 `proposals`、`decisions`、`outgoing_requests` 和 `receiver_records`。脚本设置下，只有 S0 攻击场景的模拟接收方收到原始合成日历信息，四个场景均完成本地日程路径。此处验证的是本地机制，真实模型行为和正式攻击率留待集成后评估。
 
+攻击结果离线判定入口：参见[判定模块与示例](docs/outcomes/README.md)，读取现有 v1 bundle，区分提议、拦截、实际出站与确认接收。
+
 ### 五位组员分工与 Issue
 
 | 角色 | 组员 | GitHub 用户名 | 分工 | 主要任务 |
@@ -125,6 +127,8 @@ python -m agent_privacy.pilot --output artifacts/t01-pilot.json
 ```
 
 Compare `proposals`, `decisions`, `outgoing_requests`, and `receiver_records` in the T01 output. In these scripted scenarios, the mock receiver gets raw synthetic calendar data only in the attacked S0 case, and all four local scheduling paths complete. The traces validate local mechanisms. Hosted model behavior and formal attack rates remain part of the integrated evaluation.
+
+Offline outcome grading: see [grader and examples](docs/outcomes/README.md) for v1 bundle labels separating proposals, denials, outbound disclosure and confirmed receipt.
 
 ### Team and issue ownership
 
