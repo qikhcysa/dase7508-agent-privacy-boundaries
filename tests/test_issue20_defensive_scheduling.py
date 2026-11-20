@@ -1,72 +1,72 @@
-"""Defensive offline scheduling smoke checks; no real model or transport."""
+"""Offline scheduling smoke checks through the hosted agent loop."""
 
+import base64
+import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
-from unittest.mock import Mock
+from unittest.mock import patch
 
-from agent_privacy.scheduler import schedule_fixture
-from contracts.validate import validate
-from test_issue20_defensive_trace import synthetic
-
-
-def ready(slot_hour, **extra):
-    return {
-        "start": f"2026-01-01T{slot_hour}:00:00Z",
-        "end": f"2026-01-01T{slot_hour}:30:00Z",
-        **extra,
-    }
-
-
-def run_public_agenda(provider, scheduler, fixture):
-    """Test-only composition of a fake provider and the local scheduler."""
-    try:
-        agenda = provider()
-        if agenda is None:
-            return synthetic(
-                "run_finished", status="incomplete", agenda=[], slots=[],
-                error_type="ProviderRefused",
-            )
-        slots = scheduler(fixture)["slots"]
-        return synthetic(
-            "run_finished", status="completed" if slots else "incomplete",
-            agenda=agenda, slots=slots, error_type=None,
-        )
-    except TimeoutError:
-        return synthetic(
-            "run_finished", status="error", agenda=[], slots=[],
-            error_type="TimeoutError",
-        )
+from agent_privacy import hosted
+from agent_privacy.hosted_config import HostedConfig
+from contracts.validate import load_json, validate
+from tests.test_hosted import SyntheticModel, reply
 
 
 class DefensiveSchedulingSmoke(unittest.TestCase):
-    def setUp(self):
-        self.fixture = {
-            "candidate_slots": [ready("01"), ready("02", label="synthetic notes")],
-            "calendar": {"events": [ready("01", title="synthetic busy event")]},
-            "meeting_minutes": 30,
-        }
+    def run_attempt(self, model):
+        with TemporaryDirectory() as folder:
+            output = Path(folder) / "attempt"
+            hosted.run_agent(HostedConfig(api_key="synthetic_key"), output_dir=output,
+                             transport=model)
+            bundle = load_json(output / "bundle.json")
+        validate("bundle", bundle)
+        self.assertEqual(bundle["trace"][-1]["event"], "run_finished")
+        return bundle
 
     def test_benign_slots_and_log_exclude_private_metadata(self):
-        provider = Mock(return_value=["Review tomorrow's agenda"])
-        event = run_public_agenda(provider, schedule_fixture, self.fixture)
-        validate("trace_event", event)
-        provider.assert_called_once_with()
+        bundle = self.run_attempt(SyntheticModel())
+        event = bundle["trace"][-1]
+        fixture = bundle["fixture"]
         self.assertEqual(event["status"], "completed")
-        self.assertEqual(event["slots"], [ready("02")])
-        self.assertNotIn("synthetic notes", str(event))
-        self.assertNotIn("synthetic busy event", str(event))
+        self.assertIsNone(event["error_type"])
+        self.assertEqual(event["agenda"], fixture["expected_agenda"])
+        self.assertEqual(event["slots"], fixture["expected_slots"])
+
+        busy_event = fixture["calendar"]["events"][0]
+        contact = fixture["contacts"]["entries"][0]
+        private_values = (busy_event["title"], busy_event["location"], contact["phone"])
+        controller_bodies = [base64.b64decode(entry["body"]["base64"])
+                             for entry in bundle["trace"] if entry["event"] == "send_attempt"]
+        self.assertTrue(controller_bodies)
+        for value in private_values:
+            self.assertNotIn(value, json.dumps(event))
+            for body in controller_bodies:
+                self.assertNotIn(value.encode(), body)
 
     def test_refused_provider_never_calls_scheduler(self):
-        scheduler = Mock(wraps=schedule_fixture)
-        event = run_public_agenda(Mock(return_value=None), scheduler, self.fixture)
-        validate("trace_event", event)
-        self.assertEqual((event["status"], event["error_type"], event["slots"]),
-                         ("incomplete", "ProviderRefused", []))
+        def refuse(_payload, _step):
+            return reply({"role": "assistant", "content": None}, finish="content_filter")
+
+        model = SyntheticModel(refuse)
+        with patch.object(hosted, "schedule_fixture", wraps=hosted.schedule_fixture) as scheduler:
+            bundle = self.run_attempt(model)
         scheduler.assert_not_called()
+        self.assertEqual(len(model.requests), 1)
+        self.assertFalse(any(entry["event"] == "tool_proposal" for entry in bundle["trace"]))
+        event = bundle["trace"][-1]
+        self.assertEqual((event["status"], event["error_type"]), ("error", "incomplete_model_response"))
+        self.assertEqual(event["agenda"], [])
+        self.assertEqual(event["slots"], [])
 
     def test_mock_tool_timeout_is_logged_without_exception_text(self):
-        scheduler = Mock(side_effect=TimeoutError("internal mock diagnostic"))
-        event = run_public_agenda(Mock(return_value=["Review agenda"]), scheduler, self.fixture)
-        validate("trace_event", event)
-        self.assertEqual((event["status"], event["error_type"], event["slots"]),
-                         ("error", "TimeoutError", []))
-        self.assertNotIn("internal mock diagnostic", str(event))
+        diagnostic = "internal mock diagnostic"
+        with patch.object(hosted, "schedule_fixture", side_effect=TimeoutError(diagnostic)) as scheduler:
+            bundle = self.run_attempt(SyntheticModel())
+        scheduler.assert_called_once_with(bundle["fixture"], mode="primary")
+        self.assertFalse(any(obj["meta"]["source"] == "local_tool" for obj in bundle["objects"]))
+        event = bundle["trace"][-1]
+        self.assertEqual((event["status"], event["error_type"]), ("error", "runtime_TimeoutError"))
+        self.assertEqual(event["agenda"], [])
+        self.assertEqual(event["slots"], [])
+        self.assertNotIn(diagnostic, json.dumps(bundle))
