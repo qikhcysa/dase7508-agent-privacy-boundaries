@@ -5,14 +5,17 @@ import tempfile
 import unittest
 
 from contracts.validate import load_json
+from agent_privacy.egress import EgressAdapter, EgressDenied
 from agent_privacy.outcomes import grade_bundle
 from agent_privacy.runner import build_core_plan, run_plan
+from agent_privacy.scoped_registry import ScopedRegistry
 from agent_privacy.scorer import (
     ScoreError,
     aggregate_scores,
     score_bundle,
     score_directory,
 )
+from member_a.agent_core.transport import ScriptedTransport
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -91,6 +94,7 @@ class ScorerTests(unittest.TestCase):
         bundle["run"]["document_variant"] = "benign"
         bundle["handoff"]["document_variant"] = "benign"
         calendar = next(record for record in bundle["objects"] if record["handle"] == "calendar.raw")
+        calendar["meta"]["original_scope"] = deepcopy(bundle["run"]["scope"])
         calendar["meta"]["recipients"] = ["mock_cloud"]
         bundle["authorization"]["grants"].append({
             "handle": "calendar.raw",
@@ -120,6 +124,11 @@ class ScorerTests(unittest.TestCase):
         for operation in ("load", "egress"):
             with self.subTest(operation=operation):
                 bundle = deepcopy(self.bundle)
+                document = next(record for record in bundle["objects"]
+                                if record["handle"] == "document.meeting")
+                document["meta"]["original_scope"] = bundle["run"]["scope"]
+                loaded = next(event for event in bundle["trace"] if event["event"] == "context_loaded")
+                loaded["source_metadata"] = document["meta"]
                 if operation == "load":
                     load = bundle["trace"][0]
                     self.assertEqual(load["operation"], "load")
@@ -135,6 +144,53 @@ class ScorerTests(unittest.TestCase):
                 row = score_bundle(bundle, outcome=grade_bundle(bundle))
                 self.assertTrue(row["overblocked"])
                 self.assertEqual(row["overblocking_requests"]["blocked_authorized_requests"], 1)
+
+    def test_actual_s3_scope_and_derivation_denials_are_not_overblocking(self):
+        for scenario, expected_reason in (("stale_trial", "trial_mismatch"),
+                                          ("wrong_producer", "untrusted_derivation"),
+                                          ("trusted_slots", None)):
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as directory:
+                bundle = deepcopy(self.bundle)
+                run = bundle["run"]
+                for record in bundle["objects"]:
+                    record["meta"]["original_scope"] = deepcopy(run["scope"])
+                calendar, slots = (next(record for record in bundle["objects"] if record["handle"] == handle)
+                                   for handle in ("calendar.raw", "schedule.slots"))
+                calendar["meta"]["recipients"] = ["mock_cloud"]
+                slots["meta"]["producer"] = "primary_scheduler"
+                if scenario == "stale_trial":
+                    calendar["meta"]["original_scope"]["trial_id"] = "earlier_trial"
+                if scenario == "wrong_producer":
+                    slots["meta"]["producer"] = "untrusted_producer"
+                handle, field = ("calendar.raw", "events") if scenario == "stale_trial" else ("schedule.slots", "slots")
+                selection = {"handle": handle, "fields": [field], "recipient": "mock_cloud"}
+                bundle["authorization"]["grants"] = [{**selection, "purpose": run["purpose"]}]
+                with ScopedRegistry() as registry:
+                    for record in bundle["objects"]:
+                        registry.put_record(record)
+                    adapter = EgressAdapter(
+                        run, registry, controller=ScriptedTransport([]),
+                        trace_path=Path(directory) / "events.jsonl",
+                        authorization=bundle["authorization"],
+                    )
+                    adapter.record_proposal("call", {"proposal_id": "proposal", "name": "release",
+                                                     "arguments": selection})
+                    if expected_reason:
+                        with self.assertRaisesRegex(EgressDenied, expected_reason):
+                            adapter.release_to_cloud("call")
+                    else:
+                        adapter.release_to_cloud("call")
+                    fixture = bundle["fixture"]
+                    adapter.finish(status="completed", agenda=fixture["expected_agenda"],
+                                   slots=fixture["expected_slots"], error_type=None)
+                bundle["trace"] = [json.loads(line) for line in
+                                   adapter.trace_path.read_text(encoding="utf-8").splitlines()]
+
+                row = score_bundle(bundle, outcome=grade_bundle(bundle))
+                self.assertFalse(row["overblocked"])
+                self.assertEqual(row["overblocking_requests"]["authorized_requests"],
+                                 int(expected_reason is None))
+                self.assertEqual(row["overblocking_requests"]["blocked_authorized_requests"], 0)
 
     def test_unattributable_denial_and_missing_usage_are_visible(self):
         bundle = deepcopy(self.bundle)
@@ -209,6 +265,120 @@ class ScorerTests(unittest.TestCase):
             self.assertEqual(report["summary"]["invalid_evidence"], [
                 {"evidence_path": "bad/bundle.json", "error_type": "unscorable_evidence"}
             ])
+
+    def _planned_bundle(self):
+        plan = build_core_plan([FIXTURE], repetitions=1, policies=("S3",), handoffs=("H0",),
+                               faults=("F0",), document_variants=("benign",))
+        bundle = deepcopy(self.bundle)
+        fixture = load_json(FIXTURE)
+        bundle["fixture"] = fixture
+        bundle["run"]["fixture_id"] = fixture["fixture_id"]
+        final = bundle["trace"][-1]
+        final.update(agenda=fixture["expected_agenda"], slots=fixture["expected_slots"])
+        result = {**{key: final[key] for key in ("status", "error_type", "agenda", "slots")},
+                  "reset": {"bindings_after": 0, "conversation_cleared": True, "audit_preserved": True}}
+        return plan, bundle, result
+
+    def test_legacy_ledger_recomputes_unknown_results_from_the_bundle(self):
+        plan, bundle, result = self._planned_bundle()
+        bundle["trace"] = [event for event in bundle["trace"] if event["event"] != "send_result"]
+
+        def execute(_condition, directory, _snapshot):
+            directory.mkdir()
+            (directory / "bundle.json").write_text(json.dumps(bundle), encoding="utf-8")
+            return result
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "run"
+            ledger = run_plan(plan, root, execute)
+            old_metrics = ledger["attempts"][0]["executions"][0]["metrics"]
+            old_metrics.update(input_tokens_unknown_results=0, latency_ms=0, response_bytes=0)
+            old_metrics.pop("latency_ms_unknown_results")
+            old_metrics.pop("response_bytes_unknown_results")
+            (root / "run-ledger.json").write_text(json.dumps(ledger), encoding="utf-8")
+            report = score_directory(root)
+            row = report["attempts"][0]
+            totals = report["summary"]["metrics"]
+            self.assertEqual(totals["send_count"], 1)
+            for field in ("input_tokens", "latency_ms", "response_bytes"):
+                self.assertEqual(totals[field + "_unknown_results"], 1)
+                self.assertEqual(row["metrics"][field + "_unknown_results"], 1)
+                self.assertIsNone(totals[field])
+
+    def test_legacy_interrupted_retry_recovers_evidence_and_usage(self):
+        plan, bundle, result = self._planned_bundle()
+        bundle["trace"].pop()  # The final event had not yet been written.
+        sent = next(event for event in bundle["trace"] if event["event"] == "send_result")
+        sent["usage"]["input_tokens"] = 11
+        calls = 0
+
+        def execute(_condition, directory, _snapshot):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return {**result, "status": "error", "error_type": "transport_error"}
+            directory.mkdir()
+            (directory / "bundle.json").write_text(json.dumps(bundle), encoding="utf-8")
+            raise KeyboardInterrupt
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "run"
+            with self.assertRaises(KeyboardInterrupt):
+                run_plan(plan, root, execute, max_retries=1, retryable_errors=("transport_error",))
+            path = root / "run-ledger.json"
+            ledger = load_json(path)
+            attempt = ledger["attempts"][0]
+            attempt["selected_try"] = 1
+            attempt["executions"][1].update(bundle_path=None, metrics=None)
+            path.write_text(json.dumps(ledger), encoding="utf-8")
+
+            report = score_directory(root)
+            row = report["attempts"][0]
+            self.assertEqual(row["try"], 2)
+            self.assertTrue(row["evidence_path"].endswith("/try-02/bundle.json"))
+            self.assertEqual(row["metrics"]["input_tokens"], 11)
+            self.assertEqual(report["summary"]["metrics"]["input_tokens"], 11)
+            self.assertEqual(report["summary"]["errors"], {"runner_interrupted": 1})
+            self.assertEqual(report["summary"]["execution_errors"],
+                             {"runner_interrupted": 1, "transport_error": 1})
+
+    def test_directory_isolates_mismatched_privacy_report_from_utility(self):
+        plan, bundle, result = self._planned_bundle()
+        other = deepcopy(bundle)
+        other["run"]["attempt_id"] = "other_attempt"
+        for event in other["trace"]:
+            event["attempt_id"] = "other_attempt"
+        outcome = grade_bundle(other)
+        self.assertTrue(outcome["valid_evidence"])
+
+        def save(directory):
+            directory.mkdir()
+            (directory / "bundle.json").write_text(json.dumps(bundle), encoding="utf-8")
+            (directory / "outcome.json").write_text(json.dumps(outcome), encoding="utf-8")
+
+        def execute(_condition, directory, _snapshot):
+            save(directory)
+            return result
+
+        for use_ledger in (False, True):
+            with self.subTest(use_ledger=use_ledger), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary) / "run"
+                if use_ledger:
+                    run_plan(plan, root, execute)
+                else:
+                    save(root)
+                report = score_directory(root)
+                summary, row = report["summary"], report["attempts"][0]
+                self.assertEqual(summary["planned_attempts"], 1)
+                self.assertEqual(summary["completion_rate"], 1.0)
+                self.assertEqual(summary["unscorable_attempts"], 0)
+                self.assertEqual(summary["errors"], {})
+                self.assertEqual(summary["outcome_errors"], {"outcome_bundle_mismatch": 1})
+                self.assertTrue(summary["invalid_evidence"][0]["evidence_path"].endswith("outcome.json"))
+                self.assertTrue(row["agenda"]["exact"] and row["slots"]["exact"])
+                self.assertFalse(row["valid_evidence"])
+                self.assertIsNone(row["privacy_labels"])
+                self.assertIsNone(row["overblocked"])
 
     def test_directory_uses_plan_and_ledger_for_early_failures(self):
         plan = build_core_plan(

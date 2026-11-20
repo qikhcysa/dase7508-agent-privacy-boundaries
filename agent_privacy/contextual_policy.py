@@ -5,6 +5,51 @@ from contracts.validate import ContractError, validate
 from .scoped_registry import RegistryError
 
 
+def has_trusted_summary_lineage(run, lineage):
+    if run["handoff"] != "H1" or len(lineage) != 2:
+        return False
+    summary, parent = (item["meta"] for item in lineage)
+    return (
+        summary["producer"] == "handoff_summary"
+        and summary["message_role"] == "assistant"
+        and summary["integrity"] == "untrusted"
+        and summary["original_scope"]["device_id"] == "desktop"
+        and parent["source"] == "meeting_document"
+        and parent["producer"] == "fixture_loader"
+        and parent["integrity"] == "untrusted"
+        and parent["message_role"] == "tool"
+        and parent["original_scope"] == summary["original_scope"]
+        and parent["purpose"] == summary["purpose"]
+    )
+
+
+def has_trusted_slots_lineage(run, record, lineage):
+    if len(lineage) != 2:
+        return False
+    slots, calendar = (item["meta"] for item in lineage)
+    producer = {"F0": "primary_scheduler", "F1": "minimal_scheduler"}[run["fault"]]
+    value = record["value"]
+    return (
+        slots["source"] == "local_tool"
+        and slots["producer"] == producer
+        and slots["integrity"] == "trusted"
+        and slots["message_role"] == "tool"
+        and slots["original_scope"] == run["scope"]
+        and calendar["source"] == "local_calendar"
+        and calendar["producer"] == "fixture_loader"
+        and calendar["integrity"] == "trusted"
+        and calendar["confidentiality"] == "private"
+        and calendar["original_scope"] == slots["original_scope"]
+        and calendar["purpose"] == slots["purpose"]
+        and set(value) == {"slots"}
+        and isinstance(value["slots"], list)
+        and len(value["slots"]) <= 3
+        and all(isinstance(slot, dict) and set(slot) == {"start", "end"}
+                and all(isinstance(boundary, str) for boundary in slot.values())
+                for slot in value["slots"])
+    )
+
+
 class ContextualPolicy:
     """Check one active run; only the trusted orchestrator may update its grants."""
 
@@ -45,9 +90,14 @@ class ContextualPolicy:
                 if source in {"meeting_document", "model_summary"}:
                     if handle not in self._authorization["context_handles"]:
                         return "context_not_authorized"
-                    if source == "model_summary" and not self._summary_allowed(handle, binding):
+                    if source == "model_summary" and (
+                        binding["binding"]["kind"] != "trusted_import"
+                        or not has_trusted_summary_lineage(self._run, self._registry.inspect_lineage(handle))
+                    ):
                         return "invalid_summary_lineage"
-                if meta["confidentiality"] == "derived" and not self._slots_allowed(handle, record):
+                if meta["confidentiality"] == "derived" and not has_trusted_slots_lineage(
+                    self._run, record, self._registry.inspect_lineage(handle)
+                ):
                     return "untrusted_derivation"
             except RegistryError as exc:
                 return str(exc)
@@ -62,50 +112,3 @@ class ContextualPolicy:
                 return ("private_fields_not_authorized" if meta["confidentiality"] == "private"
                         else "fields_not_authorized")
         return None
-
-    def _summary_allowed(self, handle, binding):
-        if self._run["handoff"] != "H1" or binding["binding"]["kind"] != "trusted_import":
-            return False
-        lineage = self._registry.inspect_lineage(handle)
-        if len(lineage) != 2:
-            return False
-        summary, parent = (item["meta"] for item in lineage)
-        return (
-            summary["producer"] == "handoff_summary"
-            and summary["message_role"] == "assistant"
-            and summary["integrity"] == "untrusted"
-            and summary["original_scope"]["device_id"] == "desktop"
-            and parent["source"] == "meeting_document"
-            and parent["producer"] == "fixture_loader"
-            and parent["integrity"] == "untrusted"
-            and parent["message_role"] == "tool"
-            and parent["original_scope"] == summary["original_scope"]
-            and parent["purpose"] == summary["purpose"]
-        )
-
-    def _slots_allowed(self, handle, record):
-        lineage = self._registry.inspect_lineage(handle)
-        if len(lineage) != 2:
-            return False
-        slots, calendar = (item["meta"] for item in lineage)
-        producer = {"F0": "primary_scheduler", "F1": "minimal_scheduler"}[self._run["fault"]]
-        value = record["value"]
-        return (
-            slots["source"] == "local_tool"
-            and slots["producer"] == producer
-            and slots["integrity"] == "trusted"
-            and slots["message_role"] == "tool"
-            and slots["original_scope"] == self._run["scope"]
-            and calendar["source"] == "local_calendar"
-            and calendar["producer"] == "fixture_loader"
-            and calendar["integrity"] == "trusted"
-            and calendar["confidentiality"] == "private"
-            and calendar["original_scope"] == slots["original_scope"]
-            and calendar["purpose"] == slots["purpose"]
-            and set(value) == {"slots"}
-            and isinstance(value["slots"], list)
-            and len(value["slots"]) <= 3
-            and all(isinstance(slot, dict) and set(slot) == {"start", "end"}
-                    and all(isinstance(boundary, str) for boundary in slot.values())
-                    for slot in value["slots"])
-        )

@@ -84,7 +84,10 @@ planned runs the fixture in the bundle must match the fixture locked by
   execution in the ledger when scoring a planned run.
 - `summary.metrics` totals observed usage from every physical try and each H1
   generation bundle once. Unknown values are explicit, including sends with no
-  result. The known/unknown attempt counts describe the selected scoring rows.
+  result. Rescoring reads available evidence before falling back to ledger
+  totals. For older interrupted tries, the scorer can recover the bundle from
+  the recorded try directory. The known/unknown attempt counts describe the
+  selected scoring rows.
 - The experiment denominator remains the number of planned conditions.
   `summary.errors` reflects the final planned outcomes and
   `summary.execution_errors` counts failed physical tries, including failures
@@ -94,11 +97,14 @@ planned runs the fixture in the bundle must match the fixture locked by
 An adjacent `outcome.json` must identify the exact bundle using
 `bundle_sha256`. For older reports the scorer compares the saved fields with
 the current grader's report. Missing grading evidence leaves privacy labels
-and overblocking unknown. Mismatched or unreadable evidence remains visible in
-`invalid_evidence`.
+and overblocking unknown. A mismatched or unreadable outcome report appears in
+`invalid_evidence` and `summary.outcome_errors`. Valid bundle and result
+evidence can still establish agenda, slot, and completion scores.
 
 Overblocking uses requests in benign runs. It checks the selected fields
-against the object's original task, purpose, recipients and trusted grants.
+against the active trial and session, purpose, recipients, and trusted grants.
+Foreign-scope records are ineligible except for the named, same-task H1
+summary with verified lineage. Derived slots must pass the S3 lineage rules.
 Release decisions and their paired send gates count once. If a load decision
 does not identify enough fields to verify a partial grant, or a send gate has
 no selections, the request contributes to `unknown_requests`. Use
