@@ -1,13 +1,21 @@
 # Implementation roadmap from the submitted proposal
 
-See [roadmap #27](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27) for task dependencies and current progress. The [T01 pilot](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/1) covers the scripted outbound mechanism.
+[Roadmap #27](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27) tracks live progress, prerequisites, owners, and review assignments. The [shared board](https://github.com/users/qikhcysa/projects/1/views/2) shows current task status.
 
-| Next work package | Proposal owner | Evidence needed before review |
+## Component deliveries
+
+| Component | Owner | Merged work |
 | --- | --- | --- |
-| Hosted agent loop, actual model/tool traces, H1 summary save/reload and reset | XIA Zhangning | Real generated summary text, prompts, tool proposals, and separated task snapshots |
-| Local scheduler, F1 timeout, common legal recovery path, run automation | XIA Liyuan | Reproducible F0/F1 traces and a verifier for feasible slots |
-| Three paired cases per attack family and S1 fixed-pattern redaction | JIN Zhan | Benign/attack pairs differing only in attack paragraph; explicit success criteria |
-| S2 static allowlist and S3 task/purpose/recipient/provenance enforcement | ZHANG Xilong | Allowed and denied requests with exact policy reasons across normal and recovery paths |
-| Synthetic assets, correct answers, lawful-sharing controls and audit | JIANG Hanyu | Fixture provenance, answer keys, no real personal data, manual audit notes |
+| Hosted agent paths and H1 summary handoff | XIA Zhangning | [PR #54](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/54) · [PR #57](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/57) |
+| Local scheduling, F1 recovery, batch runner, and utility scoring | XIA Liyuan | [PR #55](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/55) · [PR #56](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/56) · [PR #63](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/63) |
+| S1 redaction, paired attack inputs, and outcome grading | JIN Zhan | [PR #50](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/50) · [PR #60](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/60) · [PR #61](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/61) |
+| Shared contracts, isolated registry, recorded outbound requests, and S2/S3 checks | ZHANG Xilong | [PR #44](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/44) · [PR #45](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/45) · [PR #46](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/46) · [PR #49](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/49) · [PR #58](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/58) |
+| Fixture validation, benign cases and answer keys, and supplemental controls | JIANG Hanyu | [PR #51](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/51) · [PR #59](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/59) · [PR #62](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/62) |
 
-After integration, run a small pilot and same-process identity controls; fix tool schemas and reset behavior. Freeze model identifier, generation settings, fixtures, grading, attempt limits, retry rule and spending cap **before** formal trials. The proposal plans 12 paired fixtures, S0–S3, H0/H1, F0/F1, three repetitions and separate supplements. Scale only after the first end-to-end real-model path works and the team verifies costs. Keep failed attacks, API errors, overblocking and degraded refusals visible.
+## Integration and evaluation
+
+1. [#20](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/20) connects S0–S3, H0/H1, and F0/F1 in an end-to-end model path with a shared trace schema. The runner and scorer follow-up is tracked separately in [#64](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/64).
+2. [#21](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/21) runs the development pilot and same-process identity controls after integration. Keep pilot data separate from formal rates.
+3. [#22](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/22) freezes the model, generation settings, fixtures, grading, attempt and retry limits, and spending cap before formal trials.
+4. [#23](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/23) and [#24](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/24) run the formal core and supplemental controls sequentially. Preserve all planned attempts and keep API failures, overblocking, and degraded outcomes visible.
+5. [#25](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/25), [#31](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/31), [#32](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/32), and [#33](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/33) cover statistics, mechanism analysis, exposure audit, and clean-checkout reproduction. They feed the [final report and presentation #26](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/26).

@@ -41,7 +41,7 @@
 | H1 摘要交接 | [摘要交接](docs/hosted/HANDOFF.md)支持一次生成、独立进程手机续接、来源校验与尝试后重置。 |
 | 批量排期与评分 | [可复现 runner/scorer](docs/evaluation/README.md)生成 1,152 条核心矩阵计划，并从 v1 bundle 确定性评分议程、时段、误拦截与成本；不运行正式实验。 |
 
-两个原型使用 Python 3.11+、标准库和合成数据，可离线运行。新增的[云端正常任务](docs/hosted/README.md)需要模型 API、接口校验依赖和桌面弹窗支持。托管模型接入、统一集成及正式实验分别由 [#9][i9]、[#11][i11]、[#20][i20]、[#23][i23] 和 [#24][i24] 跟踪。
+两个原型使用 Python 3.11+、标准库和合成数据，可离线运行。[云端运行示例](docs/hosted/README.md)需要模型 API、接口校验依赖和桌面弹窗支持。已交付的组件与后续验证顺序见[实施路线图](docs/ROADMAP.md)，即时进度见 [Issue #27][i27]。
 
 **A 模块。** 从含 `member_a/` 的仓库根目录运行。默认演示跨进程加载 H1 摘要，并在主日程工具超时后通过 F1 恢复路径完成任务。输出位于 `member_a/runs/`，可查看 `validation.json` 和各场景的 `events.jsonl`。
 
@@ -111,7 +111,7 @@ The evaluation checks actual outbound requests for prohibited fields and uses re
 | H1 summary handoff | [Summary handoff](docs/hosted/HANDOFF.md) supports persisted generation, separate-process mobile continuation, provenance verification and ordinary-attempt reset. |
 | Batch planning and scoring | The [reproducible runner/scorer](docs/evaluation/README.md) builds the 1,152-attempt core plan and deterministically scores agenda, slots, overblocking and cost from v1 bundles; it does not run formal experiments. |
 
-Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. The new [hosted benign task](docs/hosted/README.md) requires a model API, contract dependencies and desktop dialog support. Hosted model work, joint integration, and formal evaluation are tracked in [#9][i9], [#11][i11], [#20][i20], [#23][i23], and [#24][i24].
+Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. The [hosted examples](docs/hosted/README.md) require a model API, contract dependencies, and desktop dialog support. See the [implementation roadmap](docs/ROADMAP.md) for component deliveries and the evaluation sequence, and [Issue #27][i27] for current task status.
 
 **Member A.** From the root of a checkout containing `member_a/`, run the commands below. The default demo reloads an H1 summary across processes and uses F1 recovery after the primary scheduler times out. Find `validation.json` and the per-scenario `events.jsonl` files under `member_a/runs/`.
 
