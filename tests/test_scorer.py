@@ -145,6 +145,23 @@ class ScorerTests(unittest.TestCase):
                 self.assertTrue(row["overblocked"])
                 self.assertEqual(row["overblocking_requests"]["blocked_authorized_requests"], 1)
 
+    def test_independent_load_does_not_erase_a_preceding_release_denial(self):
+        bundle = self.bundle
+        document = next(record for record in bundle["objects"] if record["handle"] == "document.meeting")
+        document["meta"]["original_scope"] = bundle["run"]["scope"]
+        load, loaded, proposal, request, decision = bundle["trace"][:5]
+        loaded["source_metadata"] = document["meta"]
+        selection = {"handle": document["handle"], "fields": ["text"], "recipient": "controller"}
+        proposal["proposal"]["arguments"] = selection
+        request["request"].update(selection)
+        decision.update(allowed=False, reason="synthetic_false_block")
+        bundle["trace"] = [proposal, request, decision, load, loaded, bundle["trace"][-1]]
+
+        row = score_bundle(bundle, outcome=grade_bundle(bundle))
+        self.assertTrue(row["overblocked"])
+        self.assertEqual(row["overblocking_requests"]["authorized_requests"], 2)
+        self.assertEqual(row["overblocking_requests"]["blocked_authorized_requests"], 1)
+
     def test_actual_s3_scope_and_derivation_denials_are_not_overblocking(self):
         for scenario, expected_reason in (("stale_trial", "trial_mismatch"),
                                           ("wrong_producer", "untrusted_derivation"),
@@ -354,19 +371,25 @@ class ScorerTests(unittest.TestCase):
         def save(directory):
             directory.mkdir()
             (directory / "bundle.json").write_text(json.dumps(bundle), encoding="utf-8")
-            (directory / "outcome.json").write_text(json.dumps(outcome), encoding="utf-8")
 
         def execute(_condition, directory, _snapshot):
             save(directory)
+            if timing == "during_execution":
+                (directory / "outcome.json").write_text(json.dumps(outcome), encoding="utf-8")
             return result
 
-        for use_ledger in (False, True):
-            with self.subTest(use_ledger=use_ledger), tempfile.TemporaryDirectory() as temporary:
+        for timing in ("standalone", "during_execution", "after_execution"):
+            with self.subTest(timing=timing), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary) / "run"
-                if use_ledger:
-                    run_plan(plan, root, execute)
-                else:
+                if timing == "standalone":
                     save(root)
+                    outcome_path = root / "outcome.json"
+                else:
+                    ledger = run_plan(plan, root, execute)
+                    execution = ledger["attempts"][0]["executions"][0]
+                    outcome_path = (root / execution["bundle_path"]).with_name("outcome.json")
+                if timing != "during_execution":
+                    outcome_path.write_text(json.dumps(outcome), encoding="utf-8")
                 report = score_directory(root)
                 summary, row = report["summary"], report["attempts"][0]
                 self.assertEqual(summary["planned_attempts"], 1)
@@ -379,6 +402,11 @@ class ScorerTests(unittest.TestCase):
                 self.assertFalse(row["valid_evidence"])
                 self.assertIsNone(row["privacy_labels"])
                 self.assertIsNone(row["overblocked"])
+
+                outcome_path.write_text(json.dumps(grade_bundle(bundle)), encoding="utf-8")
+                corrected = score_directory(root)
+                self.assertEqual(corrected["summary"]["outcome_errors"], {})
+                self.assertTrue(corrected["attempts"][0]["valid_evidence"])
 
     def test_directory_uses_plan_and_ledger_for_early_failures(self):
         plan = build_core_plan(

@@ -232,14 +232,16 @@ class RunnerExecutionTests(unittest.TestCase):
         fixture = ROOT / "fixtures" / "t01.json"
         plan = self.one_plan(fixture_paths=[fixture], handoffs=("H1",), faults=("F0", "F1"))
         config = HostedConfig(api_key="synthetic_evaluation_test_key")
-        for case in ("valid", "wrong_copy", "failed_generation"):
+        for case in ("valid", "wrong_copy", "failed_generation", "legacy_failed_generation"):
             with self.subTest(case=case):
                 root = self.root / case
-                reply = summary_reply(finish="length" if case == "failed_generation" else "stop")
+                failed = case.endswith("failed_generation")
+                reply = summary_reply(finish="length" if failed else "stop")
                 model = SummaryModel(response=reply)
 
                 def provider(_condition, directory):
-                    artifact = prepare_handoff(config, fixture_path=fixture, cache_dir=directory,
+                    cache_dir = directory.parent if case == "legacy_failed_generation" else directory
+                    artifact = prepare_handoff(config, fixture_path=fixture, cache_dir=cache_dir,
                                                transport=model)
                     # Archived snapshots can have different JSON formatting.
                     artifact.write_bytes(artifact.read_bytes() + b" ")
@@ -255,10 +257,19 @@ class RunnerExecutionTests(unittest.TestCase):
                     return result
 
                 ledger = run_plan(plan, root, executor, snapshot_provider=provider)
+                snapshot = ledger["snapshots"][0]
+                if case == "legacy_failed_generation":
+                    for field in ("generation_bundle_paths", "generation_observations",
+                                  "generation_error_type"):
+                        del snapshot[field]
+                    (root / "run-ledger.json").write_text(json.dumps(ledger), encoding="utf-8")
+                else:
+                    self.assertTrue(snapshot["generation_bundle_path"])
                 report = score_directory(root)
                 self.assertEqual(len(model.requests), 1)
                 self.assertEqual(report["summary"]["metrics"]["input_tokens"], 20)
-                self.assertTrue(ledger["snapshots"][0]["generation_bundle_path"])
+                if failed:
+                    self.assertEqual(report["summary"]["metrics"]["send_count"], 1)
                 if case == "valid":
                     self.assertEqual(report["summary"]["scored_attempts"], 2)
                     self.assertEqual(report["summary"]["errors"], {})

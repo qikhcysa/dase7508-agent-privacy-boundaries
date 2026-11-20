@@ -86,16 +86,17 @@ planned runs the fixture in the bundle must match the fixture locked by
   generation bundle once. Unknown values are explicit, including sends with no
   result. Rescoring reads available evidence before falling back to ledger
   totals. For older interrupted tries, the scorer can recover the bundle from
-  the recorded try directory. The known/unknown attempt counts describe the
-  selected scoring rows.
+  the recorded try directory. It can also recover saved generation evidence
+  for failed snapshots in older ledgers. The known/unknown attempt counts
+  describe the selected scoring rows.
 - The experiment denominator remains the number of planned conditions.
   `summary.errors` reflects the final planned outcomes and
   `summary.execution_errors` counts failed physical tries, including failures
   followed by successful retries. `summary.snapshot_generation_errors`
   counts failures to prepare a snapshot.
 
-An adjacent `outcome.json` must identify the exact bundle using
-`bundle_sha256`. For older reports the scorer compares the saved fields with
+An adjacent `outcome.json` may be generated after the run. It identifies the
+exact bundle using `bundle_sha256`. For older reports the scorer compares the saved fields with
 the current grader's report. Missing grading evidence leaves privacy labels
 and overblocking unknown. A mismatched or unreadable outcome report appears in
 `invalid_evidence` and `summary.outcome_errors`. Valid bundle and result

@@ -113,7 +113,7 @@ def _request_observations(bundle):
             handle = event["reference_id"]
             record = records[handle]
             linked = _preceding_release(previous, releases, "controller", handle)
-            if linked is not None:
+            if linked is not None and previous["allowed"]:
                 key = "release", linked["request_id"]
                 observations[key] = (observations[key][0], event["allowed"])
             else:
@@ -464,6 +464,35 @@ def _verify_h1_evidence(root, bundle_path, bundle, execution, snapshot):
         raise ScoreError("h1_bundle_artifact_mismatch")
 
 
+def _legacy_generation_usage(root, planned, snapshots, fixtures):
+    unindexed = {
+        key for key, snapshot in snapshots.items()
+        if ("generation_bundle_paths" not in snapshot and snapshot.get("error_type")
+            and not snapshot.get("path") and not snapshot.get("generation_bundle_path"))
+    }
+    if not unindexed:
+        return {}
+    keys_by_condition = {
+        (item["fixture_id"], item["document_variant"], item["repetition"]): item["handoff_snapshot_key"]
+        for item in planned if item["handoff_snapshot_key"] in unindexed
+    }
+    observations = {key: [] for key in unindexed}
+    # The v1 runner used a shared snapshot directory and recorded no file when
+    # preparation failed. Match surviving generation evidence to the plan.
+    for path in sorted((root / "snapshots").rglob("generation-bundle.json")):
+        try:
+            bundle = load_json(_inside_root(root, path))
+            validate("bundle", bundle)
+        except (OSError, ValueError):
+            continue
+        run = bundle["run"]
+        fixture_id = run["fixture_id"]
+        key = keys_by_condition.get((fixture_id, run["document_variant"], run["repetition"]))
+        if key is not None and bundle["fixture"] == fixtures[fixture_id]:
+            observations[key].append(trace_metrics(bundle["trace"]))
+    return observations
+
+
 def _score_run_ledger(root: Path, plan: dict[str, Any],
                       ledger: dict[str, Any]) -> dict[str, Any]:
     validate_plan(plan)
@@ -490,20 +519,25 @@ def _score_run_ledger(root: Path, plan: dict[str, Any],
         if key in snapshots:
             raise ScoreError("duplicate_run_ledger_snapshot")
         snapshots[key] = snapshot
+    fixtures = {record["fixture_id"]: load_fixture(_resolve_path(record["path"]))
+                for record in plan["fixtures"]}
+    legacy_usage = _legacy_generation_usage(root, planned, snapshots, fixtures)
+    for key, snapshot in snapshots.items():
         observations = snapshot.get("generation_observations")
         if observations is None:
-            observations = [snapshot.get("generation_metrics")]
-        paths = snapshot.get("generation_bundle_paths", [snapshot.get("generation_bundle_path")])
+            observations = legacy_usage.get(key) or [snapshot.get("generation_metrics")]
+        paths = snapshot.get("generation_bundle_paths")
+        if paths is None:
+            paths = [snapshot.get("generation_bundle_path")]
         usage.extend(_recover_usage(root, path, metrics)
                      for path, metrics in zip_longest(paths, observations))
-        error = snapshot.get("generation_error_type", snapshot.get("error_type"))
+        legacy_error = snapshot.get("error_type") if not snapshot.get("path") else None
+        error = snapshot.get("generation_error_type", legacy_error)
         if error:
             generation_errors[error] += 1
             if not observations:
                 usage.append(_unknown_metrics())
 
-    fixtures = {record["fixture_id"]: load_fixture(_resolve_path(record["path"]))
-                for record in plan["fixtures"]}
     rows = []
     invalid = []
     execution_errors = Counter()
@@ -554,6 +588,8 @@ def _score_run_ledger(root: Path, plan: dict[str, Any],
             bundle = load_json(bundle_path)
             result_path = _inside_root(root, execution.get("result_path"))
             outcome_path = execution.get("outcome_path")
+            if outcome_path is None:
+                outcome_path = bundle_path.with_name("outcome.json").relative_to(root).as_posix()
             row = _score_saved_bundle(
                 bundle,
                 result=_load_optional(result_path) if result_path is not None else None,
