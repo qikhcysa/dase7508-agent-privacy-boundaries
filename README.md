@@ -39,6 +39,7 @@
 | 共享接口与注册表 | [接口校验](docs/contracts/README.md)检查 v1 数据格式和日志的一致性，[注册表演示](docs/registry/README.md)验证对象来源与上下文隔离。 |
 | 补充用例输入 | [补充用例清单](fixtures/supplements/README.md)定义合法分享、双任务持久化和 H1 双工具失败的 240 次计划尝试及答案键；尚未运行正式实验。 |
 | H1 摘要交接 | [摘要交接](docs/hosted/HANDOFF.md)支持一次生成、独立进程手机续接、来源校验与尝试后重置。 |
+| 批量排期与评分 | [可复现 runner/scorer](docs/evaluation/README.md)生成 1,152 条核心矩阵计划，并从 v1 bundle 确定性评分议程、时段、误拦截与成本；不运行正式实验。 |
 
 两个原型使用 Python 3.11+、标准库和合成数据，可离线运行。新增的[云端正常任务](docs/hosted/README.md)需要模型 API、接口校验依赖和桌面弹窗支持。托管模型接入、统一集成及正式实验分别由 [#9][i9]、[#11][i11]、[#20][i20]、[#23][i23] 和 [#24][i24] 跟踪。
 
@@ -57,6 +58,8 @@ python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode primary
 python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode recovery
 python -m agent_privacy.hosted --non-interactive --fault F1 --output-dir artifacts/my-f1-attempt
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
+python -m agent_privacy.runner --seed dase7508-core-v1 --repetitions 3 --output artifacts/core-plan.json
+python -m agent_privacy.scorer artifacts/integrated-runs --output artifacts/integrated-score.json
 ```
 
 在 T01 输出中对照 `proposals`、`decisions`、`outgoing_requests` 和 `receiver_records`。脚本设置下，只有 S0 攻击场景的模拟接收方收到原始合成日历信息，四个场景均完成本地日程路径。此处验证的是本地机制，真实模型行为和正式攻击率留待集成后评估。
@@ -106,6 +109,7 @@ The evaluation checks actual outbound requests for prohibited fields and uses re
 | Shared contracts and registry | [Contract checks](docs/contracts/README.md) validate v1 formats and trace consistency. The [registry demo](docs/registry/README.md) checks provenance and context isolation. |
 | Supplemental inputs | The [supplement manifest](fixtures/supplements/README.md) specifies 240 planned lawful-sharing, two-task persistence, and H1 double-failure attempts with answer keys. Formal evaluation has not run. |
 | H1 summary handoff | [Summary handoff](docs/hosted/HANDOFF.md) supports persisted generation, separate-process mobile continuation, provenance verification and ordinary-attempt reset. |
+| Batch planning and scoring | The [reproducible runner/scorer](docs/evaluation/README.md) builds the 1,152-attempt core plan and deterministically scores agenda, slots, overblocking and cost from v1 bundles; it does not run formal experiments. |
 
 Both prototypes use Python 3.11+, the standard library, and synthetic data. They run offline. The new [hosted benign task](docs/hosted/README.md) requires a model API, contract dependencies and desktop dialog support. Hosted model work, joint integration, and formal evaluation are tracked in [#9][i9], [#11][i11], [#20][i20], [#23][i23], and [#24][i24].
 
@@ -124,6 +128,8 @@ python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode primary
 python -m agent_privacy.scheduler --fixture fixtures/t01.json --mode recovery
 python -m agent_privacy.hosted --non-interactive --fault F1 --output-dir artifacts/my-f1-attempt
 python -m agent_privacy.pilot --output artifacts/t01-pilot.json
+python -m agent_privacy.runner --seed dase7508-core-v1 --repetitions 3 --output artifacts/core-plan.json
+python -m agent_privacy.scorer artifacts/integrated-runs --output artifacts/integrated-score.json
 ```
 
 Compare `proposals`, `decisions`, `outgoing_requests`, and `receiver_records` in the T01 output. In these scripted scenarios, the mock receiver gets raw synthetic calendar data only in the attacked S0 case, and all four local scheduling paths complete. The traces validate local mechanisms. Hosted model behavior and formal attack rates remain part of the integrated evaluation.
