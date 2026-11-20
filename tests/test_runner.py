@@ -4,6 +4,9 @@ import shutil
 import tempfile
 import unittest
 
+from agent_privacy.handoff import prepare_handoff
+from agent_privacy.hosted import run_agent
+from agent_privacy.hosted_config import HostedConfig
 from agent_privacy.runner import (
     RunnerError,
     build_core_plan,
@@ -11,6 +14,9 @@ from agent_privacy.runner import (
     run_plan,
     validate_plan,
 )
+from agent_privacy.scorer import score_directory
+from tests.test_handoff import SummaryModel, summary_reply
+from tests.test_hosted_h1 import MobileModel
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -141,6 +147,7 @@ class RunnerExecutionTests(unittest.TestCase):
             self.assertIsNotNone(snapshot)
             seen.append((snapshot, snapshot.read_bytes()))
             directory.mkdir()
+            shutil.copyfile(snapshot, directory / "handoff-artifact.json")
             return self.result()
 
         ledger = run_plan(plan, self.root / "run", executor, snapshot_provider=provider)
@@ -157,6 +164,7 @@ class RunnerExecutionTests(unittest.TestCase):
 
     def test_snapshot_mutation_is_recorded_as_failure(self):
         plan = self.one_plan(handoffs=("H1",))
+        calls = 0
 
         def provider(_condition, directory):
             path = directory / "summary.json"
@@ -164,14 +172,39 @@ class RunnerExecutionTests(unittest.TestCase):
             return path
 
         def executor(_condition, directory, snapshot):
+            nonlocal calls
+            calls += 1
             directory.mkdir()
             snapshot.write_text("changed", encoding="utf-8")
             return self.result()
 
-        ledger = run_plan(plan, self.root / "run", executor, snapshot_provider=provider)
+        ledger = run_plan(plan, self.root / "run", executor, snapshot_provider=provider,
+                          max_retries=1, retryable_errors=("h1_snapshot_changed",))
         execution = ledger["attempts"][0]["executions"][0]
+        self.assertEqual(calls, 1)
         self.assertEqual(execution["status"], "error")
         self.assertEqual(execution["error_type"], "h1_snapshot_changed")
+
+    def test_deleted_snapshot_does_not_abort_the_ledger(self):
+        plan = self.one_plan(handoffs=("H1",), policies=("S0", "S1"))
+
+        def provider(_condition, directory):
+            path = directory / "snapshot.json"
+            path.write_text("frozen", encoding="utf-8")
+            return path
+
+        def executor(_condition, directory, snapshot):
+            directory.mkdir()
+            snapshot.unlink()
+            return self.result()
+
+        root = self.root / "run"
+        ledger = run_plan(plan, root, executor, snapshot_provider=provider)
+        first, second = ledger["attempts"]
+        self.assertIsNotNone(ledger["finished_at"])
+        self.assertEqual(first["executions"][0]["error_type"], "h1_snapshot_missing")
+        self.assertEqual(second["preparation_error"], "h1_snapshot_missing")
+        self.assertEqual(score_directory(root)["summary"]["errors"], {"h1_snapshot_missing": 2})
 
     def test_snapshot_provider_failure_is_retained_without_an_implicit_retry(self):
         plan = self.one_plan(handoffs=("H1",), policies=("S0", "S1"))
@@ -194,6 +227,59 @@ class RunnerExecutionTests(unittest.TestCase):
             for attempt in ledger["attempts"]
         ))
         self.assertIsNotNone(ledger["finished_at"])
+
+    def test_generation_usage_and_hosted_snapshot_copy_reach_the_score_report(self):
+        fixture = ROOT / "fixtures" / "t01.json"
+        plan = self.one_plan(fixture_paths=[fixture], handoffs=("H1",), faults=("F0", "F1"))
+        config = HostedConfig(api_key="synthetic_evaluation_test_key")
+        for case in ("valid", "wrong_copy", "failed_generation", "legacy_failed_generation"):
+            with self.subTest(case=case):
+                root = self.root / case
+                failed = case.endswith("failed_generation")
+                reply = summary_reply(finish="length" if failed else "stop")
+                model = SummaryModel(response=reply)
+
+                def provider(_condition, directory):
+                    cache_dir = directory.parent if case == "legacy_failed_generation" else directory
+                    artifact = prepare_handoff(config, fixture_path=fixture, cache_dir=cache_dir,
+                                               transport=model)
+                    # Archived snapshots can have different JSON formatting.
+                    artifact.write_bytes(artifact.read_bytes() + b" ")
+                    return artifact
+
+                def executor(condition, directory, snapshot):
+                    result = run_agent(config, fixture_path=fixture, handoff_path=snapshot,
+                                       output_dir=directory, transport=MobileModel(),
+                                       fault=condition["fault"])
+                    if case == "wrong_copy":
+                        artifact = directory / "handoff-artifact.json"
+                        artifact.write_bytes(artifact.read_bytes() + b" ")
+                    return result
+
+                ledger = run_plan(plan, root, executor, snapshot_provider=provider)
+                snapshot = ledger["snapshots"][0]
+                if case == "legacy_failed_generation":
+                    for field in ("generation_bundle_paths", "generation_observations",
+                                  "generation_error_type"):
+                        del snapshot[field]
+                    (root / "run-ledger.json").write_text(json.dumps(ledger), encoding="utf-8")
+                else:
+                    self.assertTrue(snapshot["generation_bundle_path"])
+                report = score_directory(root)
+                self.assertEqual(len(model.requests), 1)
+                self.assertEqual(report["summary"]["metrics"]["input_tokens"], 20)
+                if failed:
+                    self.assertEqual(report["summary"]["metrics"]["send_count"], 1)
+                if case == "valid":
+                    self.assertEqual(report["summary"]["scored_attempts"], 2)
+                    self.assertEqual(report["summary"]["errors"], {})
+                elif case == "wrong_copy":
+                    self.assertEqual(report["summary"]["scored_attempts"], 0)
+                    self.assertEqual(report["summary"]["errors"], {"h1_snapshot_use_mismatch": 2})
+                else:
+                    self.assertEqual(report["summary"]["scored_attempts"], 0)
+                    self.assertEqual(report["summary"]["snapshot_generation_errors"],
+                                     {"snapshot_provider_HandoffError": 1})
 
     def test_h1_requires_provider_before_output_is_created(self):
         output = self.root / "run"

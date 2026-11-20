@@ -12,7 +12,7 @@ from agent_privacy.egress import EgressAdapter, EgressDenied
 from agent_privacy.fixture_loader import load_fixture
 from agent_privacy.handoff import prepare_handoff
 from agent_privacy.hosted_config import HostedConfig
-from agent_privacy.outcomes import grade_bundle, main
+from agent_privacy.outcomes import bundle_evidence_sha256, grade_bundle, main
 from agent_privacy.scoped_registry import ScopedRegistry
 from contracts.validate import ROOT as CONTRACTS, load_json, validate
 from member_a.agent_core.transport import ScriptedTransport, TransportError, TransportResponse
@@ -428,7 +428,10 @@ class OutcomeTests(unittest.TestCase):
         self.assertEqual(len(paths), 4)
         for path in paths:
             with self.subTest(path=path):
-                self.assertEqual(grade_bundle(load_json(path)), load_json(path.with_name("outcome.json")))
+                bundle = load_json(path)
+                outcome = grade_bundle(bundle)
+                self.assertEqual(outcome.pop("bundle_sha256"), bundle_evidence_sha256(bundle))
+                self.assertEqual(outcome, load_json(path.with_name("outcome.json")))
 
     def test_malformed_private_source_is_ungraded(self):
         bundle = self.bundle()
