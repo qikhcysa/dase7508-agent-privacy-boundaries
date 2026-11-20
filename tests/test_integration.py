@@ -46,6 +46,7 @@ class IntegrationTests(unittest.TestCase):
         attempt_ids, conditions, snapshot_hashes = set(), set(), set()
         expected_reason = {"S0": "s0_instruction_only", "S1": RULE_VERSION,
                            "S2": "s2_allowlisted", "S3": "s3_context_authorized"}
+        expected_local_reason = {**expected_reason, "S1": "s1_redaction_at_egress"}
         for record in ledger["attempts"]:
             execution, = record["executions"]
             planned = record["condition"]
@@ -58,6 +59,11 @@ class IntegrationTests(unittest.TestCase):
             self.assertTrue(execution["reset_ok"])
             first_gate = next(event for event in bundle["trace"] if event["event"] == "egress_decision")
             self.assertEqual(first_gate["reason"], expected_reason[planned["policy"]])
+            local_decisions = [event for event in bundle["trace"] if event["event"] == "policy_decision"]
+            self.assertEqual({event["operation"] for event in local_decisions}, {"release", "load"})
+            self.assertTrue(all(event["allowed"] for event in local_decisions))
+            self.assertEqual({event["reason"] for event in local_decisions},
+                             {expected_local_reason[planned["policy"]]})
             self.assertTrue(load_json(root / execution["outcome_path"])["valid_evidence"])
             if planned["handoff"] == "H1":
                 snapshot_hashes.add(execution["snapshot_sha256"])

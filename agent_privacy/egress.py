@@ -171,6 +171,8 @@ class EgressAdapter:
             return "s3_context_authorized"
         if self._static_allowlist is not None:
             return "s2_allowlisted"
+        if self._run["policy"] == "S1":
+            return "s1_redaction_at_egress"
         return "s0_instruction_only"
 
     def _check_release(self, request: dict, selection: dict) -> None:
