@@ -16,6 +16,9 @@ import json
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
+from contracts.validate import ContractError, load_json, validate
+
+from .evaluation_metrics import trace_metrics
 from .fixture_loader import load_fixture
 
 
@@ -325,35 +328,67 @@ def _reset_ok(result: dict[str, Any], directory: Path) -> bool:
 
 
 def _bundle_metrics(path: Path) -> dict[str, Any] | None:
-    """Retain cost observations in the ledger as well as in the raw bundle."""
-    if not path.is_file():
-        return None
+    """Retain observations from valid partial as well as finished bundles."""
     try:
-        bundle = json.loads(path.read_text(encoding="utf-8"))
-        trace = bundle["trace"]
-        attempts = [event for event in trace if event["event"] == "send_attempt"]
-        results = [event for event in trace if event["event"] == "send_result"]
-        metrics: dict[str, Any] = {
-            "send_count": len(attempts),
-            "outbound_bytes": sum(event["body"]["byte_length"] for event in attempts),
-            "response_bytes": sum(
-                event["response"]["byte_length"]
-                for event in results if event["response"] is not None
-            ),
-            "latency_ms": sum(event["latency_ms"] for event in results),
-        }
-        for field in ("input_tokens", "output_tokens", "cost_usd"):
-            values = [event["usage"][field] for event in results]
-            known = [value for value in values if value is not None]
-            metrics[field] = sum(known) if known else None
-            metrics[field + "_unknown_results"] = len(values) - len(known)
-        return metrics
-    except (OSError, UnicodeError, ValueError, KeyError, TypeError):
+        bundle = load_json(path)
+        validate("bundle", bundle)
+        return trace_metrics(bundle["trace"])
+    except (OSError, ValueError, ContractError):
         return None
 
 
-def _execution_metrics(directory: Path) -> dict[str, Any] | None:
-    return _bundle_metrics(directory / "bundle.json")
+def snapshot_sha256(path: Path) -> str:
+    try:
+        return _sha256_bytes(path.read_bytes())
+    except FileNotFoundError:
+        raise RunnerError("h1_snapshot_missing") from None
+    except OSError:
+        raise RunnerError("h1_snapshot_unreadable") from None
+
+
+def _prepare_snapshot(provider, condition, directory, root, record):
+    """Record generation evidence even when generation fails."""
+    directory.mkdir(parents=True)
+    path = None
+    try:
+        path = Path(provider(deepcopy(condition), directory)).resolve()
+        record["sha256"] = snapshot_sha256(path)
+        record["path"] = _relative(path, root)
+    except KeyboardInterrupt:
+        record["error_type"] = "runner_interrupted"
+        raise
+    except Exception as exc:
+        record["error_type"] = (str(exc) if isinstance(exc, RunnerError)
+                                else "snapshot_provider_" + type(exc).__name__)
+    finally:
+        candidates = {p.resolve() for p in directory.rglob("generation-bundle.json")}
+        if path is not None and (path.parent / "generation-bundle.json").is_file():
+            candidates.add(path.parent / "generation-bundle.json")
+        paths = sorted(candidates)
+        record["generation_bundle_paths"] = [_relative(p, root) for p in paths]
+        record["generation_observations"] = [_bundle_metrics(p) for p in paths]
+        if len(paths) == 1:
+            record["generation_bundle_path"] = record["generation_bundle_paths"][0]
+            record["generation_metrics"] = record["generation_observations"][0]
+        record["generation_error_type"] = record["error_type"]
+
+
+def _check_snapshot(path, snapshot):
+    if snapshot_sha256(path) != snapshot["sha256"]:
+        raise RunnerError("h1_snapshot_changed")
+
+
+def _record_snapshot_use(target, execution, snapshot):
+    used_artifact = target / "handoff-artifact.json"
+    if used_artifact.is_file():
+        execution["used_snapshot_path"] = (Path(execution["output_dir"]) / used_artifact.name).as_posix()
+        try:
+            execution["snapshot_sha256"] = snapshot_sha256(used_artifact)
+        except RunnerError:
+            pass
+    needs_artifact = execution["status"] == "completed" or execution["bundle_path"] is not None
+    if needs_artifact and execution["snapshot_sha256"] != snapshot["sha256"]:
+        raise RunnerError("h1_snapshot_use_mismatch")
 
 
 def run_plan(
@@ -397,8 +432,7 @@ def run_plan(
     }
     ledger_path = root / "run-ledger.json"
     _write_ledger(ledger_path, ledger)
-    snapshots: dict[str, tuple[Path, str]] = {}
-    snapshot_errors: dict[str, str] = {}
+    snapshots: dict[str, dict[str, Any]] = {}
     ordinal = 0
     for block in plan["blocks"]:
         for planned in block["attempts"]:
@@ -414,56 +448,38 @@ def run_plan(
             ledger["attempts"].append(attempt_record)
             snapshot_path = None
             snapshot_key = planned["handoff_snapshot_key"]
+            snapshot = None
             if snapshot_key is not None:
-                if snapshot_key in snapshot_errors:
-                    attempt_record["preparation_error"] = snapshot_errors[snapshot_key]
-                    _write_ledger(ledger_path, ledger)
-                    continue
                 if snapshot_key not in snapshots:
-                    (root / "snapshots").mkdir(parents=True, exist_ok=True)
-                    try:
-                        supplied = Path(snapshot_provider(deepcopy(planned), root / "snapshots"))
-                        snapshot_path = supplied.resolve()
-                        if not snapshot_path.is_file():
-                            raise RunnerError("h1_snapshot_missing")
-                    except Exception as exc:
-                        error = (str(exc) if isinstance(exc, RunnerError)
-                                 else "snapshot_provider_" + type(exc).__name__)
-                        snapshot_errors[snapshot_key] = error
-                        attempt_record["preparation_error"] = error
-                        ledger["snapshots"].append({
-                            "snapshot_key": snapshot_key,
-                            "path": None,
-                            "sha256": None,
-                            "generation_bundle_path": None,
-                            "generation_metrics": None,
-                            "error_type": error,
-                        })
-                        _write_ledger(ledger_path, ledger)
-                        continue
-                    snapshot_hash = _sha256_bytes(snapshot_path.read_bytes())
-                    snapshots[snapshot_key] = (snapshot_path, snapshot_hash)
-                    generation_bundle = snapshot_path.parent / "generation-bundle.json"
-                    ledger["snapshots"].append({
-                        "snapshot_key": snapshot_key,
-                        "path": _relative(snapshot_path, root),
-                        "sha256": snapshot_hash,
-                        "generation_bundle_path": (
-                            _relative(generation_bundle, root) if generation_bundle.is_file() else None
-                        ),
-                        "generation_metrics": _bundle_metrics(generation_bundle),
+                    snapshot = {
+                        "snapshot_key": snapshot_key, "path": None, "sha256": None,
+                        "generation_bundle_path": None, "generation_metrics": None,
                         "error_type": None,
-                    })
-                    _write_ledger(ledger_path, ledger)
-                snapshot_path, expected_snapshot_hash = snapshots[snapshot_key]
-                if _sha256_bytes(snapshot_path.read_bytes()) != expected_snapshot_hash:
-                    snapshot_errors[snapshot_key] = "h1_snapshot_changed"
-                    attempt_record["preparation_error"] = "h1_snapshot_changed"
-                    next(item for item in ledger["snapshots"]
-                         if item["snapshot_key"] == snapshot_key)["error_type"] = "h1_snapshot_changed"
-                    _write_ledger(ledger_path, ledger)
-                    continue
+                    }
+                    snapshots[snapshot_key] = snapshot
+                    ledger["snapshots"].append(snapshot)
+                    try:
+                        _prepare_snapshot(snapshot_provider, planned, root / "snapshots" / snapshot_key,
+                                          root, snapshot)
+                    except KeyboardInterrupt:
+                        attempt_record["preparation_error"] = snapshot["error_type"]
+                        raise
+                    finally:
+                        _write_ledger(ledger_path, ledger)
+                snapshot = snapshots[snapshot_key]
+                if snapshot["error_type"] is None:
+                    snapshot_path = root / snapshot["path"]
             for try_number in range(1, max_retries + 2):
+                if snapshot is not None:
+                    try:
+                        if snapshot["error_type"] is None:
+                            _check_snapshot(snapshot_path, snapshot)
+                    except RunnerError as exc:
+                        snapshot["error_type"] = str(exc)
+                    if snapshot["error_type"] is not None:
+                        attempt_record["preparation_error"] = snapshot["error_type"]
+                        _write_ledger(ledger_path, ledger)
+                        break
                 target = root / "attempts" / f"{ordinal:04d}-{planned['attempt_key']}" / f"try-{try_number:02d}"
                 target.parent.mkdir(parents=True, exist_ok=True)
                 execution = {
@@ -476,8 +492,10 @@ def run_plan(
                     "result_path": None,
                     "outcome_path": None,
                     "snapshot_sha256": None,
+                    "used_snapshot_path": None,
                     "metrics": None,
                 }
+                interrupted = False
                 try:
                     returned = executor(deepcopy(planned), target, snapshot_path)
                     result = _load_result(target, returned)
@@ -495,9 +513,7 @@ def run_plan(
                     execution["reset_ok"] = _reset_ok(result, target)
                 except KeyboardInterrupt:
                     execution["error_type"] = "runner_interrupted"
-                    attempt_record["executions"].append(execution)
-                    _write_ledger(ledger_path, ledger)
-                    raise
+                    interrupted = True
                 except Exception as exc:  # Evidence keeps the type, never arbitrary text.
                     execution["error_type"] = (
                         str(exc) if isinstance(exc, RunnerError) else "executor_" + type(exc).__name__
@@ -508,22 +524,29 @@ def run_plan(
                     path = target / name
                     if path.is_file():
                         execution[field] = _relative(path, root)
-                execution["metrics"] = _execution_metrics(target)
+                execution["metrics"] = _bundle_metrics(target / "bundle.json")
                 if snapshot_path is not None:
-                    current_hash = _sha256_bytes(snapshot_path.read_bytes())
-                    execution["snapshot_sha256"] = current_hash
-                    if current_hash != snapshots[snapshot_key][1]:
-                        execution["status"] = "error"
-                        execution["error_type"] = "h1_snapshot_changed"
-                        snapshot_errors[snapshot_key] = "h1_snapshot_changed"
-                        next(item for item in ledger["snapshots"]
-                             if item["snapshot_key"] == snapshot_key)["error_type"] = "h1_snapshot_changed"
+                    try:
+                        _check_snapshot(snapshot_path, snapshot)
+                    except RunnerError as exc:
+                        snapshot["error_type"] = str(exc)
+                    try:
+                        _record_snapshot_use(target, execution, snapshot)
+                    except RunnerError as exc:
+                        if not interrupted:
+                            execution.update(status="error", error_type=str(exc))
+                    if snapshot["error_type"] is not None and not interrupted:
+                        execution.update(status="error", error_type=snapshot["error_type"])
                 if not execution["reset_ok"]:
                     execution["status"] = "error"
                     execution["error_type"] = execution["error_type"] or "attempt_reset_failed"
                 attempt_record["executions"].append(execution)
                 attempt_record["selected_try"] = try_number
                 _write_ledger(ledger_path, ledger)
+                if interrupted:
+                    raise KeyboardInterrupt
+                if snapshot is not None and snapshot["error_type"] is not None:
+                    break
                 if execution["status"] == "completed":
                     break
                 if execution["error_type"] not in retryable or try_number > max_retries:

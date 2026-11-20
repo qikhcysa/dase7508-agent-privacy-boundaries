@@ -178,17 +178,21 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
     handoff = None
     if handoff_path is not None:
         try:
-            handoff = load_handoff(handoff_path, fixture=fixture, document_variant=document_variant,
+            source_artifact = Path(handoff_path).resolve()
+            artifact_bytes = source_artifact.read_bytes()
+            handoff = load_handoff(source_artifact, fixture=fixture, document_variant=document_variant,
                                    repetition=repetition, user_id=user_id, task_id=task_id)
+            if source_artifact.read_bytes() != artifact_bytes:
+                raise HandoffError("handoff_artifact_changed")
             # Freeze and archive verified bytes before creating mobile bindings or
             # reporting a successful load. Source files may change after validation.
             evidence_snapshot = {}
             for name, expected_sha256 in handoff["evidence_sha256"].items():
-                evidence = (Path(handoff_path).resolve().parent / name).read_bytes()
+                evidence = (source_artifact.parent / name).read_bytes()
                 if hashlib.sha256(evidence).hexdigest() != expected_sha256:
                     raise HandoffError("generation_evidence_changed")
                 evidence_snapshot[name] = evidence
-            _write(directory / "handoff-artifact.json", handoff)
+            (directory / "handoff-artifact.json").write_bytes(artifact_bytes)
             for name, evidence in evidence_snapshot.items():
                 (directory / name).write_bytes(evidence)
         except (HandoffError, OSError) as exc:
