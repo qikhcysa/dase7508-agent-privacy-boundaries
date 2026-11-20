@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from agent_privacy.egress import EgressAdapter, EgressDenied
-from agent_privacy.scoped_registry import ScopedRegistry
+from agent_privacy.scoped_registry import RegistryError, ScopedRegistry
 from agent_privacy.static_allowlist import StaticAllowlist
 from contracts.validate import ContractError, ROOT, load_json, validate
 from member_a.agent_core.transport import HttpTransport, ScriptedTransport
@@ -147,6 +147,17 @@ class StaticAllowlistTests(unittest.TestCase):
                 adapter.send_controller(payload, selections=[CALENDAR])
         send.assert_not_called()
         self.assertEqual([e["event"] for e in self.trace(adapter)], ["egress_decision"])
+
+    def test_context_load_returns_only_allowlisted_fields(self):
+        adapter = self.make_adapter("context")
+        record = adapter.record_context_load(SLOTS["handle"], fields=SLOTS["fields"])
+        self.assertEqual(set(record["value"]), {"slots"})
+        with self.assertRaisesRegex(RegistryError, "s2_field_not_allowlisted"):
+            adapter.record_context_load(NOTE["handle"], fields=NOTE["fields"])
+        trace = self.trace(adapter)
+        self.assertEqual([event["event"] for event in trace],
+                         ["policy_decision", "context_loaded", "policy_decision"])
+        self.assertFalse(trace[-1]["allowed"])
 
     def test_controller_rechecks_fields_carried_in_earlier_messages(self):
         controller = ScriptedTransport([{"ok": True}])

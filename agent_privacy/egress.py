@@ -139,17 +139,24 @@ class EgressAdapter:
         """Record the allowed data projection with the object's original metadata."""
         record = self._registry.inspect_record(handle)
         reason = None
-        if self._contextual_policy is not None:
+        if self._contextual_policy is not None or self._static_allowlist is not None:
             fields = list(record["value"]) if fields is None else fields
             selection = {"handle": handle, "fields": fields}
             validate("selection", selection)
-            reason = self._contextual_policy.denial([selection], "controller")
+            if self._contextual_policy is not None:
+                reason = self._contextual_policy.denial([selection], "controller")
+            else:
+                record = self._selection_record(selection)
+                allowed, decision = self._static_allowlist.decide([selection])
+                reason = None if allowed else decision
         self._record("policy_decision", operation="load", reference_id=handle,
                      allowed=reason is None, reason=reason or self._allow_reason())
         if reason:
             raise RegistryError(reason)
         if self._contextual_policy is not None:
             record = self._registry.select_fields(handle, fields, self._run["scope"])
+        elif self._static_allowlist is not None:
+            record["value"] = {field: record["value"][field] for field in fields}
         self._record("context_loaded", handle=handle, loaded_message_role="tool",
                      source_metadata=record["meta"])
         return record
@@ -160,12 +167,19 @@ class EgressAdapter:
                      error_type=error_type)
 
     def _allow_reason(self) -> str:
-        return "s3_context_authorized" if self._contextual_policy else "s0_instruction_only"
+        if self._contextual_policy is not None:
+            return "s3_context_authorized"
+        if self._static_allowlist is not None:
+            return "s2_allowlisted"
+        return "s0_instruction_only"
 
     def _check_release(self, request: dict, selection: dict) -> None:
-        if self._contextual_policy is None:
-            return
-        reason = self._contextual_policy.denial([selection], request["recipient"])
+        reason = None
+        if self._contextual_policy is not None:
+            reason = self._contextual_policy.denial([selection], request["recipient"])
+        elif self._static_allowlist is not None and request["recipient"] == "controller":
+            allowed, decision = self._static_allowlist.decide([selection])
+            reason = None if allowed else decision
         if reason:
             self._record("policy_decision", operation="release", reference_id=request["request_id"],
                          allowed=False, reason=reason)
