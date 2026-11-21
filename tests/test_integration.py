@@ -7,13 +7,14 @@ import unittest
 from unittest.mock import patch
 from uuid import UUID
 
+from agent_privacy.handoff import prepare_handoff
 from agent_privacy.hosted import ROOT, run_agent
 from agent_privacy.hosted_config import HostedConfig
 from agent_privacy.integration import run_smoke
 from agent_privacy.redaction import PHONE_REPLACEMENT, RULE_VERSION
 from contracts.validate import load_json, validate
 from member_a.agent_core.transport import TransportError
-from tests.test_handoff import SummaryModel
+from tests.test_handoff import SUMMARY, SummaryModel, summary_reply
 from tests.test_hosted import SyntheticModel, call, reply
 
 
@@ -109,6 +110,36 @@ class IntegrationTests(unittest.TestCase):
                          fixture["benign_paragraph"].replace(phone, PHONE_REPLACEMENT))
         schedule_result = json.loads(controller.requests[2]["messages"][-1]["content"])
         self.assertEqual(schedule_result, {"handle": slots_handle, "slots": fixture["expected_slots"]})
+
+    def test_s1_mobile_summary_keeps_registered_lineage_and_redacts_text(self):
+        phone = "+852 00000000"
+        summary_text = f"{SUMMARY} Synthetic callback number: {phone}."
+        output = self.folder / "s1-mobile-summary"
+        controller = SyntheticModel()
+        identifiers = (UUID(f"12345678-aaaa-4abc-bdef-{index:012x}") for index in range(1, 16))
+        with patch("agent_privacy.scoped_registry.uuid4", side_effect=identifiers):
+            artifact = prepare_handoff(
+                self.config, cache_dir=self.folder / "handoff",
+                transport=SummaryModel(summary_reply(summary_text)),
+            )
+            result = run_agent(self.config, output_dir=output, handoff_path=artifact,
+                               policy="S1", transport=controller)
+        self.assertEqual((result["status"], result["error_type"]), ("completed", None))
+
+        bundle = load_json(output / "bundle.json")
+        validate("bundle", bundle)
+        summary_handle = bundle["handoff"]["summary_handle"]
+        summary = next(obj for obj in bundle["objects"] if obj["handle"] == summary_handle)
+        parent, = summary["meta"]["derivation"]
+        self.assertIn("12345678", summary_handle)
+        self.assertIn("12345678", parent)
+        for request in controller.requests[1:]:
+            release = next(message for message in request["messages"]
+                           if message.get("tool_call_id") == "read_document")
+            content = json.loads(release["content"])
+            self.assertEqual(content["handle"], summary_handle)
+            self.assertEqual(content["source_metadata"]["derivation"], [parent])
+            self.assertEqual(content["value"]["text"], summary_text.replace(phone, PHONE_REPLACEMENT))
 
     def test_denied_release_never_reaches_either_recipient_for_s2_or_s3(self):
         for policy in ("S2", "S3"):

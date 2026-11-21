@@ -43,17 +43,15 @@ def _content(value):
     raise ValueError("S1 requires text content, text parts or null.")
 
 
-def redact_payload(payload, recipient, *, s1_message_content: dict[int, str] | None = None):
-    """Redact data, using pre-redacted content only for trusted runtime messages."""
+def redact_payload(payload, recipient):
+    """Transform data content while retaining transport control fields."""
     result = deepcopy(payload)
     if recipient == "mock_cloud":
         result["fields"] = redact_value(result["fields"])
     elif recipient == "controller":
-        runtime_content = s1_message_content or {}
-        for index, message in enumerate(result["messages"]):
+        for message in result["messages"]:
             if "content" in message:
-                message["content"] = (runtime_content[index] if index in runtime_content
-                                      else _content(message["content"]))
+                message["content"] = _content(message["content"])
             for call in message.get("tool_calls", []):
                 function = call.get("function", {})
                 if function.get("name") == "save_memory":
