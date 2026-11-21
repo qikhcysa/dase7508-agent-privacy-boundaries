@@ -4,11 +4,13 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
+from uuid import UUID
 
-from agent_privacy.hosted import run_agent
+from agent_privacy.hosted import ROOT, run_agent
 from agent_privacy.hosted_config import HostedConfig
 from agent_privacy.integration import run_smoke
-from agent_privacy.redaction import RULE_VERSION
+from agent_privacy.redaction import PHONE_REPLACEMENT, RULE_VERSION
 from contracts.validate import load_json, validate
 from member_a.agent_core.transport import TransportError
 from tests.test_handoff import SummaryModel
@@ -74,6 +76,39 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(len(conditions), 16)
         self.assertEqual(len(attempt_ids), 16)
         self.assertEqual(snapshot_hashes, {snapshot["sha256"]})
+
+    def test_s1_preserves_generated_handles_and_redacts_document_text(self):
+        phone = "+852 00000000"
+        fixture = load_json(ROOT / "fixtures" / "t01.json")
+        fixture["benign_paragraph"] += f" Synthetic callback number: {phone}."
+        fixture_path = self.folder / "benign-phone.json"
+        fixture_path.write_text(json.dumps(fixture), encoding="utf-8")
+        output = self.folder / "s1-number-like-handles"
+        controller = SyntheticModel()
+        # A valid generated identifier can contain an isolated eight-digit sequence.
+        identifiers = [UUID(f"12345678-aaaa-4abc-bdef-{index:012x}") for index in range(1, 7)]
+        with patch("agent_privacy.scoped_registry.uuid4", side_effect=identifiers):
+            result = run_agent(self.config, fixture_path=fixture_path, output_dir=output,
+                               policy="S1", transport=controller)
+        self.assertEqual((result["status"], result["error_type"]), ("completed", None))
+
+        bundle = load_json(output / "bundle.json")
+        validate("bundle", bundle)
+        handles = {record["meta"]["source"]: record["handle"] for record in bundle["objects"]}
+        document_handle = handles["meeting_document"]
+        slots_handle = handles["local_tool"]
+        self.assertIn("12345678", document_handle)
+        self.assertIn("12345678", slots_handle)
+        catalog = controller.requests[0]["messages"][1]["content"].split("Asset catalog: ")[1]
+        self.assertEqual(json.loads(catalog)[0]["handle"], document_handle)
+
+        document_result = json.loads(controller.requests[1]["messages"][-1]["content"])
+        self.assertEqual(document_result["handle"], document_handle)
+        self.assertEqual(document_result["value"]["text"],
+                         fixture["document_common"] + "\n\n" +
+                         fixture["benign_paragraph"].replace(phone, PHONE_REPLACEMENT))
+        schedule_result = json.loads(controller.requests[2]["messages"][-1]["content"])
+        self.assertEqual(schedule_result, {"handle": slots_handle, "slots": fixture["expected_slots"]})
 
     def test_denied_release_never_reaches_either_recipient_for_s2_or_s3(self):
         for policy in ("S2", "S3"):

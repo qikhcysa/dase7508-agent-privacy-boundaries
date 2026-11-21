@@ -198,8 +198,9 @@ class EgressAdapter:
         record = self._selection_record(selection)
         return {field: record["value"][field] for field in selection["fields"]}
 
-    def send_controller(self, payload: dict, *, selections: list[dict]) -> TransportResponse:
-        """Send a Chat Completions request using the trusted asset manifest."""
+    def send_controller(self, payload: dict, *, selections: list[dict],
+                        s1_message_content: dict[int, str] | None = None) -> TransportResponse:
+        """Send a request with optional S1 projections keyed by caller message index."""
         payload = deepcopy(payload)
         selections = deepcopy(selections)
         if not isinstance(selections, list):
@@ -215,8 +216,10 @@ class EgressAdapter:
         if controller_run["mode"] == "hosted" and payload.get("model") != controller_run["model"]:
             raise ValueError("Controller payload model does not match the run.")
         payload["messages"] = [{"role": "system", "content": S0_PRIVACY_INSTRUCTION}, *messages]
+        # The privacy instruction shifts the caller's message indices by one.
+        runtime_content = {index + 1: content for index, content in (s1_message_content or {}).items()}
         return self._send(payload, recipient="controller", channel="controller",
-                          selections=selections)
+                          selections=selections, s1_message_content=runtime_content)
 
     def release_to_cloud(self, call_id: str) -> TransportResponse:
         """Resolve a recorded cloud proposal and send the requested fields."""
@@ -272,10 +275,11 @@ class EgressAdapter:
                 "value": {field: record["value"][field] for field in arguments["fields"]}}
 
     def _send(self, payload: dict, *, recipient: str, channel: str,
-              selections: list[dict], request_id: str | None = None) -> TransportResponse:
+              selections: list[dict], request_id: str | None = None,
+              s1_message_content: dict[int, str] | None = None) -> TransportResponse:
         transport = self._controller if recipient == "controller" else self._cloud
         if self._run["policy"] == "S1":
-            payload = redact_payload(payload, recipient)
+            payload = redact_payload(payload, recipient, s1_message_content=s1_message_content)
         body = _encode(payload)
         evidence = _evidence(body)
         send_id = uuid4().hex
