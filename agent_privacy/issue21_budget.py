@@ -16,6 +16,14 @@ CAP = 5 * UNITS_PER_CNY
 RESERVATION = 1_048_576 * 8 + 8192 * 28
 
 
+def check_budget_evidence(path):
+    with closing(sqlite3.connect(path)) as db:
+        blocked = db.execute("SELECT state FROM usage WHERE pending = 1 OR state = 'stopped_before_network'"
+                             " ORDER BY rowid LIMIT 1").fetchone()
+    if blocked:
+        raise ValueError(f"Budget stopped ({blocked[0]}). Reconcile the saved ledger before continuing.")
+
+
 def open_budget(path, billed_cny):
     if not billed_cny.is_finite() or not Decimal(0) <= billed_cny <= Decimal(5):
         raise ValueError("Cumulative Issue 21 bill must be between 0 and 5 CNY")
@@ -29,6 +37,8 @@ def open_budget(path, billed_cny):
         recorded = db.execute("SELECT COALESCE(SUM(units), 0) FROM usage").fetchone()[0]
         if billed_units > recorded:
             db.execute("INSERT INTO usage VALUES (?, 0, NULL, 'bill_adjustment')", (billed_units - recorded,))
+    if max(billed_units, recorded) + RESERVATION > CAP:
+        raise ValueError("Insufficient headroom for the next request. No new stage may start.")
 
 
 class CappedTransport:

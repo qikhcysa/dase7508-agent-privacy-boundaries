@@ -9,6 +9,7 @@ from pathlib import Path
 import sqlite3
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from agent_privacy import issue21
 from agent_privacy.hosted_config import HostedConfig
@@ -112,7 +113,8 @@ class Issue21Tests(unittest.TestCase):
         proxy.send(b'{}')
         with closing(sqlite3.connect(budget)) as db:
             self.assertEqual(db.execute("SELECT units, pending FROM usage").fetchall(), [(20*8+12*28, 0)])
-        open_budget(budget, Decimal("4.99"))
+        with self.assertRaisesRegex(ValueError, "Insufficient headroom"):
+            open_budget(budget, Decimal("4.99"))
         with self.assertRaises(TransportError):
             proxy.send(b'{}')
         self.assertEqual(len(mock.requests), 1)
@@ -135,6 +137,57 @@ class Issue21Tests(unittest.TestCase):
         with closing(sqlite3.connect(budget)) as db:
             self.assertEqual(db.execute("SELECT units, pending FROM usage ORDER BY rowid").fetchall(),
                              [(RESERVATION, 1), (0, 0)])
+
+    def test_wrong_or_completed_stage_cannot_change_the_operator_bill(self):
+        root = self.root / "batch"
+        issue21.initialize(root)
+        cfg = HostedConfig(api_key="offline-only")
+        with patch.object(issue21, "LIVE", root), patch.object(issue21, "configure", return_value=cfg):
+            with patch("sys.argv", ["issue21", issue21.BLOCKS[2], "--bill-cny", "4.99"]):
+                with self.assertRaisesRegex(ValueError, "Missing prior checkpoint"):
+                    issue21.main()
+            (root / issue21.BLOCKS[0]).mkdir()
+            issue21.write_json(root / issue21.BLOCKS[0] / "checkpoint.json", {})
+            (root / issue21.BLOCKS[1]).mkdir()
+            with patch("sys.argv", ["issue21", issue21.BLOCKS[1], "--bill-cny", "4.99"]):
+                with self.assertRaisesRegex(ValueError, "already started"):
+                    issue21.main()
+        with closing(sqlite3.connect(root / "budget.sqlite3")) as db:
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM usage").fetchone(), (0,))
+
+    def test_budget_pause_retains_first_condition_and_blocks_the_next_stage(self):
+        root = self.root / "batch"
+        issue21.initialize(root)
+        budget = root / "budget.sqlite3"
+        cfg = HostedConfig(api_key="offline-only")
+        model = SummaryModel(response={"error": "no usage"})
+        transport = CappedTransport(model, budget)
+        with self.assertRaisesRegex(ValueError, "Budget stopped"):
+            issue21.run_stage(root, issue21.BLOCKS[0], cfg, lambda: transport, transport, Decimal(0))
+        block = root / issue21.BLOCKS[0]
+        ledger = load_json(block / "run-ledger.json")
+        self.assertEqual(len(model.requests), 1)
+        self.assertEqual(len(ledger["attempts"]), 1)
+        self.assertIsNone(ledger["finished_at"])
+        self.assertFalse((block / "checkpoint.json").exists())
+        with self.assertRaisesRegex(ValueError, "Missing prior checkpoint"):
+            issue21.run_stage(root, issue21.BLOCKS[1], cfg, None, None, Decimal(0))
+
+    def test_failed_reset_preserves_the_try_and_pauses_the_block(self):
+        root = self.root / "batch"
+        issue21.initialize(root, evidence_kind="offline_scripted")
+        cfg = HostedConfig(api_key="offline-only")
+        def with_failed_reset(*args, **kwargs):
+            result = issue21.run_agent(*args, **kwargs)
+            result["reset"]["bindings_after"] = 1
+            return result
+        with patch("agent_privacy.integration.run_agent", side_effect=with_failed_reset):
+            with self.assertRaisesRegex(ValueError, "reset evidence"):
+                issue21.run_stage(root, issue21.BLOCKS[0], cfg, SyntheticModel, SummaryModel(), None)
+        stage = root / issue21.BLOCKS[0]
+        attempt, = load_json(stage / "run-ledger.json")["attempts"]
+        self.assertFalse(attempt["executions"][0]["reset_ok"])
+        self.assertFalse((stage / "checkpoint.json").exists())
 
 
 if __name__ == "__main__":

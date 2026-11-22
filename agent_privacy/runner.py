@@ -397,6 +397,7 @@ def run_plan(
     executor: Callable[[dict[str, Any], Path, Path | None], Any],
     *,
     snapshot_provider: Callable[[dict[str, Any], Path], str | Path] | None = None,
+    after_condition: Callable[[dict[str, Any]], None] | None = None,
     max_retries: int = 0,
     retryable_errors: Iterable[str] = (),
 ) -> dict[str, Any]:
@@ -405,6 +406,7 @@ def run_plan(
     ``executor`` receives a copied condition, a new output path, and either the
     immutable H1 snapshot path or ``None``. It must create its output directory.
     Every try is retained. A retry occurs only for an explicitly declared error.
+    An optional observer can stop the run after the condition's evidence is saved.
     """
     validate_plan(plan)
     if type(max_retries) is not int or max_retries < 0:
@@ -551,6 +553,8 @@ def run_plan(
                     break
                 if execution["error_type"] not in retryable or try_number > max_retries:
                     break
+            if after_condition is not None:
+                after_condition(deepcopy(attempt_record))
     ledger["finished_at"] = datetime.now(timezone.utc).isoformat()
     _write_ledger(ledger_path, ledger)
     return ledger

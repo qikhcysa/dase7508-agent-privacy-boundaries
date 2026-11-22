@@ -14,7 +14,7 @@ from .handoff import HandoffError
 from .hosted import ROOT, run_agent
 from .hosted_config import DEFAULT_BASE_URL, configure
 from .integration import run_smoke
-from .issue21_budget import CappedTransport, open_budget
+from .issue21_budget import CappedTransport, check_budget_evidence, open_budget
 from .outcomes import grade_bundle
 from .runner import build_core_plan
 from .scorer import score_bundle
@@ -67,6 +67,7 @@ def check_control(config, directory, artifact, factory, identity, expected):
     decision = load_json(directory / "handoff-load.json")
     bundle_path = directory / "bundle.json"
     task_completed = None
+    valid_evidence = False
     if bundle_path.is_file():
         bundle = load_json(bundle_path)
         outcome = grade_bundle(bundle)
@@ -74,12 +75,13 @@ def check_control(config, directory, artifact, factory, identity, expected):
         score = score_bundle(bundle, result=result, outcome=outcome)
         write_json(directory / "score.json", score)
         task_completed = score["task_completed"]
+        valid_evidence = score["valid_evidence"]
     reset = load_json(directory / "reset.json")
     reset_ok = (reset["bindings_after"] == 0 and reset["conversation_cleared"] is True
                 and reset["audit_preserved"] is True)
     if expected == "allow":
         matched = (decision["allowed"] is True and decision["summary_loaded"] is True
-                   and bundle_path.is_file() and result["controller_steps"] > 0)
+                   and valid_evidence is True and result["controller_steps"] > 0)
     else:
         matched = (decision["allowed"] is False and decision["summary_loaded"] is False
                    and result["error_type"] == decision["reason"] == "handoff_scope_mismatch"
@@ -90,7 +92,7 @@ def check_control(config, directory, artifact, factory, identity, expected):
             "usage": result.get("usage"), "task_completed": task_completed}
 
 
-def run_controls(root, config, factory, plan):
+def run_controls(root, config, factory, plan, budget):
     base = root / BLOCKS[0]
     snapshot, = load_json(base / "run-ledger.json")["snapshots"]
     artifact = base / snapshot["path"]
@@ -112,6 +114,10 @@ def run_controls(root, config, factory, plan):
                 stream.write(json.dumps({"attempt": name, "identity_override": identity,
                                          **observation}) + "\n")
             passed += observation["passed"]
+            if budget is not None:
+                check_budget_evidence(budget)
+            if not observation["passed"]:
+                raise ValueError(f"Review the saved identity and reset evidence for {name} before continuing")
     return {"planned": 32, "observed": 32, "expected_decisions_and_resets": passed}
 
 
@@ -124,11 +130,25 @@ def run_stage(root, stage, config, controller_factory, summary_transport, billed
             raise ValueError(f"Missing prior checkpoint: {earlier}")
     if (root / stage).exists():
         raise ValueError("Stage already started; preserve its evidence and inspect the ledger")
+    budget = root / "budget.sqlite3" if billed_cny is not None else None
+    if budget is not None:
+        if not budget.is_file():
+            raise ValueError("Missing original budget ledger")
+        check_budget_evidence(budget)
+        open_budget(budget, billed_cny)
+
+    def verify_condition(record):
+        if budget is not None:
+            check_budget_evidence(budget)
+        if any(execution["reset_ok"] is not True for execution in record["executions"]):
+            raise ValueError(f"Review the saved reset evidence for {record['attempt_key']} before continuing")
+
     if stage == "identity":
-        report = run_controls(root, config, controller_factory, plan)
+        report = run_controls(root, config, controller_factory, plan, budget)
     else:
         report = run_smoke(config, root / stage, fixture_path=FIXTURES / (stage + ".json"),
-                           controller_factory=controller_factory, summary_transport=summary_transport)["summary"]
+                           controller_factory=controller_factory, summary_transport=summary_transport,
+                           after_condition=verify_condition)["summary"]
     write_json(root / stage / "checkpoint.json", {
         "stage": stage, "excluded_from_formal_rates": True,
         "operator_bill_before_cny": str(billed_cny) if billed_cny is not None else None,
@@ -153,9 +173,6 @@ def main():
     if load_json(LIVE / "classification.json")["evidence_kind"] != "operator_live":
         parser.error("The live operator must use the original operator plan.")
     budget = LIVE / "budget.sqlite3"
-    if not budget.is_file():
-        parser.error("Missing original budget ledger.")
-    open_budget(budget, args.bill_cny)
     config = configure(interactive=False, model=MODEL, base_url=DEFAULT_BASE_URL)
     def factory():
         return CappedTransport(HttpTransport(config.endpoint, config.api_key, config.timeout), budget)
