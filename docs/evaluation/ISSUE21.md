@@ -15,7 +15,13 @@
 
 ## 夏立原的运行清单
 
-收到压缩包后，将包内的 `agent_privacy`、`docs`、`fixtures` 和 `tests` 四个目录解压到小组仓库 `main` 提交 `8b88afc` 的干净副本根目录，与现有同名目录合并。打开包含 `requirements-contracts.txt` 的目录，在 Python 3.11 或更高版本的环境运行 `python -m pip install -r requirements-contracts.txt`。
+从 GitHub 获取本次试跑的完整代码。在新的本地目录中执行以下命令，使用 Python 3.11 或更高版本。后续批次都在这一份副本中运行，以便共用账本。
+
+```sh
+git clone --branch codex/issue21 --single-branch https://github.com/qikhcysa/dase7508-agent-privacy-boundaries.git dase7508-issue21
+cd dase7508-issue21
+python -m pip install -r requirements-contracts.txt
+```
 
 1. 在同一台机器、同一份仓库副本中完成全部真实批次，先复核下方离线命令。运行 `python -m agent_privacy.issue21 plan` 生成排期，查看 `artifacts/issue21-operator/plan.json`。首份清单已经包含全部 96 个位置，正式统计始终排除该目录。
 2. 使用本项目智谱账号的环境变量 `AGENT_API_KEY` 或 `ZAI_API_KEY`。仓库的配置自检可以在本机执行。`python -m agent_privacy.hosted --model glm-5.3-flash --base-url https://open.bigmodel.cn/api/paas/v4/ --non-interactive --check-config`。自检不发模型请求。批次固定使用同一服务、模型和 #20 的思考设置。不要把密钥写入记录。
