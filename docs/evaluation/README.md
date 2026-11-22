@@ -2,9 +2,38 @@
 
 `agent_privacy.runner` and `agent_privacy.scorer` provide the issue #19
 evaluation boundary. They prepare and score runs; they do not claim that a
-development run is a formal experiment. The integrated S0--S3 executor is
-tracked by issue #20, and the protocol must be frozen under issue #22 before
+development run is a formal experiment. The development smoke executor for
+issue #20 is described below. The protocol must be frozen under issue #22 before
 issues #23 and #24 execute formal attempts.
+
+## Run the development smoke matrix
+
+The smoke command runs the repository's synthetic benign T01 fixture once per
+S0--S3, H0/H1, and F0/F1 combination, for 16 attempts. It generates one H1
+summary and reuses the same artifact for all eight H1 conditions.
+
+```sh
+python -m agent_privacy.integration --output-dir artifacts/t01-smoke
+```
+
+The command uses the configured hosted model. For headless operation, add
+`--non-interactive` and follow the [credential setup](../hosted/README.md).
+Use a new output directory. The command can make multiple API requests per
+condition and returns a nonzero exit status if any condition fails utility
+scoring or has invalid evidence.
+
+| Check | Evidence |
+| --- | --- |
+| Four policies, both handoff modes, and both fault conditions | `plan.json` and each attempt's `bundle.json` |
+| F1 recovery and fresh attempt state | Scheduler provenance, `result.json`, and `reset.json` |
+| Shared frozen H1 summary | Snapshot SHA-256 in `run-ledger.json` and each H1 artifact |
+| Utility, authorized-request counts, and observed cost | `score.json` and each attempt's `outcome.json` |
+
+To reproduce the verification offline, run
+`python -m unittest tests.test_integration -v`. Scripted responses exercise
+the same execution and scoring path. The suite also verifies denied releases
+to both recipients, unknown delivery on API transport failure, and the existing
+hosted tests cover scheduler exceptions and recovery gating.
 
 ## Build the core plan
 

@@ -3,6 +3,7 @@
 import base64
 from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from inspect import signature
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -106,6 +107,35 @@ class S1EgressTests(unittest.TestCase):
         bundle["trace"] = [json.loads(line) for line in adapter.trace_path.read_text(encoding="utf8").splitlines()]
         validate("bundle", bundle)
         return bundle["trace"]
+
+    def test_controller_send_has_no_free_form_content_override(self):
+        parameters = signature(EgressAdapter.send_controller).parameters
+        self.assertNotIn("s1_message_content", parameters)
+
+    def test_user_json_handle_is_redacted_as_data(self):
+        contact = {
+            "handle": "obj_aaaaaaaa87654321bbbbbbbbbbbbbbbb",
+            "phone": "+852 87654321",
+            "note": "Confirm availability",
+        }
+        payload = {"messages": [{"role": "user", "content": json.dumps(contact)}]}
+        original = deepcopy(payload)
+        controller = ScriptedTransport([{}])
+        adapter = self.adapter(controller)
+
+        adapter.send_controller(payload, selections=[])
+
+        body, = controller.requests
+        self.assertNotIn(b"87654321", body)
+        message = json.loads(body)["messages"][-1]
+        self.assertEqual(json.loads(message["content"]), {
+            "handle": "obj_aaaaaaaa" + PHONE_REPLACEMENT + "bbbbbbbbbbbbbbbb",
+            "phone": PHONE_REPLACEMENT,
+            "note": contact["note"],
+        })
+        send, = [event for event in self.trace(adapter) if event["event"] == "send_attempt"]
+        self.assertEqual(base64.b64decode(send["body"]["base64"]), body)
+        self.assertEqual(payload, original)
 
     def test_both_recipients_and_fault_inputs_have_exact_redacted_bytes(self):
         observed = []
