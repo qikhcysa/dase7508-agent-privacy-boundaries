@@ -8,6 +8,9 @@ issues #23 and #24 execute formal attempts.
 
 ## Run the development smoke matrix
 
+For the separate 64 development attempts and 32 same-process identity controls,
+use the [Issue 21 operator and reset checklist](ISSUE21.md).
+
 The smoke command runs the repository's synthetic benign T01 fixture once per
 S0--S3, H0/H1, and F0/F1 combination, for 16 attempts. It generates one H1
 summary and reuses the same artifact for all eight H1 conditions.

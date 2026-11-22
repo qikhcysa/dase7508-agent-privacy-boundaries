@@ -20,18 +20,19 @@ from .scorer import score_directory
 FIXTURE = ROOT / "fixtures" / "t01.json"
 
 
-def run_smoke(config, output_dir: str | Path, *, controller_factory=None, summary_transport=None):
+def run_smoke(config, output_dir: str | Path, *, fixture_path=FIXTURE,
+              controller_factory=None, summary_transport=None):
     """Use a fresh controller for each condition and share the frozen H1 input."""
     output_dir = Path(output_dir).resolve()
-    plan = build_core_plan([FIXTURE], repetitions=1, document_variants=("benign",))
+    plan = build_core_plan([fixture_path], repetitions=1, document_variants=("benign",))
 
     def snapshot_provider(condition, directory):
-        return prepare_handoff(config, fixture_path=FIXTURE, cache_dir=directory,
+        return prepare_handoff(config, fixture_path=fixture_path, cache_dir=directory,
                                repetition=condition["repetition"], transport=summary_transport)
 
     def execute(condition, directory, snapshot):
         result = run_agent(
-            config, fixture_path=FIXTURE, output_dir=directory, handoff_path=snapshot,
+            config, fixture_path=fixture_path, output_dir=directory, handoff_path=snapshot,
             repetition=condition["repetition"], fault=condition["fault"],
             policy=condition["policy"],
             transport=controller_factory() if controller_factory is not None else None,
