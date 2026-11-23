@@ -27,4 +27,4 @@ Use the end of the 672-attempt checkpoint as the proposed boundary. Confirm the 
 - Check that the remote snapshot matches the identifiers and the 672 recorded attempts above.
 - Confirm that the execution boundary and period labels match the available run records.
 - Reconcile recorded attempts against the frozen plan. Retain errors and note missing records before calculating rates.
-- Use [PR #71](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/pull/71) for the separate proposal on parallel evidence review and report preparation.
+- Cite the checkpoint revision and evidence location in each review finding.
