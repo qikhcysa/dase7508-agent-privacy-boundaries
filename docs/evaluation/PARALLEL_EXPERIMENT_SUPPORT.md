@@ -1,6 +1,6 @@
 # Parallel support for the formal evaluation
 
-Use this plan to review evidence and prepare deliverables while the formal runs are in progress. The formal operator and execution order follow the [frozen protocol](ISSUE22_2026-11-23.md). [Issue #23](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/23) remains the owner of the core run. [Issue #24](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/24) remains the owner of the supplement run. Record development checks as separate engineering evidence.
+Use this plan to review evidence and prepare deliverables while the formal runs are in progress. The formal operator and execution order follow the [frozen protocol](ISSUE22_2026-11-23.md). [Issue #23](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/23) tracks the core run, and [Issue #24](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/24) tracks the supplemental run. Record development checks as separate engineering evidence.
 
 ## Proposed division of work
 
