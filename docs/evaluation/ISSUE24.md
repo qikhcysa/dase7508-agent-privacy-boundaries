@@ -89,3 +89,79 @@ records token-derived conservative usage and requires the human operator to
 check the provider dashboard at every block boundary. Formal execution requires
 one clean execution commit; changing code, the protocol, the supplement
 manifest, the frozen plan, or archived input bytes stops resume.
+
+## Parallel four-shard mode (optional scheduling variant)
+
+The default single-operator flow above remains the authoritative protocol
+baseline. When wall-clock time matters, the same frozen plan can be split into
+four fixture-aligned shards under the dated parallel addendum
+[`ISSUE24_PARALLEL_ADDENDUM_2026-11-24.md`](ISSUE24_PARALLEL_ADDENDUM_2026-11-24.md).
+Prompts, tools, conditions, criteria, grading and the three spending caps are
+unchanged; only scheduling and the operator count change.
+
+| Shard | Member | GitHub account | Fixtures | Attempts |
+| --- | --- | --- | --- | ---: |
+| `w1` | XIA Zhangning | `cynic004` | B01-B03 | 60 |
+| `w2` | XIA Liyuan | `Sherlyn-Xia` | B04-B06 | 60 |
+| `w3` | JIN Zhan | `jinzhan857-sketch` | B07-B09 | 60 |
+| `w4` | ZHANG Xilong | `qikhcysa` | B10-B12 | 60 |
+
+A fixture has 20 attempts, so three fixtures per shard give exactly 60 attempts
+per worker. Persistence pairs stay inside one shard, and every shared H1
+snapshot key belongs to a single fixture, so no summary key crosses a worker.
+No retries are added and every condition still runs at most once.
+
+**Coordinator, once** (no API call):
+
+```sh
+python -m agent_privacy.issue24 plan --prior-budget ../dase7508-issue23/artifacts/issue23-operator/budget.sqlite3
+python -m agent_privacy.issue24_parallel shard-plan
+```
+
+`shard-plan` writes `artifacts/issue24-operator/assignment.json` plus one
+isolated root per worker under `artifacts/issue24-operator/shards/<worker>/`
+(frozen shard plan, archived inputs, a copy of the inherited budget ledger and
+its own classification record). The coordinator distributes the checkout and
+each worker root to the corresponding operator.
+
+**Each worker, in the worker's own root**:
+
+```sh
+python -m agent_privacy.issue24_parallel run-shard --worker w1 \
+  --formal-bill-cny <...> --daily-bill-cny <...> --project-bill-cny <...> \
+  --non-interactive
+```
+
+The command runs the remaining blocks of that shard through the owner's block
+runner, so evidence layout, snapshot reuse, reset checks and score rows are the
+same as the serial mode. It is resumable: recorded conditions are verified and
+skipped, never repeated.
+
+**Coordinator, after all four shards finish**:
+
+```sh
+python -m agent_privacy.issue24_parallel merge
+python -m agent_privacy.issue24_parallel judge-summaries \
+  --samples 3 --formal-bill-cny <...> --daily-bill-cny <...> --project-bill-cny <...>
+```
+
+`merge` refuses to run unless every planned condition is recorded exactly once,
+re-checks reset evidence, merges the attempt and snapshot evidence, writes
+`merged/score.json` (the owner's scorer and family aggregation) and
+`merged/merge-report.json` (per-worker attempt counts and incremental
+conservative spend). `judge-summaries` is analysis support for #31: a fixed,
+hash-recorded prompt asks GLM-5.3-Flash, three samples per retained task-one
+summary, whether the summary still carries the persistence instruction, and
+writes `merged/summary-review.json` plus a per-sample JSONL. Its settings are
+analysis settings, not frozen experiment settings; the exact summary text and a
+teammate's reading remain authoritative.
+
+Accounting in parallel mode: each worker holds a copy of the inherited budget
+ledger, so the three caps are still enforced per worker; the coordinator sums
+the incremental conservative usage after merge and reconciles the provider
+dashboard. A pending request stops its own shard until that shard's operator
+reconciles it; it never blocks the other shards.
+
+The default single-operator flow is unchanged and should be used when the serial
+protocol baseline is required.
+
