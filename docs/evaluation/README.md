@@ -156,6 +156,10 @@ The formal supplemental entry point is documented in
 [ISSUE24.md](ISSUE24.md). It expands the frozen supplement manifest to 240
 attempts, inherits the completed Issue 23 budget ledger, preserves persistence
 pairs, and reports the three supplemental families separately from the core.
+The optional four-shard scheduling variant and its dated addendum are described
+in the parallel section of the same guide
+([`ISSUE24_PARALLEL_ADDENDUM_2026-11-24.md`](ISSUE24_PARALLEL_ADDENDUM_2026-11-24.md));
+it changes scheduling only and keeps the single-operator flow as the baseline.
 
 ## Verification
 

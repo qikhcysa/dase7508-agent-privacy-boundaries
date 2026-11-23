@@ -439,14 +439,14 @@ def initialize(root: Path = LIVE, *, prior_budget: Path = DEFAULT_PRIOR_BUDGET) 
     return plan
 
 
-def _metadata(commit: str) -> dict:
+def _metadata(commit: str, plan_sha256_value: str = PLAN_SHA256) -> dict:
     return {
         "issue": 24,
         "phase": "formal",
         "protocol_sha256": PROTOCOL_SHA256,
         "execution_commit": commit,
         "model": MODEL,
-        "plan_sha256": PLAN_SHA256,
+        "plan_sha256": plan_sha256_value,
         "retry_limit": 0,
     }
 
@@ -603,26 +603,28 @@ def _aggregate(rows: list[dict], ledger: dict, plan: dict,
     }
 
 
-def _score() -> dict:
-    plan = load_json(LIVE / "frozen-plan.json")
-    if not (RUNS / "run-ledger.json").is_file():
+def _score(root: Path = LIVE) -> dict:
+    root = Path(root)
+    runs = root / "supplements"
+    plan = load_json(root / "frozen-plan.json")
+    if not (runs / "run-ledger.json").is_file():
         report = {"summary": _aggregate([], {"attempts": []}, plan),
                   "attempts": [], "scoring_errors": []}
-        _write_json(LIVE / "score.json", report, replace=True)
+        _write_json(root / "score.json", report, replace=True)
         return report
-    ledger = load_json(RUNS / "run-ledger.json")
+    ledger = load_json(runs / "run-ledger.json")
     rows, scoring_errors = [], []
     for record in ledger["attempts"]:
         execution = _selected_execution(record)
         if execution is None or execution.get("bundle_path") is None:
             continue
-        root = RUNS.resolve()
+        base = runs.resolve()
         try:
-            bundle = load_json(root / execution["bundle_path"])
-            result = load_json(root / execution["result_path"])
-            outcome = load_json(root / execution["outcome_path"])
+            bundle = load_json(base / execution["bundle_path"])
+            result = load_json(base / execution["result_path"])
+            outcome = load_json(base / execution["outcome_path"])
             row = _supplement_score(record["condition"], bundle, result, outcome,
-                                    root / execution["used_snapshot_path"]
+                                    base / execution["used_snapshot_path"]
                                     if execution.get("used_snapshot_path") else None)
         except (OSError, ValueError, KeyError, TypeError, ScoreError) as exc:
             scoring_errors.append({
@@ -634,7 +636,7 @@ def _score() -> dict:
         rows.append(row)
     report = {"summary": _aggregate(rows, ledger, plan, scoring_errors),
               "attempts": rows, "scoring_errors": scoring_errors}
-    _write_json(LIVE / "score.json", report, replace=True)
+    _write_json(root / "score.json", report, replace=True)
     return report
 
 
@@ -648,18 +650,23 @@ def _block_for_existing(plan: dict, existing: int) -> tuple[dict, int]:
 
 
 def run_next_block(*, formal_bill_cny: Decimal, daily_bill_cny: Decimal,
-                   project_bill_cny: Decimal, interactive: bool = True) -> dict:
-    classification = load_json(LIVE / "classification.json")
-    if (classification.get("protocol_sha256") != protocol_sha256()
-            or classification.get("plan_sha256") != PLAN_SHA256):
+                   project_bill_cny: Decimal, interactive: bool = True,
+                   root: Path = LIVE, plan: dict | None = None,
+                   plan_validator=None) -> dict:
+    root = Path(root)
+    runs = root / "supplements"
+    classification = load_json(root / "classification.json")
+    if classification.get("protocol_sha256") != protocol_sha256():
         raise ValueError("Frozen Issue 24 metadata changed")
-    plan = load_json(LIVE / "frozen-plan.json")
-    validate_supplement_plan(plan)
-    if plan_sha256(plan) != PLAN_SHA256:
+    plan = plan if plan is not None else load_json(root / "frozen-plan.json")
+    validator = plan_validator or validate_supplement_plan
+    validator(plan)
+    frozen_digest = plan_sha256(plan)
+    if classification.get("plan_sha256") != frozen_digest:
         raise ValueError("Frozen Issue 24 plan changed")
-    _verify_archived_inputs(plan)
+    _verify_archived_inputs(plan, root)
     commit = execution_commit(require_clean=True)
-    budget = LIVE / "budget.sqlite3"
+    budget = root / "budget.sqlite3"
     check_budget_evidence(budget)
     open_budget(
         budget,
@@ -668,9 +675,9 @@ def run_next_block(*, formal_bill_cny: Decimal, daily_bill_cny: Decimal,
         project_bill_cny=project_bill_cny,
     )
     existing = 0
-    if (RUNS / "run-ledger.json").is_file():
-        ledger = load_json(RUNS / "run-ledger.json")
-        if ledger.get("metadata") != _metadata(commit):
+    if (runs / "run-ledger.json").is_file():
+        ledger = load_json(runs / "run-ledger.json")
+        if ledger.get("metadata") != _metadata(commit, frozen_digest):
             raise ValueError("Execution commit or frozen formal metadata changed")
         existing = len(ledger["attempts"])
     block, target = _block_for_existing(plan, existing)
@@ -686,7 +693,7 @@ def run_next_block(*, formal_bill_cny: Decimal, daily_bill_cny: Decimal,
     def snapshot_provider(condition, directory):
         return prepare_handoff(
             config,
-            fixture_path=LIVE / condition["summary_fixture_path"],
+            fixture_path=root / condition["summary_fixture_path"],
             cache_dir=directory,
             document_variant=condition["summary_document_variant"],
             repetition=condition["repetition"],
@@ -702,7 +709,7 @@ def run_next_block(*, formal_bill_cny: Decimal, daily_bill_cny: Decimal,
             retained_records = retained_summary(cases[condition["case_id"]], snapshot)["records"]
         result = run_agent(
             config,
-            fixture_path=LIVE / condition["fixture_path"],
+            fixture_path=root / condition["fixture_path"],
             output_dir=directory,
             handoff_path=snapshot if condition["handoff"] == "H1" else None,
             document_variant=condition["document_variant"],
@@ -735,20 +742,20 @@ def run_next_block(*, formal_bill_cny: Decimal, daily_bill_cny: Decimal,
     failure = None
     try:
         ledger = run_plan(
-            plan, RUNS, execute,
+            plan, runs, execute,
             snapshot_provider=snapshot_provider,
             after_condition=after_condition,
             max_retries=0,
             retryable_errors=(),
-            resume=RUNS.exists(),
+            resume=runs.exists(),
             max_new_conditions=target - existing,
-            metadata=_metadata(commit),
-            plan_validator=validate_supplement_plan,
+            metadata=_metadata(commit, frozen_digest),
+            plan_validator=validator,
         )
     except Exception as exc:
         failure = exc
-        ledger = load_json(RUNS / "run-ledger.json") if (RUNS / "run-ledger.json").is_file() else None
-    report = _score() if ledger is not None else None
+        ledger = load_json(runs / "run-ledger.json") if (runs / "run-ledger.json").is_file() else None
+    report = _score(root) if ledger is not None else None
     if failure is not None:
         raise failure
     observed = len(ledger["attempts"])
@@ -773,16 +780,18 @@ def run_next_block(*, formal_bill_cny: Decimal, daily_bill_cny: Decimal,
             else "reconcile_provider_bill_before_next_block"
         ),
     }
-    _write_json(LIVE / "checkpoints" / f"{block['block_id']}.json", checkpoint)
+    _write_json(root / "checkpoints" / f"{block['block_id']}.json", checkpoint)
     return checkpoint
 
 
-def status() -> dict:
-    plan = load_json(LIVE / "frozen-plan.json")
+def status(root: Path = LIVE) -> dict:
+    root = Path(root)
+    runs = root / "supplements"
+    plan = load_json(root / "frozen-plan.json")
     attempts = 0
     finished = False
-    if (RUNS / "run-ledger.json").is_file():
-        ledger = load_json(RUNS / "run-ledger.json")
+    if (runs / "run-ledger.json").is_file():
+        ledger = load_json(runs / "run-ledger.json")
         attempts = len(ledger["attempts"])
         finished = ledger["finished_at"] is not None
     completed_blocks, cumulative = 0, 0
@@ -790,7 +799,7 @@ def status() -> dict:
         cumulative += len(block["attempts"])
         if attempts >= cumulative:
             completed_blocks += 1
-    score = load_json(LIVE / "score.json")["summary"] if (LIVE / "score.json").is_file() else None
+    score = load_json(root / "score.json")["summary"] if (root / "score.json").is_file() else None
     return {
         "planned_attempts": plan["attempt_count"],
         "recorded_attempts": attempts,
@@ -798,7 +807,7 @@ def status() -> dict:
         "total_blocks": plan["block_count"],
         "finished": finished,
         "families": None if score is None else score["families"],
-        "budget": budget_status(LIVE / "budget.sqlite3"),
+        "budget": budget_status(root / "budget.sqlite3"),
     }
 
 
