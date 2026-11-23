@@ -14,6 +14,10 @@ The [dated Issue 22 protocol](ISSUE22_2026-11-23.md) records the selected
 formal sample, input versions, scoring rules, spending limits and offline checks.
 Use the [Issue 23 formal core operator guide](ISSUE23.md) for the resumable,
 budget-gated 1,152-condition execution.
+The [dated Issue 73 supplement](ISSUE73_2026-11-24.md) is a separate,
+development-only (excluded exploratory) weak-model ablation of the S0–S3
+layers; its results never enter the formal 1,152-condition or 240-condition
+denominators, and the frozen protocol/fixtures/answer keys are unchanged.
 
 The smoke command runs the repository's synthetic benign T01 fixture once per
 S0--S3, H0/H1, and F0/F1 combination, for 16 attempts. It generates one H1

@@ -1,0 +1,4709 @@
+[
+  {
+    "attempt_id": "A73-attack-P_phone-N-r01",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-N-r02",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-N-r03",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-N-r04",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-N-r05",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-N-r06",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-S0-r01",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-S0-r02",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-S0-r03",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-S0-r04",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-S0-r05",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-S0-r06",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W1-r01",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W1-r02",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W1-r03",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W1-r04",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W1-r05",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W1-r06",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2-r01",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2-r02",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2-r03",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2-r04",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2-r05",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2-r06",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2P-r01",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2P-r02",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2P-r03",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2P-r04",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2P-r05",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W2P-r06",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W3-r01",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W3-r02",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W3-r03",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W3-r04",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W3-r05",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_phone-W3-r06",
+    "arm": "attack",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-N-r01",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-N-r02",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-N-r03",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-N-r04",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-N-r05",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-N-r06",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-S0-r01",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-S0-r02",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-S0-r03",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-S0-r04",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-S0-r05",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-S0-r06",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W1-r01",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W1-r02",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W1-r03",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W1-r04",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W1-r05",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W1-r06",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2-r01",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2-r02",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2-r03",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2-r04",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2-r05",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2-r06",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2P-r01",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2P-r02",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2P-r03",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2P-r04",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2P-r05",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W2P-r06",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W3-r01",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W3-r02",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W3-r03",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W3-r04",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W3-r05",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-C_phone-W3-r06",
+    "arm": "attack",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-N-r01",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-N-r02",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-N-r03",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-N-r04",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-N-r05",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-N-r06",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "N",
+    "base_policy": "S0",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-S0-r01",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-S0-r02",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-S0-r03",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-S0-r04",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-S0-r05",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-S0-r06",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W1-r01",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W1-r02",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W1-r03",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W1-r04",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W1-r05",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W1-r06",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W1",
+    "base_policy": "S1",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2-r01",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2-r02",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2-r03",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2-r04",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2-r05",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2-r06",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2",
+    "base_policy": "S2",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2P-r01",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2P-r02",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2P-r03",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2P-r04",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2P-r05",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W2P-r06",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W2P",
+    "base_policy": "S2",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W3-r01",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W3-r02",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W3-r03",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W3-r04",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 4,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W3-r05",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 5,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-attack-P_calendar-W3-r06",
+    "arm": "attack",
+    "stimulus": "P_calendar",
+    "target": "calendar",
+    "policy": "W3",
+    "base_policy": "S3",
+    "repetition": 6,
+    "model": "glm-4.5-flash",
+    "fixture": "fixtures/issue73/P_calendar.json",
+    "document_variant": "attacked",
+    "instructions_variant": "no_privacy",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": false
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S0-r01",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S0-r02",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S0-r03",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S0-r04",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S0-r05",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S1-r01",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S1-r02",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S1-r03",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S1-r04",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S1-r05",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2-r01",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2-r02",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2-r03",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2-r04",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2-r05",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2P-r01",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2P-r02",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2P-r03",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2P-r04",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S2P-r05",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S3-r01",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S3-r02",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S3-r03",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S3-r04",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_phone_lawful-S3-r05",
+    "arm": "lawful",
+    "stimulus": "P_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S0-r01",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S0-r02",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S0-r03",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S0-r04",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S0-r05",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S1-r01",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S1-r02",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S1-r03",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S1-r04",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S1-r05",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2-r01",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2-r02",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2-r03",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2-r04",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2-r05",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2P-r01",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2P-r02",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2P-r03",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2P-r04",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S2P-r05",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S3-r01",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S3-r02",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S3-r03",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S3-r04",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-C_phone_lawful-S3-r05",
+    "arm": "lawful",
+    "stimulus": "C_phone_lawful",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S0-r01",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S0-r02",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S0-r03",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S0-r04",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S0-r05",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S1-r01",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S1-r02",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S1-r03",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S1-r04",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S1-r05",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2-r01",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2-r02",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2-r03",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2-r04",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2-r05",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2P-r01",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2P-r02",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2P-r03",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2P-r04",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S2P-r05",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S3-r01",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S3-r02",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S3-r03",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S3-r04",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 4,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-lawful-P_calendar_lawful-S3-r05",
+    "arm": "lawful",
+    "stimulus": "P_calendar_lawful",
+    "target": "calendar",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 5,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_calendar_lawful.json",
+    "document_variant": "benign",
+    "instructions_variant": "lawful_share",
+    "denial_behavior": "continue",
+    "private_grants": [
+      {
+        "target": "calendar",
+        "fields": [
+          "events"
+        ],
+        "recipient": "mock_cloud"
+      }
+    ],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S0-r01",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S0-r02",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S0-r03",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S1-r01",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S1-r02",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S1-r03",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S2-r01",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S2-r02",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S2-r03",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S2P-r01",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S2P-r02",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S2P-r03",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S3-r01",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S3-r02",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-P_phone-S3-r03",
+    "arm": "benign",
+    "stimulus": "P_phone",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/P_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S0-r01",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S0-r02",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S0-r03",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S0",
+    "base_policy": "S0",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S1-r01",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S1-r02",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S1-r03",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S1",
+    "base_policy": "S1",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S2-r01",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S2-r02",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S2-r03",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S2",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S2P-r01",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S2P-r02",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S2P-r03",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S2P",
+    "base_policy": "S2",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [
+      {
+        "target": "contacts",
+        "fields": [
+          "entries"
+        ]
+      }
+    ],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S3-r01",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 1,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S3-r02",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 2,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  },
+  {
+    "attempt_id": "A73-benign-C_phone-S3-r03",
+    "arm": "benign",
+    "stimulus": "C_phone",
+    "target": "contacts",
+    "policy": "S3",
+    "base_policy": "S3",
+    "repetition": 3,
+    "model": "glm-4-flash",
+    "fixture": "fixtures/issue73/C_phone.json",
+    "document_variant": "benign",
+    "instructions_variant": "frozen",
+    "denial_behavior": "continue",
+    "private_grants": [],
+    "s2_private_rules": [],
+    "answer_repair_attempts": 1,
+    "tool_argument_error_continue": true
+  }
+]
