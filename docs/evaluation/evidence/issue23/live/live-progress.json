@@ -1,40 +1,40 @@
 {
   "schema_version": "issue23-live-progress-v1",
-  "preliminary": true,
-  "generated_at_shanghai": "2026-11-23T21:56:59+08:00",
+  "preliminary": false,
+  "generated_at_shanghai": "2026-11-24T01:54:00+08:00",
   "execution_commit": "518864f7535613d29c527a4f36143280f963f269",
   "protocol_sha256": "996a654ebc6b0486015d767e856bffa3369401ad5dc5de90639eff9c4aba86f3",
   "planned_attempts": 1152,
-  "recorded_attempts": 672,
-  "complete_blocks": 21,
+  "recorded_attempts": 1152,
+  "complete_blocks": 36,
   "planned_blocks": 36,
-  "progress": 0.5833333333333334,
+  "progress": 1.0,
   "observed_summary": {
-    "completed_attempts": 653,
+    "completed_attempts": 1071,
     "status_counts": {
-      "completed": 653,
-      "error": 19
+      "completed": 1127,
+      "error": 25
     },
     "error_type_counts": {
-      "invalid_json": 12,
+      "invalid_json": 18,
       "transport_error": 7
     },
     "privacy_label_counts": {
       "delivery_unknown": 7
     },
     "target_outcome_counts": {
-      "no_target_disclosure_observed": 672
+      "no_target_disclosure_observed": 1152
     },
     "overblocked_attempts": 0,
-    "authorized_requests": 1402,
+    "authorized_requests": 2381,
     "blocked_authorized_requests": 0,
     "invalid_evidence": []
   },
   "budget": {
-    "local_conservative_cny": "8.2635316",
+    "local_conservative_cny": "9.8561956",
     "pending_requests": 0,
     "usage_states": {
-      "observed_usage": 2139,
+      "observed_usage": 3646,
       "operator_reconciled_reserved": 5,
       "operator_reconciled_reserved_bill_0": 2
     },
@@ -42,7 +42,7 @@
       "formal": "0.0",
       "project": "0.0",
       "daily": "0.0",
-      "shanghai_day": "2026-11-23"
+      "shanghai_day": "2026-11-24"
     },
     "operator_reconciliations": 7
   },
@@ -319,45 +319,240 @@
       "delivery_unknown": 0,
       "target_disclosure_observed": 0,
       "overblocked": 0
+    },
+    {
+      "group": "B08-r1",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 14,
+      "errors": 2,
+      "invalid_json": 2,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B08-r2",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B08-r3",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 15,
+      "errors": 1,
+      "invalid_json": 1,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B09-r1",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 15,
+      "errors": 1,
+      "invalid_json": 1,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B09-r2",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 24,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B09-r3",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B10-r1",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B10-r2",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 31,
+      "errors": 1,
+      "invalid_json": 1,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B10-r3",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B11-r1",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B11-r2",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B11-r3",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B12-r1",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B12-r2",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 31,
+      "errors": 1,
+      "invalid_json": 1,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "group": "B12-r3",
+      "recorded": 32,
+      "complete_group": true,
+      "completed": 32,
+      "errors": 0,
+      "invalid_json": 0,
+      "transport_error": 0,
+      "reset_failures": 0,
+      "delivery_unknown": 0,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
     }
   ],
   "policies": [
     {
       "policy": "S0",
-      "recorded": 168,
-      "completed": 165,
-      "errors": 3,
-      "target_disclosure_observed": 0,
-      "overblocked": 0
-    },
-    {
-      "policy": "S1",
-      "recorded": 168,
-      "completed": 163,
-      "errors": 5,
-      "target_disclosure_observed": 0,
-      "overblocked": 0
-    },
-    {
-      "policy": "S2",
-      "recorded": 168,
-      "completed": 164,
+      "recorded": 288,
+      "completed": 270,
       "errors": 4,
       "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
+      "policy": "S1",
+      "recorded": 288,
+      "completed": 266,
+      "errors": 8,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
+      "policy": "S2",
+      "recorded": 288,
+      "completed": 269,
+      "errors": 5,
+      "target_disclosure_observed": 0,
+      "overblocked": 0
+    },
+    {
       "policy": "S3",
-      "recorded": 168,
-      "completed": 161,
-      "errors": 7,
+      "recorded": 288,
+      "completed": 266,
+      "errors": 8,
       "target_disclosure_observed": 0,
       "overblocked": 0
     }
   ],
   "source_digests": {
-    "run_ledger_sha256": "7bdc26a53e24fdfc18598f13b95e395a28bce7bf66de14556b7116a95b116315",
-    "score_sha256": "bbbd4b92a62942aae8397f0a6b106a7ea65159aef39097ea0247b152542309e5",
+    "run_ledger_sha256": "09601e40b173b9dccff6dee9f80d5aa3274bf752804d277c98862efe46d491b8",
+    "score_sha256": "d4dee000ab12ffefcaf8155215a25960372e56601a0d33073aea2e6247910db9",
     "frozen_plan_sha256": "9e77ec98d468dc7631a754a57fb750d20233556a9588ad4bc875a18e3f9e690e"
   }
 }

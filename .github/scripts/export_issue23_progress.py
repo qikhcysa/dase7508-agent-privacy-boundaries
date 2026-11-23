@@ -154,9 +154,10 @@ def main() -> int:
     planned_attempts = plan["attempt_count"]
     recorded_attempts = len(rows)
     complete_blocks = recorded_attempts // 32
+    complete_run = recorded_attempts == planned_attempts
     snapshot = {
         "schema_version": "issue23-live-progress-v1",
-        "preliminary": True,
+        "preliminary": not complete_run,
         "generated_at_shanghai": generated,
         "execution_commit": ledger["metadata"]["execution_commit"],
         "protocol_sha256": ledger["metadata"]["protocol_sha256"],
@@ -199,9 +200,11 @@ def main() -> int:
 
     observed_summary = snapshot["observed_summary"]
     lines = [
-        "# Issue 23 live formal progress",
+        "# Issue 23 final formal results" if complete_run else "# Issue 23 live formal progress",
         "",
-        "> Preliminary, incomplete evidence. This branch updates after every two additional complete 32-attempt groups. Missing planned attempts are not failures.",
+        ("> Final derived snapshot: all frozen attempts are recorded and scored."
+         if complete_run else
+         "> Preliminary, incomplete evidence. This branch updates after every two additional complete 32-attempt groups. Missing planned attempts are not failures."),
         "",
         f"Generated: `{generated}` (Asia/Shanghai)  ",
         f"Execution commit: `{snapshot['execution_commit']}`  ",
