@@ -90,10 +90,14 @@ class EgressAdapter:
     def __init__(self, run: dict, registry: ScopedRegistry, *,
                  controller: HttpTransport | ScriptedTransport, trace_path: str | Path,
                  static_allowlist: StaticAllowlist | None = None,
-                 authorization: dict | None = None):
+                 authorization: dict | None = None,
+                 privacy_preamble: bool = True):
         self._run = deepcopy(run)
         validate("run", self._run)
         policy = self._run["policy"]
+        if type(privacy_preamble) is not bool:
+            raise ValueError("privacy_preamble must be a bool")
+        self._privacy_preamble = privacy_preamble
         if (policy == "S3") != (authorization is not None):
             raise ValueError("Only S3 requires trusted contextual authorization.")
         self._contextual_policy = (ContextualPolicy(self._run, registry, authorization)
@@ -286,9 +290,12 @@ class EgressAdapter:
                 if (type(index) is not int or not 0 <= index < len(messages)
                         or not isinstance(handle, str) or handle not in selected):
                     raise RegistryError("invalid_runtime_reference")
-                # The adapter prepends a privacy instruction to the caller's history.
-                references[index + 1] = (handle, selected[handle])
-        payload["messages"] = [{"role": "system", "content": S0_PRIVACY_INSTRUCTION}, *messages]
+                # The adapter prepends a privacy instruction to the caller's history
+                # unless the development-only no-instruction control disables it.
+                offset = 1 if self._privacy_preamble else 0
+                references[index + offset] = (handle, selected[handle])
+        payload["messages"] = (([{"role": "system", "content": S0_PRIVACY_INSTRUCTION}]
+                                if self._privacy_preamble else []) + messages)
         return self._send(payload, recipient="controller", channel="controller",
                           selections=selections, runtime_references=references)
 
