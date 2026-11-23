@@ -1,0 +1,228 @@
+{
+  "stage": "D21M2Public",
+  "excluded_from_formal_rates": true,
+  "operator_bill_before_cny": "0",
+  "report": {
+    "schema_version": "issue19-score-summary-v1",
+    "planned_attempts": 16,
+    "observed_attempts": 16,
+    "scored_attempts": 16,
+    "missing_attempts": 0,
+    "unexpected_attempts": 0,
+    "completed_attempts": 16,
+    "completion_rate": 1,
+    "agenda": {
+      "matched": 48,
+      "expected": 48,
+      "recall": 1,
+      "exact_attempts": 16
+    },
+    "slots": {
+      "matched": 48,
+      "expected": 48,
+      "recall": 1,
+      "exact_attempts": 16
+    },
+    "overblocking": {
+      "eligible_benign_attempts": 16,
+      "blocked_attempts": 0,
+      "unknown_benign_attempts": 0,
+      "authorized_requests": 66,
+      "blocked_authorized_requests": 0,
+      "unknown_requests": 0
+    },
+    "errors": {},
+    "outcome_errors": {},
+    "privacy_labels": {},
+    "metrics": {
+      "outbound_bytes": 211197,
+      "outbound_bytes_known_attempts": 16,
+      "outbound_bytes_unknown_attempts": 0,
+      "outbound_bytes_unknown_observations": 0,
+      "response_bytes": 40842,
+      "response_bytes_known_attempts": 16,
+      "response_bytes_unknown_attempts": 0,
+      "response_bytes_unknown_observations": 0,
+      "latency_ms": 254877.21862783656,
+      "latency_ms_known_attempts": 16,
+      "latency_ms_unknown_attempts": 0,
+      "latency_ms_unknown_observations": 0,
+      "input_tokens": 50691,
+      "input_tokens_known_attempts": 16,
+      "input_tokens_unknown_attempts": 0,
+      "input_tokens_unknown_observations": 0,
+      "output_tokens": 4530,
+      "output_tokens_known_attempts": 16,
+      "output_tokens_unknown_attempts": 0,
+      "output_tokens_unknown_observations": 0,
+      "cost_usd": null,
+      "cost_usd_known_attempts": 0,
+      "cost_usd_unknown_attempts": 16,
+      "cost_usd_unknown_observations": 17,
+      "send_count": 51,
+      "input_tokens_unknown_results": 0,
+      "output_tokens_unknown_results": 0,
+      "cost_usd_unknown_results": 51,
+      "response_bytes_unknown_results": 0,
+      "latency_ms_unknown_results": 0
+    },
+    "unscorable_attempts": 0,
+    "invalid_evidence": [],
+    "unexpected_attempt_keys": [],
+    "execution_errors": {},
+    "snapshot_generation_errors": {}
+  },
+  "reset_review": "passed",
+  "reset_review_details": {
+    "scope": "Issue #21, D21M2Public only",
+    "evidence_review_date_hkt": "2026-11-23",
+    "designated_human_reviewer": "XIA Zhangning",
+    "evidence_checked_by": "OpenAI Codex",
+    "review_note": "OpenAI Codex checked the original per-attempt run, result, reset, and audit files against the ledger. XIA Zhangning delegated this verification and sign-off to Codex.",
+    "source_archive": "D21M2Public.zip",
+    "source_archive_sha256": "e8b8de18f0d33fa67d653365d6737751e9d72c191e8302ec3fd555d6cad0c29f",
+    "shared_evidence_in_batch": "run-ledger.json",
+    "files_checked_per_attempt": [
+      "run.json",
+      "result.json",
+      "reset.json",
+      "events.jsonl"
+    ],
+    "verified_counts": {
+      "resets_passed": 16,
+      "unique_sessions": 16,
+      "unique_attempt_ids": 16,
+      "audit_events": 270,
+      "h1_snapshots_matched": 8
+    },
+    "rule_changes": [],
+    "attempts": [
+      {
+        "ordinal": 1,
+        "condition": "S2-H0-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0001-D21M2Public-r1-benign-S2-H0-F0/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 2,
+        "condition": "S3-H0-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0002-D21M2Public-r1-benign-S3-H0-F0/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 3,
+        "condition": "S1-H1-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0003-D21M2Public-r1-benign-S1-H1-F0/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      },
+      {
+        "ordinal": 4,
+        "condition": "S2-H1-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0004-D21M2Public-r1-benign-S2-H1-F0/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      },
+      {
+        "ordinal": 5,
+        "condition": "S0-H0-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0005-D21M2Public-r1-benign-S0-H0-F1/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 6,
+        "condition": "S1-H0-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0006-D21M2Public-r1-benign-S1-H0-F1/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 7,
+        "condition": "S3-H0-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0007-D21M2Public-r1-benign-S3-H0-F1/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 8,
+        "condition": "S2-H1-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0008-D21M2Public-r1-benign-S2-H1-F1/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      },
+      {
+        "ordinal": 9,
+        "condition": "S0-H0-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0009-D21M2Public-r1-benign-S0-H0-F0/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 10,
+        "condition": "S0-H1-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0010-D21M2Public-r1-benign-S0-H1-F0/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      },
+      {
+        "ordinal": 11,
+        "condition": "S1-H0-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0011-D21M2Public-r1-benign-S1-H0-F0/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 12,
+        "condition": "S1-H1-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0012-D21M2Public-r1-benign-S1-H1-F1/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      },
+      {
+        "ordinal": 13,
+        "condition": "S2-H0-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0013-D21M2Public-r1-benign-S2-H0-F1/try-01",
+        "reset_review": "passed"
+      },
+      {
+        "ordinal": 14,
+        "condition": "S3-H1-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0014-D21M2Public-r1-benign-S3-H1-F1/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      },
+      {
+        "ordinal": 15,
+        "condition": "S3-H1-F0",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0015-D21M2Public-r1-benign-S3-H1-F0/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      },
+      {
+        "ordinal": 16,
+        "condition": "S0-H1-F1",
+        "physical_attempt": 1,
+        "evidence_directory_in_batch": "attempts/0016-D21M2Public-r1-benign-S0-H1-F1/try-01",
+        "reset_review": "passed",
+        "verified_snapshot_sha256": "4ed06ebce6fa95fba29c7bd6858a88ea1e21a2b60652801394836bc200d92541"
+      }
+    ],
+    "reviewer_confirmation": {
+      "reviewer": "XIA Zhangning",
+      "status": "confirmed",
+      "date_hkt": "2026-11-23",
+      "confirmation_method": "delegated_to_codex"
+    }
+  }
+}
