@@ -119,6 +119,28 @@ class RunnerExecutionTests(unittest.TestCase):
         saved = json.loads((self.root / "run" / "run-ledger.json").read_text(encoding="utf-8"))
         self.assertIsNotNone(saved["finished_at"])
 
+    def test_checkpoint_resume_keeps_prefix_and_metadata(self):
+        plan = self.one_plan(policies=("S0", "S1"))
+        calls = []
+
+        def executor(condition, directory, _snapshot):
+            calls.append(condition["attempt_key"])
+            directory.mkdir()
+            return self.result()
+
+        root = self.root / "resumable"
+        metadata = {"phase": "formal", "protocol_sha256": "a" * 64}
+        first = run_plan(plan, root, executor, max_new_conditions=1, metadata=metadata)
+        self.assertEqual(len(first["attempts"]), 1)
+        self.assertIsNone(first["finished_at"])
+        resumed = run_plan(plan, root, executor, resume=True, max_new_conditions=1,
+                           metadata=metadata)
+        self.assertEqual(len(resumed["attempts"]), 2)
+        self.assertIsNotNone(resumed["finished_at"])
+        self.assertEqual(calls, [item["attempt_key"] for item in plan["blocks"][0]["attempts"]])
+        with self.assertRaisesRegex(RunnerError, "resume_ledger_changed"):
+            run_plan(plan, root, executor, resume=True, metadata={"phase": "changed"})
+
     def test_failed_reset_turns_a_completed_executor_into_an_error(self):
         def executor(_condition, directory, _snapshot):
             directory.mkdir()
