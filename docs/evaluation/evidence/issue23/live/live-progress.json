@@ -53,11 +53,13 @@
       "complete_group": true,
       "completed": 30,
       "errors": 2,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 1,
       "reset_failures": 0,
       "delivery_unknown": 1,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -66,11 +68,13 @@
       "complete_group": true,
       "completed": 26,
       "errors": 6,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 6,
       "reset_failures": 0,
       "delivery_unknown": 6,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -79,11 +83,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -92,11 +98,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -105,11 +113,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -118,11 +128,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -131,11 +143,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -144,11 +158,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -157,11 +173,13 @@
       "complete_group": true,
       "completed": 31,
       "errors": 1,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -170,11 +188,13 @@
       "complete_group": true,
       "completed": 29,
       "errors": 3,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 3,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -183,11 +203,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -196,11 +218,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -209,11 +233,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -222,11 +248,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -235,11 +263,13 @@
       "complete_group": true,
       "completed": 29,
       "errors": 3,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 3,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -248,11 +278,13 @@
       "complete_group": true,
       "completed": 31,
       "errors": 1,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -261,11 +293,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -274,11 +308,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -287,11 +323,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -300,11 +338,13 @@
       "complete_group": true,
       "completed": 30,
       "errors": 2,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 2,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -313,11 +353,13 @@
       "complete_group": true,
       "completed": 31,
       "errors": 1,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -326,11 +368,13 @@
       "complete_group": true,
       "completed": 14,
       "errors": 2,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 2,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -339,11 +383,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -352,11 +398,13 @@
       "complete_group": true,
       "completed": 15,
       "errors": 1,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -365,11 +413,13 @@
       "complete_group": true,
       "completed": 15,
       "errors": 1,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -378,11 +428,13 @@
       "complete_group": true,
       "completed": 24,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -391,11 +443,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -404,11 +458,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -417,11 +473,13 @@
       "complete_group": true,
       "completed": 31,
       "errors": 1,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -430,11 +488,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -443,11 +503,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -456,11 +518,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -469,11 +533,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -482,11 +548,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -495,11 +563,13 @@
       "complete_group": true,
       "completed": 31,
       "errors": 1,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 1,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     },
     {
@@ -508,11 +578,13 @@
       "complete_group": true,
       "completed": 32,
       "errors": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "invalid_json": 0,
       "transport_error": 0,
       "reset_failures": 0,
       "delivery_unknown": 0,
-      "target_disclosure_observed": 0,
       "overblocked": 0
     }
   ],
@@ -522,7 +594,9 @@
       "recorded": 288,
       "completed": 270,
       "errors": 4,
-      "target_disclosure_observed": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "overblocked": 0
     },
     {
@@ -530,7 +604,9 @@
       "recorded": 288,
       "completed": 266,
       "errors": 8,
-      "target_disclosure_observed": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "overblocked": 0
     },
     {
@@ -538,7 +614,9 @@
       "recorded": 288,
       "completed": 269,
       "errors": 5,
-      "target_disclosure_observed": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "overblocked": 0
     },
     {
@@ -546,7 +624,9 @@
       "recorded": 288,
       "completed": 266,
       "errors": 8,
-      "target_disclosure_observed": 0,
+      "target_confirmed": 0,
+      "target_unconfirmed": 0,
+      "target_disclosures": 0,
       "overblocked": 0
     }
   ],
