@@ -10,6 +10,8 @@ issues #23 and #24 execute formal attempts.
 
 For the separate 64 development attempts and 32 same-process identity controls,
 use the [Issue 21 operator and reset checklist](ISSUE21.md).
+The [dated Issue 22 protocol](ISSUE22_2026-11-23.md) records the selected
+formal sample, input versions, scoring rules, spending limits and offline checks.
 
 The smoke command runs the repository's synthetic benign T01 fixture once per
 S0--S3, H0/H1, and F0/F1 combination, for 16 attempts. It generates one H1
