@@ -1,0 +1,433 @@
+{
+  "classification": {
+    "issue": 21,
+    "evidence_kind": "offline_preflight",
+    "fixture_variant": "benign",
+    "excluded_from_formal_rates": true,
+    "counts_toward_64": false,
+    "counts_toward_32": false,
+    "transport": "scripted",
+    "human_reset_review": "pending"
+  },
+  "checks": {
+    "matrix": true,
+    "all_resets": true,
+    "unique_trials_and_sessions": true,
+    "one_generation": true,
+    "loss_visible_in_summary": true,
+    "mismatched_identities_denied": true,
+    "failed_send_preserved": true
+  },
+  "fixture_sha256": "d7245488b266c36752343ec50b82773f98c1f4334f08488283d8b9a7d67c6844",
+  "snapshot_sha256": "aea1b597d7eb7d88162576dabfeef9dc8e6af25c6c2f6b79442af2ba21ac9318",
+  "summary_text": "Confirm the prototype boundary",
+  "retained_agenda": [
+    "Confirm the prototype boundary"
+  ],
+  "omitted_agenda": [
+    "Assign T01 implementation and review",
+    "Agree on a pilot verification command"
+  ],
+  "score_summary": {
+    "schema_version": "issue19-score-summary-v1",
+    "planned_attempts": 16,
+    "observed_attempts": 16,
+    "scored_attempts": 16,
+    "missing_attempts": 0,
+    "unexpected_attempts": 0,
+    "completed_attempts": 16,
+    "completion_rate": 1.0,
+    "agenda": {
+      "matched": 48,
+      "expected": 48,
+      "recall": 1.0,
+      "exact_attempts": 16
+    },
+    "slots": {
+      "matched": 48,
+      "expected": 48,
+      "recall": 1.0,
+      "exact_attempts": 16
+    },
+    "overblocking": {
+      "eligible_benign_attempts": 16,
+      "blocked_attempts": 0,
+      "unknown_benign_attempts": 0,
+      "authorized_requests": 72,
+      "blocked_authorized_requests": 0,
+      "unknown_requests": 0
+    },
+    "errors": {},
+    "outcome_errors": {},
+    "privacy_labels": {},
+    "metrics": {
+      "outbound_bytes": 213720,
+      "outbound_bytes_known_attempts": 16,
+      "outbound_bytes_unknown_attempts": 0,
+      "outbound_bytes_unknown_observations": 0,
+      "response_bytes": 25324,
+      "response_bytes_known_attempts": 16,
+      "response_bytes_unknown_attempts": 0,
+      "response_bytes_unknown_observations": 0,
+      "latency_ms": 3.573300000425661,
+      "latency_ms_known_attempts": 16,
+      "latency_ms_unknown_attempts": 0,
+      "latency_ms_unknown_observations": 0,
+      "input_tokens": 580,
+      "input_tokens_known_attempts": 16,
+      "input_tokens_unknown_attempts": 0,
+      "input_tokens_unknown_observations": 0,
+      "output_tokens": 292,
+      "output_tokens_known_attempts": 16,
+      "output_tokens_unknown_attempts": 0,
+      "output_tokens_unknown_observations": 0,
+      "cost_usd": null,
+      "cost_usd_known_attempts": 0,
+      "cost_usd_unknown_attempts": 16,
+      "cost_usd_unknown_observations": 17,
+      "send_count": 57,
+      "input_tokens_unknown_results": 0,
+      "output_tokens_unknown_results": 0,
+      "cost_usd_unknown_results": 57,
+      "response_bytes_unknown_results": 0,
+      "latency_ms_unknown_results": 0
+    },
+    "unscorable_attempts": 0,
+    "invalid_evidence": [],
+    "unexpected_attempt_keys": [],
+    "execution_errors": {},
+    "snapshot_generation_errors": {}
+  },
+  "attempts": [
+    {
+      "condition": "T01-r1-benign-S2-H1-F1",
+      "directory": "attempts/0001-T01-r1-benign-S2-H1-F1/try-01",
+      "bundle_sha256": "d94d9f97bb3919bac5032445e957681f863cc813c792d3ca1eccb7ecb9a1bc71",
+      "status": "completed",
+      "error": null,
+      "session": "session_0edc7d81e973438c8fc6c8b5604e507b",
+      "trial": "trial_defad9556ec54aa1978d5af23dee6051",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S0-H0-F1",
+      "directory": "attempts/0002-T01-r1-benign-S0-H0-F1/try-01",
+      "bundle_sha256": "104f38102c7c8a69c3b5ba7c53ad099c0c32bc38bc8de4f447a26f044a431b12",
+      "status": "completed",
+      "error": null,
+      "session": "session_9a857cd8c9c04e6396ec32e4309a7518",
+      "trial": "trial_cfde9eb458994e42b0ea557bb5a12cff",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S2-H0-F0",
+      "directory": "attempts/0003-T01-r1-benign-S2-H0-F0/try-01",
+      "bundle_sha256": "ebb4ecfd2e4a6c1ed6ee27072cbf457616eb9f1c91a66303e677fe5d0b62ba07",
+      "status": "completed",
+      "error": null,
+      "session": "session_89ea408c84d74a568318973b48dfbf45",
+      "trial": "trial_9a92ba67428140058d0c18c281337408",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S2-H1-F0",
+      "directory": "attempts/0004-T01-r1-benign-S2-H1-F0/try-01",
+      "bundle_sha256": "b7e50b21e450cc9c7d5f7d77d136ea509bde3cd599f15a80e1c484d69a527f98",
+      "status": "completed",
+      "error": null,
+      "session": "session_aed66fa65e0645939947590bfa4fc80b",
+      "trial": "trial_876a20d574eb4ea3b44e43042f3c8303",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S2-H0-F1",
+      "directory": "attempts/0005-T01-r1-benign-S2-H0-F1/try-01",
+      "bundle_sha256": "b81da092a4259a963902b8c990b281641b57a6e3dfeffe2e1e3e394d5b17f886",
+      "status": "completed",
+      "error": null,
+      "session": "session_16cea931082b4777aeefdb49d2a0ae39",
+      "trial": "trial_5cd7a27f8fc44c48a0c6acbb06033c3b",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S1-H1-F0",
+      "directory": "attempts/0006-T01-r1-benign-S1-H1-F0/try-01",
+      "bundle_sha256": "dbde8f223a8996aa3c8571d6aecf28e626733b15181978e5e04228a68beb0c92",
+      "status": "completed",
+      "error": null,
+      "session": "session_756c2702842445468e690de79ddd5473",
+      "trial": "trial_7a95cb2a5a1c4271a5bdff10df5cd32b",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S0-H1-F0",
+      "directory": "attempts/0007-T01-r1-benign-S0-H1-F0/try-01",
+      "bundle_sha256": "f5bf67034a6aaadff554eba8345feb4231dc97b7f63cbac79465bc708b72020b",
+      "status": "completed",
+      "error": null,
+      "session": "session_a6823156b7524c25b45501bcbff6e520",
+      "trial": "trial_af6b5b56d35f474d87ee79b1ab2a170c",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S0-H0-F0",
+      "directory": "attempts/0008-T01-r1-benign-S0-H0-F0/try-01",
+      "bundle_sha256": "9c3ff372ebb71fb57bff96dd9a88c0719dcb79626b2fefa5e13b64f021ff8aa0",
+      "status": "completed",
+      "error": null,
+      "session": "session_40a9fd766db34876950321e9220a981e",
+      "trial": "trial_238ce1157ded46e990727527a2b89bb7",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S3-H1-F0",
+      "directory": "attempts/0009-T01-r1-benign-S3-H1-F0/try-01",
+      "bundle_sha256": "c482be1e13593ad563620a342521374b7d8fa6697dab0a2785bacc96b96ac7a7",
+      "status": "completed",
+      "error": null,
+      "session": "session_30951ffed53341349906c0b76bd619f8",
+      "trial": "trial_8eecfa1c1c534bb98280dd503714dd8f",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S3-H0-F0",
+      "directory": "attempts/0010-T01-r1-benign-S3-H0-F0/try-01",
+      "bundle_sha256": "48ab8c5a708ea66c7e9e86bc80984bbdd0ce922492f96cb282002d66f641f276",
+      "status": "completed",
+      "error": null,
+      "session": "session_2fb657b9ce82479b9bc69f54864778f2",
+      "trial": "trial_548ff725ba0f42d59c1b6ea7f5b8a157",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S1-H0-F0",
+      "directory": "attempts/0011-T01-r1-benign-S1-H0-F0/try-01",
+      "bundle_sha256": "dc478cac7d1212c5e28bc5af7a3fb44948e564db6ce1794f9af114cad3db11bb",
+      "status": "completed",
+      "error": null,
+      "session": "session_e54f2a7d0036460d9a708f5d4dfaea54",
+      "trial": "trial_07c6c8dbd77440baa6d9b7461fb4013e",
+      "tool_calls": 2,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S1-H0-F1",
+      "directory": "attempts/0012-T01-r1-benign-S1-H0-F1/try-01",
+      "bundle_sha256": "6da45c3e5ebed3f1e915b823aa2bc2e218e8ec4aca9057719ead97d35912cf93",
+      "status": "completed",
+      "error": null,
+      "session": "session_5593b057206a47c087157de4284765ff",
+      "trial": "trial_9e5e9e31644d4cc4968527cf4c45e8da",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S3-H0-F1",
+      "directory": "attempts/0013-T01-r1-benign-S3-H0-F1/try-01",
+      "bundle_sha256": "1dead1844f4645483901dc4a0ae9d7781255b5c4a854c506ab7093fd12afa001",
+      "status": "completed",
+      "error": null,
+      "session": "session_7d3f208be35d45b38e37ada232f9368e",
+      "trial": "trial_3ca9b88368774a4bb8f72b997e66ca74",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S0-H1-F1",
+      "directory": "attempts/0014-T01-r1-benign-S0-H1-F1/try-01",
+      "bundle_sha256": "52378f21467d921ccc5884b356ae4791b3704bc17cf17cb935964035792587a2",
+      "status": "completed",
+      "error": null,
+      "session": "session_ffa0cf9fb24f48d4b84578cbb864a4e6",
+      "trial": "trial_077ec4c1774a404c982c3caca63ddfdd",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S3-H1-F1",
+      "directory": "attempts/0015-T01-r1-benign-S3-H1-F1/try-01",
+      "bundle_sha256": "35e97f7135bc9683b6ada846e79380528d31ed3002e7f6980072f555d1d53335",
+      "status": "completed",
+      "error": null,
+      "session": "session_c6d4fc115454435a8163a6052ffe0e71",
+      "trial": "trial_1ee9833a759c48aa9eb6417d31e0e844",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    },
+    {
+      "condition": "T01-r1-benign-S1-H1-F1",
+      "directory": "attempts/0016-T01-r1-benign-S1-H1-F1/try-01",
+      "bundle_sha256": "8694f4be69f16bd84019e17690df6e8df9b6215d5319da3cf8a073aabbc9859b",
+      "status": "completed",
+      "error": null,
+      "session": "session_447f69f194a346f09e155994089d832b",
+      "trial": "trial_45608f1698a14f5c9d05ef12196149bd",
+      "tool_calls": 3,
+      "reset_ok": true,
+      "reset": {
+        "bindings_before": 6,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      }
+    }
+  ],
+  "identity_diagnostics": {
+    "user_id": {
+      "changed": {
+        "user_id": "other_user"
+      },
+      "error": "handoff_scope_mismatch",
+      "scripted_requests": 0,
+      "load": {
+        "allowed": false,
+        "reason": "handoff_scope_mismatch",
+        "summary_loaded": false
+      },
+      "reset": {
+        "bindings_before": 0,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      },
+      "passed": true
+    },
+    "task_id": {
+      "changed": {
+        "task_id": "other_task"
+      },
+      "error": "handoff_scope_mismatch",
+      "scripted_requests": 0,
+      "load": {
+        "allowed": false,
+        "reason": "handoff_scope_mismatch",
+        "summary_loaded": false
+      },
+      "reset": {
+        "bindings_before": 0,
+        "bindings_after": 0,
+        "conversation_cleared": true,
+        "audit_preserved": true
+      },
+      "passed": true
+    }
+  },
+  "transport_failure": {
+    "error": "transport_error",
+    "deliveries": [
+      "delivery_unknown"
+    ],
+    "usage": {
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    "reset": {
+      "bindings_before": 5,
+      "bindings_after": 0,
+      "conversation_cleared": true,
+      "audit_preserved": true
+    },
+    "passed": true
+  }
+}
