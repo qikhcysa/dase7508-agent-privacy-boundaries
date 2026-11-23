@@ -152,6 +152,11 @@ can appear in both `authorized_requests` and `unknown_requests`.
 Standalone bundle discovery remains available when neither run manifest is
 present.
 
+The formal supplemental entry point is documented in
+[ISSUE24.md](ISSUE24.md). It expands the frozen supplement manifest to 240
+attempts, inherits the completed Issue 23 budget ledger, preserves persistence
+pairs, and reports the three supplemental families separately from the core.
+
 ## Verification
 
 The offline checks make no API calls:

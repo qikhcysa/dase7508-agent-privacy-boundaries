@@ -403,6 +403,7 @@ def run_plan(
     resume: bool = False,
     max_new_conditions: int | None = None,
     metadata: dict[str, Any] | None = None,
+    plan_validator: Callable[[dict[str, Any]], None] = validate_plan,
 ) -> dict[str, Any]:
     """Execute a plan without carrying mutable state between ordinary attempts.
 
@@ -411,14 +412,14 @@ def run_plan(
     Every try is retained. A retry occurs only for an explicitly declared error.
     An optional observer can stop the run after the condition's evidence is saved.
     """
-    validate_plan(plan)
+    plan_validator(plan)
     if type(max_retries) is not int or max_retries < 0:
         raise RunnerError("invalid_retry_limit")
     retryable = set(retryable_errors)
     if any(not isinstance(item, str) or not item for item in retryable):
         raise RunnerError("invalid_retryable_error")
     if snapshot_provider is None and any(
-        attempt["handoff"] == "H1"
+        attempt["handoff_snapshot_key"] is not None
         for block in plan["blocks"] for attempt in block["attempts"]
     ):
         raise RunnerError("h1_snapshot_provider_required")
@@ -588,11 +589,16 @@ def run_plan(
                         _check_snapshot(snapshot_path, snapshot)
                     except RunnerError as exc:
                         snapshot["error_type"] = str(exc)
-                    try:
-                        _record_snapshot_use(target, execution, snapshot)
-                    except RunnerError as exc:
-                        if not interrupted:
-                            execution.update(status="error", error_type=str(exc))
+                    evidence_role = planned.get("snapshot_evidence_role", "handoff")
+                    if evidence_role == "handoff":
+                        try:
+                            _record_snapshot_use(target, execution, snapshot)
+                        except RunnerError as exc:
+                            if not interrupted:
+                                execution.update(status="error", error_type=str(exc))
+                    else:
+                        execution["snapshot_sha256"] = snapshot["sha256"]
+                        execution["used_snapshot_path"] = snapshot["path"]
                     if snapshot["error_type"] is not None and not interrupted:
                         execution.update(status="error", error_type=snapshot["error_type"])
                 if not execution["reset_ok"]:
