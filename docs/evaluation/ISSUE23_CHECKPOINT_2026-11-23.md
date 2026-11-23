@@ -4,7 +4,7 @@ This record supports [Issue #23](https://github.com/qikhcysa/dase7508-agent-priv
 
 ## Proposed reporting boundary
 
-The [remote checkpoint](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/blob/codex/issue23-live-results/docs/evaluation/evidence/issue23/live/live-progress.json) published on 2026-11-23 at 21:56:59 Asia/Shanghai contains 672 recorded attempts from 21 complete blocks. There are 653 completed tasks and 19 errors. The formal plan contains 1,152 attempts. Coverage is reported as of the snapshot.
+The [remote checkpoint](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/blob/codex/issue23-live-results/docs/evaluation/evidence/issue23/live/live-progress.json) generated on 2026-11-23 at 21:56:59 Asia/Shanghai contains 672 recorded attempts from 21 complete blocks. There are 653 completed tasks and 19 errors. The formal plan contains 1,152 attempts. Coverage is reported as of the snapshot.
 
 | Reference | Identifier |
 | --- | --- |
@@ -14,7 +14,7 @@ The [remote checkpoint](https://github.com/qikhcysa/dase7508-agent-privacy-bound
 | Frozen plan SHA-256 reported by the checkpoint | `9e77ec98d468dc7631a754a57fb750d20233556a9588ad4bc875a18e3f9e690e` |
 | Formal protocol identifier reported by the checkpoint | `996a654ebc6b0486015d767e856bffa3369401ad5dc5de90639eff9c4aba86f3` |
 
-Use the end of the 672-attempt checkpoint as the proposed boundary. Confirm the actual boundary from the first affected run record before assigning any result to a new execution period. A checkpoint timestamp is the publication time.
+Use the end of the 672-attempt checkpoint as the proposed boundary. Confirm the actual boundary from the first affected run record before assigning any result to a new execution period. The snapshot timestamp records its generation time.
 
 ## Report results across the boundary
 
