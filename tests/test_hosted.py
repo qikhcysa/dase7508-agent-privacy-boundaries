@@ -107,6 +107,29 @@ class HostedTests(unittest.TestCase):
         for path in (self.directory / "attempt").glob("*.json*"):
             self.assertNotIn(self.config.api_key, path.read_text(encoding="utf-8"))
 
+    def test_formal_attacked_s1_s2_records_protocol_identity(self):
+        protocol = "a" * 64
+        for policy in ("S1", "S2"):
+            with self.subTest(policy=policy):
+                directory = self.directory / ("formal_" + policy)
+                result = run_agent(
+                    self.config, output_dir=directory, transport=SyntheticModel(),
+                    document_variant="attacked", policy=policy, phase="formal",
+                    protocol_sha256=protocol,
+                )
+                bundle = load_json(directory / "bundle.json")
+                validate("bundle", bundle)
+                self.assertEqual(bundle["run"]["phase"], "formal")
+                self.assertEqual(bundle["run"]["protocol_sha256"], protocol)
+                manifest = load_json(directory / "manifest.json")
+                self.assertEqual(manifest["phase"], "formal")
+                self.assertEqual(manifest["protocol_sha256"], protocol)
+                self.assertEqual(result["status"], "completed")
+
+        with self.assertRaisesRegex(ValueError, "formal_protocol_sha256_required"):
+            run_agent(self.config, output_dir=self.directory / "missing_protocol",
+                      transport=SyntheticModel(), phase="formal")
+
     def test_f1_timeout_uses_common_recovery_and_preserves_completion(self):
         model = SyntheticModel()
         result, bundle = self.run_attempt(model, name="f1", fault="F1")

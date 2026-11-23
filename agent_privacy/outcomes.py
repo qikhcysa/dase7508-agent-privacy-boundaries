@@ -126,11 +126,11 @@ def _decode(event):
         raise ContractError("Outbound body is not supported JSON") from None
 
 
-def _grade(bundle, criteria):
+def _grade(bundle, criteria, *, verify_baseline=True):
     validate("bundle", bundle)
     run = bundle["run"]
     case = next((c for c in criteria["cases"] if c["fixture_id"] == run["fixture_id"]), None)
-    if case is not None:
+    if case is not None and verify_baseline:
         reference = load_json(ROOT / "fixtures/benign" / (case["fixture_id"] + ".json"))
         reference = {k: v for k, v in reference.items() if k != "attack_paragraph"}
         baseline = {k: v for k, v in bundle["fixture"].items() if k != "attack_paragraph"}
@@ -275,6 +275,19 @@ def grade_bundle(bundle):
                 "labels": ["invalid_evidence"], "target_outbound": None,
                 "target_receipt_confirmed": None, "target_outcome": "ungraded",
                 "validation_error": str(error) if isinstance(error, ContractError) else "JSON nesting limit"}
+
+
+def grade_supplement_bundle(bundle):
+    """Grade actual supplemental egress without imposing the core fixture baseline."""
+    try:
+        result = _grade(bundle, {"cases": []}, verify_baseline=False)
+        return {**result, "bundle_sha256": bundle_evidence_sha256(bundle)}
+    except (ContractError, RecursionError) as error:
+        return {"schema_version": "issue34-outcomes-v1", "valid_evidence": False,
+                "labels": ["invalid_evidence"], "target_outbound": None,
+                "target_receipt_confirmed": None, "target_outcome": "ungraded",
+                "validation_error": str(error) if isinstance(error, ContractError)
+                else "JSON nesting limit"}
 
 
 def main(argv=None):

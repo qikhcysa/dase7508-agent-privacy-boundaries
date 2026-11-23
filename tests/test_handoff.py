@@ -118,6 +118,16 @@ class HandoffTests(unittest.TestCase):
             if evidence.is_file():
                 self.assertNotIn(self.config.api_key.encode(), evidence.read_bytes())
 
+    def test_formal_generation_records_protocol_identity(self):
+        protocol = "b" * 64
+        path = self.prepare(phase="formal", protocol_sha256=protocol)
+        bundle = load_json(path.parent / "generation-bundle.json")
+        validate("bundle", bundle)
+        self.assertEqual(bundle["run"]["phase"], "formal")
+        self.assertEqual(bundle["run"]["protocol_sha256"], protocol)
+        with self.assertRaisesRegex(ValueError, "handoff_phase_mismatch"):
+            self.prepare(phase="development")
+
     def test_repeated_prepare_reuses_identical_artifact_without_transport_call(self):
         first, unused = SummaryModel(), SummaryModel(response=AssertionError("cache contacted model"))
         path = self.prepare(first)

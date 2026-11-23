@@ -400,6 +400,10 @@ def run_plan(
     after_condition: Callable[[dict[str, Any]], None] | None = None,
     max_retries: int = 0,
     retryable_errors: Iterable[str] = (),
+    resume: bool = False,
+    max_new_conditions: int | None = None,
+    metadata: dict[str, Any] | None = None,
+    plan_validator: Callable[[dict[str, Any]], None] = validate_plan,
 ) -> dict[str, Any]:
     """Execute a plan without carrying mutable state between ordinary attempts.
 
@@ -408,37 +412,90 @@ def run_plan(
     Every try is retained. A retry occurs only for an explicitly declared error.
     An optional observer can stop the run after the condition's evidence is saved.
     """
-    validate_plan(plan)
+    plan_validator(plan)
     if type(max_retries) is not int or max_retries < 0:
         raise RunnerError("invalid_retry_limit")
     retryable = set(retryable_errors)
     if any(not isinstance(item, str) or not item for item in retryable):
         raise RunnerError("invalid_retryable_error")
     if snapshot_provider is None and any(
-        attempt["handoff"] == "H1"
+        attempt["handoff_snapshot_key"] is not None
         for block in plan["blocks"] for attempt in block["attempts"]
     ):
         raise RunnerError("h1_snapshot_provider_required")
+    if max_new_conditions is not None and (
+        type(max_new_conditions) is not int or max_new_conditions < 1
+    ):
+        raise RunnerError("invalid_condition_limit")
+    if metadata is not None and not isinstance(metadata, dict):
+        raise RunnerError("invalid_run_metadata")
     root = Path(output_dir).resolve()
-    root.mkdir(parents=True, exist_ok=False)
-    _write_json(root / "plan.json", plan)
-    ledger = {
-        "schema_version": LEDGER_VERSION,
-        "plan_sha256": plan_sha256(plan),
-        "started_at": datetime.now(timezone.utc).isoformat(),
-        "finished_at": None,
-        "max_retries": max_retries,
-        "retryable_errors": sorted(retryable),
-        "snapshots": [],
-        "attempts": [],
-    }
     ledger_path = root / "run-ledger.json"
-    _write_ledger(ledger_path, ledger)
+    if resume:
+        try:
+            saved_plan = json.loads((root / "plan.json").read_text(encoding="utf-8"))
+            ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, UnicodeError):
+            raise RunnerError("resume_evidence_unreadable") from None
+        if saved_plan != plan or ledger.get("plan_sha256") != plan_sha256(plan):
+            raise RunnerError("resume_plan_changed")
+        if (ledger.get("schema_version") != LEDGER_VERSION
+                or ledger.get("max_retries") != max_retries
+                or ledger.get("retryable_errors") != sorted(retryable)
+                or ledger.get("metadata") != metadata
+                or not isinstance(ledger.get("snapshots"), list)
+                or not isinstance(ledger.get("attempts"), list)):
+            raise RunnerError("resume_ledger_changed")
+        ledger["finished_at"] = None
+    else:
+        root.mkdir(parents=True, exist_ok=False)
+        _write_json(root / "plan.json", plan)
+        ledger = {
+            "schema_version": LEDGER_VERSION,
+            "plan_sha256": plan_sha256(plan),
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "finished_at": None,
+            "max_retries": max_retries,
+            "retryable_errors": sorted(retryable),
+            "metadata": deepcopy(metadata),
+            "snapshots": [],
+            "attempts": [],
+        }
+        _write_ledger(ledger_path, ledger)
     snapshots: dict[str, dict[str, Any]] = {}
+    for snapshot in ledger["snapshots"]:
+        key = snapshot.get("snapshot_key") if isinstance(snapshot, dict) else None
+        if not isinstance(key, str) or key in snapshots:
+            raise RunnerError("resume_snapshot_changed")
+        snapshots[key] = snapshot
+    ordered_conditions = [
+        condition for block in plan["blocks"] for condition in block["attempts"]
+    ]
+    existing = ledger["attempts"]
+    if len(existing) > len(ordered_conditions):
+        raise RunnerError("resume_attempts_changed")
+    for index, record in enumerate(existing):
+        if (not isinstance(record, dict)
+                or record.get("ordinal") != index + 1
+                or record.get("attempt_key") != ordered_conditions[index]["attempt_key"]
+                or record.get("condition") != ordered_conditions[index]):
+            raise RunnerError("resume_attempts_changed")
+        executions = record.get("executions")
+        if not isinstance(executions, list) or record.get("selected_try") not in (
+            None, *(execution.get("try") for execution in executions if isinstance(execution, dict))
+        ):
+            raise RunnerError("resume_attempts_changed")
+    new_conditions = 0
     ordinal = 0
     for block in plan["blocks"]:
         for planned in block["attempts"]:
             ordinal += 1
+            if ordinal <= len(existing):
+                continue
+            if max_new_conditions is not None and new_conditions >= max_new_conditions:
+                _write_ledger(ledger_path, ledger)
+                return ledger
+            new_conditions += 1
             attempt_record = {
                 "ordinal": ordinal,
                 "attempt_key": planned["attempt_key"],
@@ -532,11 +589,16 @@ def run_plan(
                         _check_snapshot(snapshot_path, snapshot)
                     except RunnerError as exc:
                         snapshot["error_type"] = str(exc)
-                    try:
-                        _record_snapshot_use(target, execution, snapshot)
-                    except RunnerError as exc:
-                        if not interrupted:
-                            execution.update(status="error", error_type=str(exc))
+                    evidence_role = planned.get("snapshot_evidence_role", "handoff")
+                    if evidence_role == "handoff":
+                        try:
+                            _record_snapshot_use(target, execution, snapshot)
+                        except RunnerError as exc:
+                            if not interrupted:
+                                execution.update(status="error", error_type=str(exc))
+                    else:
+                        execution["snapshot_sha256"] = snapshot["sha256"]
+                        execution["used_snapshot_path"] = snapshot["path"]
                     if snapshot["error_type"] is not None and not interrupted:
                         execution.update(status="error", error_type=snapshot["error_type"])
                 if not execution["reset_ok"]:

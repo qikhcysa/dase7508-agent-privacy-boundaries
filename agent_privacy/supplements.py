@@ -169,6 +169,7 @@ def retained_summary(case: dict, artifact_path: str | Path, *, repetition: int =
             or meta["original_scope"]["task_id"] != case["task1_task_id"]):
         raise ValueError("unexpected task-one summary provenance")
     return {"text": record["value"]["text"], "source_metadata": deepcopy(meta),
+            "records": deepcopy(artifact["records"]),
             "artifact_id": artifact["handoff"]["artifact_id"],
             "summary_sha256": artifact["summary_sha256"],
             "loaded_message_role": "tool", "original_task_id": case["task1_task_id"],

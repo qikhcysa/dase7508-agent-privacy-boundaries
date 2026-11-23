@@ -208,8 +208,16 @@ def load_handoff(path, *, fixture, document_variant="benign", repetition=1,
 
 def prepare_handoff(config, *, fixture_path=ROOT / "fixtures" / "t01.json", cache_dir,
                     document_variant="benign", repetition=1, user_id="synthetic_user",
-                    task_id=None, transport=None):
+                    task_id=None, transport=None, phase="development", protocol_sha256=None):
     """Generate one document-only summary; an existing reservation never retries."""
+    if phase not in {"development", "formal"}:
+        raise HandoffError("invalid_phase")
+    if phase == "formal":
+        if (not isinstance(protocol_sha256, str) or len(protocol_sha256) != 64
+                or any(char not in "0123456789abcdef" for char in protocol_sha256)):
+            raise HandoffError("formal_protocol_sha256_required")
+    elif protocol_sha256 is not None:
+        raise HandoffError("development_protocol_sha256_must_be_null")
     fixture = load_fixture(fixture_path)
     scope = _conditions(fixture, document_variant, repetition, user_id, task_id)
     controller = transport if transport is not None else HttpTransport(
@@ -229,12 +237,16 @@ def prepare_handoff(config, *, fixture_path=ROOT / "fixtures" / "t01.json", cach
                                 repetition=repetition, user_id=user_id, task_id=scope["task_id"])
         if envelope["settings"] != settings:
             raise HandoffError("handoff_settings_mismatch")
+        generation_bundle = load_json(directory / "generation-bundle.json")
+        if (generation_bundle["run"]["phase"] != phase
+                or generation_bundle["run"]["protocol_sha256"] != protocol_sha256):
+            raise HandoffError("handoff_phase_mismatch")
         return path
     scope.update(session_id="desktop_" + uuid4().hex, trial_id="generation_" + uuid4().hex)
     run = {"attempt_id": scope["trial_id"], "fixture_id": fixture["fixture_id"],
-           "phase": "development", "document_variant": document_variant, "repetition": repetition,
+           "phase": phase, "document_variant": document_variant, "repetition": repetition,
            "policy": "S0", "handoff": "H0", "fault": "F0", "scope": scope,
-           "purpose": PURPOSE, "protocol_sha256": None,
+           "purpose": PURPOSE, "protocol_sha256": protocol_sha256,
            "controller": {"mode": mode, "model": config.model if mode == "hosted" else None,
                           "settings": {"temperature": 1, "max_tokens": config.max_tokens,
                                        "seed": None, "max_steps": 1, "max_tool_calls": 1}}}

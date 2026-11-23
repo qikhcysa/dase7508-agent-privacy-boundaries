@@ -12,6 +12,8 @@ For the separate 64 development attempts and 32 same-process identity controls,
 use the [Issue 21 operator and reset checklist](ISSUE21.md).
 The [dated Issue 22 protocol](ISSUE22_2026-11-23.md) records the selected
 formal sample, input versions, scoring rules, spending limits and offline checks.
+Use the [Issue 23 formal core operator guide](ISSUE23.md) for the resumable,
+budget-gated 1,152-condition execution.
 
 The smoke command runs the repository's synthetic benign T01 fixture once per
 S0--S3, H0/H1, and F0/F1 combination, for 16 attempts. It generates one H1
@@ -149,6 +151,15 @@ can appear in both `authorized_requests` and `unknown_requests`.
 
 Standalone bundle discovery remains available when neither run manifest is
 present.
+
+The formal supplemental entry point is documented in
+[ISSUE24.md](ISSUE24.md). It expands the frozen supplement manifest to 240
+attempts, inherits the completed Issue 23 budget ledger, preserves persistence
+pairs, and reports the three supplemental families separately from the core.
+The optional four-shard scheduling variant and its dated addendum are described
+in the parallel section of the same guide
+([`ISSUE24_PARALLEL_ADDENDUM_2026-11-24.md`](ISSUE24_PARALLEL_ADDENDUM_2026-11-24.md));
+it changes scheduling only and keeps the single-operator flow as the baseline.
 
 ## Verification
 
