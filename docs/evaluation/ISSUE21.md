@@ -74,4 +74,4 @@ python -m unittest discover -s tests -q
 | [已批准排期的整批回放](evidence/issue21/approved-rehearsal-20261122.json) | 64 个开发条件完成并重置，合法请求 288 个，脚本下误拦截 0 个。32 次身份对照符合预期。原身份 16 次可接续，只换用户与只换任务各 8 次在加载阶段被拒绝。 |
 | [独立防护核验](evidence/issue21/offline-20261122.json) | 故意只给 H1 摘要保留三条议程中的一条，脚本仍可输出满分答案。分别换用户和任务均在零控制器请求时被拒绝。另一次模拟传输失败保留了未知送达、未知用量与重置证据。 |
 
-本次没有调整释放策略、评分规则或重置规则。真实模型执行、真实费用和人工重置签核仍待组员完成。金展核对证据，按 Issue 分工完成最新版本审查后再验收 #21。[Issue #21](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/21) · [项目路线图](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27)
+2026 年 11 月 23 日，夏立原已跑完 64 次开发试验和 32 次身份对照，夏张宁已确认重置核对结果。四批开发记录的离线复算与提交的评分一致。真实运行的费用口径、逐份摘要偏差及核对方法见[验收记录](evidence/issue21/ACCEPTANCE_2026-11-23.md)。最新版本由夏立原独立审查。[Issue #21](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/21) · [项目路线图](https://github.com/qikhcysa/dase7508-agent-privacy-boundaries/issues/27)
