@@ -14,6 +14,7 @@ Protocol: `996a654ebc6b0486015d767e856bffa3369401ad5dc5de90639eff9c4aba86f3`
 - Target outcomes: `{"no_target_disclosure_observed": 1152}`.
 - Privacy labels: `{"delivery_unknown": 7}`.
 - Authorized requests blocked: **0/2381**; overblocked attempts: **0**.
+- Unknown overblocking counts are unavailable in this snapshot. The original CSV encoded both unknown and negative observations as `False`. Verification requires the archived score.
 - Invalid evidence: **0**.
 - Local conservative budget usage: **9.8561956 CNY**; pending requests: **0**.
 
@@ -70,6 +71,8 @@ Target disclosures count only `confirmed_success` and `outbound_delivery_unconfi
 | S3 | 288 | 266 | 8 | 0 | 0 | 0 |
 
 ## Files
+
+The [operator archive manifest](../ARCHIVE.md) describes the underlying records and their verification status.
 
 - `live-attempts.csv`: one row per recorded formal attempt, including group, S/H/F condition, completion, error type, reset status and outcome labels.
 - `live-progress.json`: machine-readable aggregate, budget snapshot and source digests.

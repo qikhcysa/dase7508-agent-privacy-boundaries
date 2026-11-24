@@ -83,6 +83,30 @@ class Issue23BudgetTests(unittest.TestCase):
             open_budget(project, formal_bill_cny=Decimal("0"),
                         daily_bill_cny=Decimal("0"), project_bill_cny=Decimal("499.20"))
 
+    def test_lagging_partial_and_settled_bills_across_blocks(self):
+        self.open(formal="1", daily="1", project="10")
+        model = Model()
+        CappedTransport(model, self.path).send(b"one")
+        for paid in (Decimal("0"), Decimal("0.0001"), Decimal("0.00022")):
+            self.open(formal=str(1 + paid), daily=str(1 + paid), project=str(10 + paid))
+            status = budget_status(self.path)
+            self.assertEqual(status["formal_used_cny"], "1.00022")
+            self.assertEqual(status["daily_used_cny"], "1.00022")
+            self.assertEqual(status["project_used_cny"], "10.00022")
+        CappedTransport(model, self.path).send(b"two")
+        self.assertEqual(budget_status(self.path)["project_used_cny"], "10.00044")
+
+    def test_lagging_bill_near_cap_does_not_permit_another_request(self):
+        self.open(project="499.1382")
+        model = Model()
+        capped = CappedTransport(model, self.path)
+        capped.send(b"one")
+        with self.assertRaisesRegex(ValueError, "project"):
+            self.open(project="499.1382")
+        with self.assertRaisesRegex(TransportError, "stopped_before_network"):
+            capped.send(b"two")
+        self.assertEqual(model.calls, 1)
+
     def test_unknown_usage_retains_reservation_and_blocks_future_send(self):
         self.open()
         model = Model(usage=False)

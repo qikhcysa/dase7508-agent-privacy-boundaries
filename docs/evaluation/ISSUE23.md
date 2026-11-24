@@ -56,6 +56,11 @@ reset files and `score.json`. Reconcile the provider bill before invoking the
 next block. Do not rerun failed conditions; the next invocation continues only
 unstarted plan identifiers.
 
+The resume check inspects the reset and preparation evidence of previously recorded
+attempts before executing another condition. An unresolved reset or incomplete
+selected try stops the run for evidence review. For access and integrity checks
+on the completed run, see the [archive manifest](evidence/issue23/ARCHIVE.md).
+
 ## Offline verification
 
 ```sh

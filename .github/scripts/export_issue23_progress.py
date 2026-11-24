@@ -10,7 +10,9 @@ from datetime import datetime
 from hashlib import sha256
 import json
 from pathlib import Path
+from shutil import copyfile
 import sqlite3
+from tempfile import TemporaryDirectory
 from zoneinfo import ZoneInfo
 
 
@@ -127,7 +129,7 @@ def main() -> int:
             "valid_evidence": bool(row.get("valid_evidence")),
             "target_outcome": row.get("target_outcome") or "",
             "privacy_labels": ";".join(row.get("privacy_labels") or []),
-            "overblocked": bool(row.get("overblocked")),
+            "overblocked": row["overblocked"],
             "evidence_path": row.get("evidence_path") or "",
         })
 
@@ -152,7 +154,7 @@ def main() -> int:
             "reset_failures": sum(item["reset_ok"] is not True for item in items),
             "delivery_unknown": sum("delivery_unknown" in item["privacy_labels"] for item in items),
             **summarize_target_outcomes(items),
-            "overblocked": sum(item["overblocked"] for item in items),
+            "overblocked": sum(item["overblocked"] is True for item in items),
         })
 
     policy_rows = []
@@ -164,7 +166,7 @@ def main() -> int:
             "completed": sum(item["task_completed"] for item in items),
             "errors": sum(bool(item["error_type"]) for item in items),
             **summarize_target_outcomes(items),
-            "overblocked": sum(item["overblocked"] for item in items),
+            "overblocked": sum(item["overblocked"] is True for item in items),
         })
 
     planned_attempts = plan["attempt_count"]
@@ -188,9 +190,11 @@ def main() -> int:
             "error_type_counts": dict(Counter(row["error_type"] for row in rows if row["error_type"])),
             "privacy_label_counts": dict(Counter(label for row in rows for label in row["privacy_labels"].split(";") if label)),
             "target_outcome_counts": dict(Counter(row["target_outcome"] for row in rows if row["target_outcome"])),
-            "overblocked_attempts": sum(row["overblocked"] for row in rows),
+            "overblocked_attempts": sum(row["overblocked"] is True for row in rows),
             "authorized_requests": summary["overblocking"]["authorized_requests"],
             "blocked_authorized_requests": summary["overblocking"]["blocked_authorized_requests"],
+            "unknown_requests": summary["overblocking"]["unknown_requests"],
+            "unknown_benign_attempts": summary["overblocking"]["unknown_benign_attempts"],
             "invalid_evidence": summary["invalid_evidence"],
         },
         "budget": budget_snapshot(budget_path),
@@ -202,17 +206,6 @@ def main() -> int:
             "frozen_plan_sha256": digest(plan_path),
         },
     }
-
-    output.mkdir(parents=True, exist_ok=True)
-    json_path = output / "live-progress.json"
-    csv_path = output / "live-attempts.csv"
-    md_path = output / "README.md"
-    json_path.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    fieldnames = list(rows[0]) if rows else ["ordinal", "group", "attempt_key", "status", "error_type"]
-    with csv_path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
 
     observed_summary = snapshot["observed_summary"]
     lines = [
@@ -234,6 +227,8 @@ def main() -> int:
         f"- Target outcomes: `{json.dumps(observed_summary['target_outcome_counts'], ensure_ascii=False, sort_keys=True)}`.",
         f"- Privacy labels: `{json.dumps(observed_summary['privacy_label_counts'], ensure_ascii=False, sort_keys=True)}`.",
         f"- Authorized requests blocked: **{observed_summary['blocked_authorized_requests']}/{observed_summary['authorized_requests']}**; overblocked attempts: **{observed_summary['overblocked_attempts']}**.",
+        f"- Requests with unknown overblocking: **{observed_summary['unknown_requests']}**. "
+        f"Benign attempts with unknown overblocking: **{observed_summary['unknown_benign_attempts']}**.",
         f"- Invalid evidence: **{len(observed_summary['invalid_evidence'])}**.",
         f"- Local conservative budget usage: **{snapshot['budget']['local_conservative_cny']} CNY**; pending requests: **{snapshot['budget']['pending_requests']}**.",
         "",
@@ -260,24 +255,63 @@ def main() -> int:
     for row in policy_rows:
         lines.append(
             f"| {row['policy']} | {row['recorded']} | {row['completed']} | {row['errors']} | "
-            f"{row['target_disclosure_observed']} | {row['overblocked']} |"
+            f"{row['target_confirmed']} | {row['target_unconfirmed']} | {row['overblocked']} |"
         )
     lines += [
         "",
         "## Files",
+        "",
+        "The [operator archive manifest](../ARCHIVE.md) describes the underlying records and their verification status.",
         "",
         "- `live-attempts.csv`: one row per recorded formal attempt, including group, S/H/F condition, completion, error type, reset status and outcome labels.",
         "- `live-progress.json`: machine-readable aggregate, budget snapshot and source digests.",
         "- Raw conversations, request bodies, API credentials and local SQLite files are intentionally not published on this branch.",
         "",
     ]
-    md_path.write_text("\n".join(lines), encoding="utf-8")
+    output.mkdir(parents=True, exist_ok=True)
+    with TemporaryDirectory(dir=output) as temporary:
+        staging = Path(temporary)
+        md_path = staging / "README.md"
+        md_path.write_text("\n".join(lines), encoding="utf-8")
+        json_path = staging / "live-progress.json"
+        json_path.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        csv_path = staging / "live-attempts.csv"
+        fieldnames = list(rows[0]) if rows else ["ordinal", "group", "attempt_key", "status", "error_type"]
+        with csv_path.open("w", encoding="utf-8", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        publish_files(output, (csv_path, json_path, md_path))
     print(json.dumps({
         "recorded_attempts": recorded_attempts,
         "complete_blocks": complete_blocks,
         "output": str(output),
     }, ensure_ascii=False))
     return 0
+
+
+def publish_files(output, staged_files):
+    # Keep the previous snapshot available if a destination cannot be replaced.
+    previous = {}
+    for staged in staged_files:
+        destination = output / staged.name
+        if destination.exists():
+            backup = staged.with_suffix(".backup")
+            copyfile(destination, backup)
+            previous[destination] = backup
+    replaced = []
+    try:
+        for staged in staged_files:
+            destination = output / staged.name
+            staged.replace(destination)
+            replaced.append(destination)
+    except (OSError, KeyboardInterrupt):
+        for destination in reversed(replaced):
+            if destination in previous:
+                previous[destination].replace(destination)
+            else:
+                destination.unlink()
+        raise
 
 
 if __name__ == "__main__":

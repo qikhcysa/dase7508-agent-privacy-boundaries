@@ -48,6 +48,25 @@ def _schema(db: sqlite3.Connection) -> None:
         "daily_bill_units INTEGER NOT NULL, shanghai_day TEXT NOT NULL, "
         "recorded_total_units INTEGER NOT NULL, recorded_daily_units INTEGER NOT NULL)"
     )
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS bill_history AS SELECT * FROM operator_snapshot WHERE 0"
+    )
+
+
+def _accounted_usage(db, day, total, day_total):
+    # Each reconciled bill supplies a floor, plus the local usage recorded since
+    # that observation. A lagging bill cannot erase a previous floor.
+    formal_offset, project_offset, daily_offset = db.execute(
+        "SELECT MAX(formal_bill_units - recorded_total_units), "
+        "MAX(project_bill_units - recorded_total_units), "
+        "MAX(CASE WHEN shanghai_day = ? THEN daily_bill_units - recorded_daily_units END) "
+        "FROM (SELECT * FROM operator_snapshot UNION ALL SELECT * FROM bill_history)",
+        (day,),
+    ).fetchone()
+    if formal_offset is None:
+        raise ValueError("Missing Issue 23 budget initialization")
+    return (total + max(0, formal_offset), total + max(0, project_offset),
+            day_total + max(0, daily_offset or 0))
 
 
 def initialize_budget(path) -> None:
@@ -99,40 +118,34 @@ def open_budget(path, *, formal_bill_cny: Decimal, daily_bill_cny: Decimal,
         day_total = db.execute(
             "SELECT COALESCE(SUM(units), 0) FROM usage WHERE shanghai_day = ?", (day,)
         ).fetchone()[0]
-        if max(formal, total) + RESERVATION > FORMAL_CAP:
-            raise ValueError("Insufficient formal-stage headroom for one request")
-        if max(project, total) + RESERVATION > PROJECT_CAP:
-            raise ValueError("Insufficient project headroom for one request")
-        if max(daily, day_total) + RESERVATION > DAILY_CAP:
-            raise ValueError("Insufficient current-day headroom for one request")
+        db.execute("INSERT INTO bill_history SELECT * FROM operator_snapshot WHERE singleton=1")
         db.execute(
             "UPDATE operator_snapshot SET formal_bill_units = ?, project_bill_units = ?, "
             "daily_bill_units = ?, shanghai_day = ?, recorded_total_units = ?, "
             "recorded_daily_units = ? WHERE singleton = 1",
             (formal, project, daily, day, total, day_total),
         )
+        formal_used, project_used, daily_used = _accounted_usage(db, day, total, day_total)
+        if formal_used + RESERVATION > FORMAL_CAP:
+            raise ValueError("Insufficient formal-stage headroom for one request")
+        if project_used + RESERVATION > PROJECT_CAP:
+            raise ValueError("Insufficient project headroom for one request")
+        if daily_used + RESERVATION > DAILY_CAP:
+            raise ValueError("Insufficient current-day headroom for one request")
 
 
 def budget_status(path, *, now: datetime | None = None) -> dict:
     day = _today(now)
     with closing(sqlite3.connect(path)) as db:
-        snapshot = db.execute(
-            "SELECT formal_bill_units, project_bill_units, daily_bill_units, shanghai_day, "
-            "recorded_total_units, recorded_daily_units FROM operator_snapshot WHERE singleton = 1"
-        ).fetchone()
-        if snapshot is None:
-            raise ValueError("Missing Issue 23 budget initialization")
+        # Keep the status read consistent and leave archived ledger files untouched.
+        db.execute("BEGIN")
+        _schema(db)
         total = db.execute("SELECT COALESCE(SUM(units), 0) FROM usage").fetchone()[0]
         day_total = db.execute(
             "SELECT COALESCE(SUM(units), 0) FROM usage WHERE shanghai_day = ?", (day,)
         ).fetchone()[0]
         pending = db.execute("SELECT COUNT(*) FROM usage WHERE pending = 1").fetchone()[0]
-    formal = max(snapshot[0], snapshot[4]) + max(0, total - snapshot[4])
-    project = max(snapshot[1], snapshot[4]) + max(0, total - snapshot[4])
-    if snapshot[3] == day:
-        daily = max(snapshot[2], snapshot[5]) + max(0, day_total - snapshot[5])
-    else:
-        daily = day_total
+        formal, project, daily = _accounted_usage(db, day, total, day_total)
     return {
         "shanghai_day": day,
         "formal_used_cny": str(Decimal(formal) / UNITS_PER_CNY),
@@ -156,11 +169,7 @@ class CappedTransport:
         day = _today(self.now() if callable(self.now) else self.now)
         with closing(sqlite3.connect(self.path)) as db, db:
             db.execute("BEGIN IMMEDIATE")
-            snapshot = db.execute(
-                "SELECT formal_bill_units, project_bill_units, daily_bill_units, shanghai_day, "
-                "recorded_total_units, recorded_daily_units FROM operator_snapshot WHERE singleton = 1"
-            ).fetchone()
-            if snapshot is None:
+            if db.execute("SELECT 1 FROM operator_snapshot WHERE singleton=1").fetchone() is None:
                 raise TransportError("issue23_budget_not_initialized")
             total, pending = db.execute(
                 "SELECT COALESCE(SUM(units), 0), COALESCE(SUM(pending), 0) FROM usage"
@@ -168,10 +177,7 @@ class CappedTransport:
             day_total = db.execute(
                 "SELECT COALESCE(SUM(units), 0) FROM usage WHERE shanghai_day = ?", (day,)
             ).fetchone()[0]
-            formal = max(snapshot[0], snapshot[4]) + max(0, total - snapshot[4])
-            project = max(snapshot[1], snapshot[4]) + max(0, total - snapshot[4])
-            daily = (max(snapshot[2], snapshot[5]) + max(0, day_total - snapshot[5])
-                     if snapshot[3] == day else day_total)
+            formal, project, daily = _accounted_usage(db, day, total, day_total)
             reason = None
             if pending:
                 reason = "pending"

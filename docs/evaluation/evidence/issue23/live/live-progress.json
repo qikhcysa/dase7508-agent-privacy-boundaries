@@ -28,6 +28,8 @@
     "overblocked_attempts": 0,
     "authorized_requests": 2381,
     "blocked_authorized_requests": 0,
+    "unknown_requests": null,
+    "unknown_benign_attempts": null,
     "invalid_evidence": []
   },
   "budget": {

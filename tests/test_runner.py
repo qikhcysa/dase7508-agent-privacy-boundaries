@@ -152,6 +152,30 @@ class RunnerExecutionTests(unittest.TestCase):
         self.assertEqual(execution["error_type"], "attempt_reset_failed")
         self.assertFalse(execution["reset_ok"])
 
+    def test_restart_preserves_unresolved_reset_stop(self):
+        plan = self.one_plan(policies=("S0", "S1"))
+        root = self.root / "reset-stop"
+        calls = []
+
+        def executor(condition, directory, _snapshot):
+            calls.append(condition["attempt_key"])
+            directory.mkdir()
+            return self.result(reset=False)
+
+        def stop_on_failed_reset(record):
+            if not record["executions"][0]["reset_ok"]:
+                raise ValueError("review reset")
+
+        with self.assertRaisesRegex(ValueError, "review reset"):
+            run_plan(plan, root, executor, after_condition=stop_on_failed_reset)
+        ledger_path = root / "run-ledger.json"
+        before = ledger_path.read_bytes()
+        with self.assertRaisesRegex(RunnerError, "resume_requires_evidence_review"):
+            run_plan(plan, root, executor, after_condition=stop_on_failed_reset, resume=True)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(ledger_path.read_bytes(), before)
+        self.assertIsNone(json.loads(before)["finished_at"])
+
     def test_h1_snapshot_is_prepared_once_and_reused_immutably(self):
         plan = self.one_plan(handoffs=("H1",), policies=("S0", "S1"), faults=("F0", "F1"))
         provider_calls = 0

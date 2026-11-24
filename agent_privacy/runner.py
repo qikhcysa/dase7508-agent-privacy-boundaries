@@ -480,10 +480,14 @@ def run_plan(
                 or record.get("condition") != ordered_conditions[index]):
             raise RunnerError("resume_attempts_changed")
         executions = record.get("executions")
-        if not isinstance(executions, list) or record.get("selected_try") not in (
-            None, *(execution.get("try") for execution in executions if isinstance(execution, dict))
-        ):
+        if (not isinstance(executions, list) or len(executions) > max_retries + 1
+                or not all(isinstance(item, dict) for item in executions)):
             raise RunnerError("resume_attempts_changed")
+        selected_try = record.get("selected_try")
+        selected = [item for item in executions if item.get("try") == selected_try]
+        if (record.get("preparation_error") is not None or selected_try is None
+                or len(selected) != 1 or selected[0].get("reset_ok") is not True):
+            raise RunnerError(f"resume_requires_evidence_review: {record['attempt_key']}")
     new_conditions = 0
     ordinal = 0
     for block in plan["blocks"]:
