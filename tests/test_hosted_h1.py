@@ -338,7 +338,7 @@ class HostedH1Tests(unittest.TestCase):
             with self.subTest(failure=failure):
                 artifact = self.prepare(repetition={"changed": 1, "removed": 2, "copy_failed": 3}[failure])
                 repetition = load_json(artifact)["handoff"]["repetition"]
-                directory = self.directory / failure
+                directory = (self.directory / failure).resolve()
                 model = MobileModel()
 
                 def load_then_change(*args, **kwargs):

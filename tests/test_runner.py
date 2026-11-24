@@ -119,6 +119,28 @@ class RunnerExecutionTests(unittest.TestCase):
         saved = json.loads((self.root / "run" / "run-ledger.json").read_text(encoding="utf-8"))
         self.assertIsNotNone(saved["finished_at"])
 
+    def test_checkpoint_resume_keeps_prefix_and_metadata(self):
+        plan = self.one_plan(policies=("S0", "S1"))
+        calls = []
+
+        def executor(condition, directory, _snapshot):
+            calls.append(condition["attempt_key"])
+            directory.mkdir()
+            return self.result()
+
+        root = self.root / "resumable"
+        metadata = {"phase": "formal", "protocol_sha256": "a" * 64}
+        first = run_plan(plan, root, executor, max_new_conditions=1, metadata=metadata)
+        self.assertEqual(len(first["attempts"]), 1)
+        self.assertIsNone(first["finished_at"])
+        resumed = run_plan(plan, root, executor, resume=True, max_new_conditions=1,
+                           metadata=metadata)
+        self.assertEqual(len(resumed["attempts"]), 2)
+        self.assertIsNotNone(resumed["finished_at"])
+        self.assertEqual(calls, [item["attempt_key"] for item in plan["blocks"][0]["attempts"]])
+        with self.assertRaisesRegex(RunnerError, "resume_ledger_changed"):
+            run_plan(plan, root, executor, resume=True, metadata={"phase": "changed"})
+
     def test_failed_reset_turns_a_completed_executor_into_an_error(self):
         def executor(_condition, directory, _snapshot):
             directory.mkdir()
@@ -129,6 +151,30 @@ class RunnerExecutionTests(unittest.TestCase):
         self.assertEqual(execution["status"], "error")
         self.assertEqual(execution["error_type"], "attempt_reset_failed")
         self.assertFalse(execution["reset_ok"])
+
+    def test_restart_preserves_unresolved_reset_stop(self):
+        plan = self.one_plan(policies=("S0", "S1"))
+        root = self.root / "reset-stop"
+        calls = []
+
+        def executor(condition, directory, _snapshot):
+            calls.append(condition["attempt_key"])
+            directory.mkdir()
+            return self.result(reset=False)
+
+        def stop_on_failed_reset(record):
+            if not record["executions"][0]["reset_ok"]:
+                raise ValueError("review reset")
+
+        with self.assertRaisesRegex(ValueError, "review reset"):
+            run_plan(plan, root, executor, after_condition=stop_on_failed_reset)
+        ledger_path = root / "run-ledger.json"
+        before = ledger_path.read_bytes()
+        with self.assertRaisesRegex(RunnerError, "resume_requires_evidence_review"):
+            run_plan(plan, root, executor, after_condition=stop_on_failed_reset, resume=True)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(ledger_path.read_bytes(), before)
+        self.assertIsNone(json.loads(before)["finished_at"])
 
     def test_h1_snapshot_is_prepared_once_and_reused_immutably(self):
         plan = self.one_plan(handoffs=("H1",), policies=("S0", "S1"), faults=("F0", "F1"))

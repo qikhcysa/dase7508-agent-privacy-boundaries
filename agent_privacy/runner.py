@@ -400,6 +400,9 @@ def run_plan(
     after_condition: Callable[[dict[str, Any]], None] | None = None,
     max_retries: int = 0,
     retryable_errors: Iterable[str] = (),
+    resume: bool = False,
+    max_new_conditions: int | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Execute a plan without carrying mutable state between ordinary attempts.
 
@@ -419,26 +422,83 @@ def run_plan(
         for block in plan["blocks"] for attempt in block["attempts"]
     ):
         raise RunnerError("h1_snapshot_provider_required")
+    if max_new_conditions is not None and (
+        type(max_new_conditions) is not int or max_new_conditions < 1
+    ):
+        raise RunnerError("invalid_condition_limit")
+    if metadata is not None and not isinstance(metadata, dict):
+        raise RunnerError("invalid_run_metadata")
     root = Path(output_dir).resolve()
-    root.mkdir(parents=True, exist_ok=False)
-    _write_json(root / "plan.json", plan)
-    ledger = {
-        "schema_version": LEDGER_VERSION,
-        "plan_sha256": plan_sha256(plan),
-        "started_at": datetime.now(timezone.utc).isoformat(),
-        "finished_at": None,
-        "max_retries": max_retries,
-        "retryable_errors": sorted(retryable),
-        "snapshots": [],
-        "attempts": [],
-    }
     ledger_path = root / "run-ledger.json"
-    _write_ledger(ledger_path, ledger)
+    if resume:
+        try:
+            saved_plan = json.loads((root / "plan.json").read_text(encoding="utf-8"))
+            ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, UnicodeError):
+            raise RunnerError("resume_evidence_unreadable") from None
+        if saved_plan != plan or ledger.get("plan_sha256") != plan_sha256(plan):
+            raise RunnerError("resume_plan_changed")
+        if (ledger.get("schema_version") != LEDGER_VERSION
+                or ledger.get("max_retries") != max_retries
+                or ledger.get("retryable_errors") != sorted(retryable)
+                or ledger.get("metadata") != metadata
+                or not isinstance(ledger.get("snapshots"), list)
+                or not isinstance(ledger.get("attempts"), list)):
+            raise RunnerError("resume_ledger_changed")
+        ledger["finished_at"] = None
+    else:
+        root.mkdir(parents=True, exist_ok=False)
+        _write_json(root / "plan.json", plan)
+        ledger = {
+            "schema_version": LEDGER_VERSION,
+            "plan_sha256": plan_sha256(plan),
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "finished_at": None,
+            "max_retries": max_retries,
+            "retryable_errors": sorted(retryable),
+            "metadata": deepcopy(metadata),
+            "snapshots": [],
+            "attempts": [],
+        }
+        _write_ledger(ledger_path, ledger)
     snapshots: dict[str, dict[str, Any]] = {}
+    for snapshot in ledger["snapshots"]:
+        key = snapshot.get("snapshot_key") if isinstance(snapshot, dict) else None
+        if not isinstance(key, str) or key in snapshots:
+            raise RunnerError("resume_snapshot_changed")
+        snapshots[key] = snapshot
+    ordered_conditions = [
+        condition for block in plan["blocks"] for condition in block["attempts"]
+    ]
+    existing = ledger["attempts"]
+    if len(existing) > len(ordered_conditions):
+        raise RunnerError("resume_attempts_changed")
+    for index, record in enumerate(existing):
+        if (not isinstance(record, dict)
+                or record.get("ordinal") != index + 1
+                or record.get("attempt_key") != ordered_conditions[index]["attempt_key"]
+                or record.get("condition") != ordered_conditions[index]):
+            raise RunnerError("resume_attempts_changed")
+        executions = record.get("executions")
+        if (not isinstance(executions, list) or len(executions) > max_retries + 1
+                or not all(isinstance(item, dict) for item in executions)):
+            raise RunnerError("resume_attempts_changed")
+        selected_try = record.get("selected_try")
+        selected = [item for item in executions if item.get("try") == selected_try]
+        if (record.get("preparation_error") is not None or selected_try is None
+                or len(selected) != 1 or selected[0].get("reset_ok") is not True):
+            raise RunnerError(f"resume_requires_evidence_review: {record['attempt_key']}")
+    new_conditions = 0
     ordinal = 0
     for block in plan["blocks"]:
         for planned in block["attempts"]:
             ordinal += 1
+            if ordinal <= len(existing):
+                continue
+            if max_new_conditions is not None and new_conditions >= max_new_conditions:
+                _write_ledger(ledger_path, ledger)
+                return ledger
+            new_conditions += 1
             attempt_record = {
                 "ordinal": ordinal,
                 "attempt_key": planned["attempt_key"],

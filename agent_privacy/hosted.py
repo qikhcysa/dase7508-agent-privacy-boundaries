@@ -169,7 +169,8 @@ def _source_hashes() -> dict:
 def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.json",
               output_dir: str | Path, transport=None, handoff_path=None,
               document_variant="benign", repetition=1, fault: str = "F0",
-              user_id="synthetic_user", task_id=None, policy="S0") -> dict:
+              user_id="synthetic_user", task_id=None, policy="S0",
+              phase="development", protocol_sha256=None) -> dict:
     """Run one fresh attempt. An injected scripted/loopback transport is only a test."""
     if policy not in POLICIES:
         raise ValueError("invalid_policy")
@@ -177,8 +178,14 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         raise ValueError("fault must be F0 or F1")
     if document_variant not in {"benign", "attacked"} or type(repetition) is not int or repetition < 1:
         raise ValueError("invalid_attempt_condition")
-    if policy in {"S1", "S2"} and document_variant != "benign":
-        raise ValueError("s1_s2_require_benign_fixture")
+    if phase not in {"development", "formal"}:
+        raise ValueError("invalid_phase")
+    if phase == "formal":
+        if (not isinstance(protocol_sha256, str) or len(protocol_sha256) != 64
+                or any(char not in "0123456789abcdef" for char in protocol_sha256)):
+            raise ValueError("formal_protocol_sha256_required")
+    elif protocol_sha256 is not None:
+        raise ValueError("development_protocol_sha256_must_be_null")
     fixture = load_fixture(fixture_path)
     source_sha256 = _source_hashes()
     directory = Path(output_dir).resolve()
@@ -222,9 +229,9 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         config.endpoint, api_key=config.api_key, timeout=config.timeout)
     mode = "hosted" if controller.mode == "http" else "scripted"
     run = {"attempt_id": scope["trial_id"], "fixture_id": fixture["fixture_id"],
-           "phase": "development", "document_variant": document_variant, "repetition": repetition,
+           "phase": phase, "document_variant": document_variant, "repetition": repetition,
            "policy": policy, "handoff": "H1" if handoff else "H0", "fault": fault, "scope": scope,
-           "purpose": PURPOSE, "protocol_sha256": None,
+           "purpose": PURPOSE, "protocol_sha256": protocol_sha256,
            "controller": {"mode": mode, "model": config.model if mode == "hosted" else None,
                           "settings": {"temperature": 1, "max_tokens": config.max_tokens,
                                        "seed": None, "max_steps": config.max_steps,
@@ -485,7 +492,8 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
     if handoff:
         artifact_names.extend(["handoff-load.json", "handoff-artifact.json", *handoff["evidence_sha256"]])
     _write(directory / "manifest.json", {
-        "schema_version": "1.0", "phase": "development",
+        "schema_version": "1.0", "phase": phase,
+        "protocol_sha256": protocol_sha256,
         "conditions": "/".join((document_variant, run["handoff"], fault, policy)),
         "created_at": datetime.now(timezone.utc).isoformat(), "endpoint": controller.endpoint,
         "source_sha256": source_sha256,
@@ -497,7 +505,9 @@ def run_agent(config, *, fixture_path: str | Path = ROOT / "fixtures" / "t01.jso
         "handoff_generation_evidence": deepcopy(handoff["evidence_sha256"]) if handoff else None,
         "model_options": {key: value for key, value in payload.items()
                           if key not in {"messages", "tools"}},
-        "limits": "One development attempt; no retries, provider fallback, or formal scoring."})
+        "limits": ("One formal attempt; zero retries and no provider fallback."
+                   if phase == "formal" else
+                   "One development attempt; no retries, provider fallback, or formal scoring.")})
     return result
 
 
